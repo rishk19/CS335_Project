@@ -1391,7 +1391,7 @@ int main(int argc, char** argv)
 {   
     yyin = fopen("temp.txt","r");
     yyparse();
-    ast_print(root,0);
+    //ast_print(root,0);
     FILE* graph = fopen("AST.dot","w");
     fprintf(graph, "digraph AST{ \n");
     graph_maker(root, graph,0,0);
