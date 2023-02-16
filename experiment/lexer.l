@@ -9,12 +9,14 @@
 %%
 
 b {
-    sscanf(yytext, "%s", yylval.data);
+    //sscanf(yytext, "%s", yylval.data);
+    yylval.data = "b";
     return (B);
 }
 
 c { 
-    sscanf(yytext, "%s", yylval.data);
+    //sscanf(yytext, "%s", yylval.data);
+    yylval.data = "c";
     return (C);
 }
 

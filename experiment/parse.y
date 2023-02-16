@@ -3,7 +3,7 @@
 int yyerror(char *s);
 int yylex();
 extern FILE *yyin;
-extern struct node *root;
+struct node *root = NULL;
 
 struct node{
     char* data;
@@ -33,6 +33,7 @@ struct node* makeleaf(char* node);
 
 a: 
     b c {
+        //printf("a -> bc");
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $2;
@@ -42,19 +43,22 @@ a:
 
 b:
     B {
+        //printf("b -> B");ß
         $$ = makeleaf($1);
     }
 ;
 
 c : 
     c C{
+        //printf("c->cC");
         struct node* memArr[2];
         memArr[1] = makeleaf($2);
         memArr[0] = $1;
        $$ = makeInternalNode("C (Non-Terminal)", memArr,2);
     }
     | C {
-       $$ =  makeleaf($1);
+        //printf("c-> C");
+        $$ =  makeleaf($1);
     }
 
 ;
@@ -68,6 +72,7 @@ int yyerror(char *s)
 
 
 struct node* makeleaf(char* nodeStr){
+    printf("%s\n",nodeStr);
     struct node* leaf = (struct node*)malloc(sizeof(struct node));
     leaf->data = nodeStr;
     for(int i = 0; i<10; i++){

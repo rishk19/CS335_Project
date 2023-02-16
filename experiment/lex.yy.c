@@ -728,38 +728,40 @@ case 1:
 YY_RULE_SETUP
 #line 11 "lexer.l"
 {
-    sscanf(yytext, "%s", yylval.data);
+    //sscanf(yytext, "%s", yylval.data);
+    yylval.data = "b";
     return (B);
 }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 16 "lexer.l"
+#line 17 "lexer.l"
 { 
-    sscanf(yytext, "%s", yylval.data);
+    //sscanf(yytext, "%s", yylval.data);
+    yylval.data = "c";
     return (C);
 }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 21 "lexer.l"
+#line 23 "lexer.l"
 {
 
 }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 25 "lexer.l"
+#line 27 "lexer.l"
 {
     
 }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 29 "lexer.l"
+#line 31 "lexer.l"
 ECHO;
 	YY_BREAK
-#line 762 "lex.yy.c"
+#line 764 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1764,7 +1766,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 29 "lexer.l"
+#line 31 "lexer.l"
 
 
 

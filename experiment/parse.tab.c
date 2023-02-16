@@ -84,7 +84,7 @@
 int yyerror(char *s);
 int yylex();
 extern FILE *yyin;
-extern struct node *root;
+struct node *root = NULL;
 
 struct node{
     char* data;
@@ -97,7 +97,7 @@ struct node* makeleaf(char* node);
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 
 /* Enabling verbose error messages.  */
@@ -416,7 +416,7 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    35,    35,    44,    50,    56
+       0,    35,    35,    45,    52,    59
 };
 #endif
 
@@ -1314,6 +1314,7 @@ yyreduce:
         case 2:
 #line 35 "parse.y"
     {
+        //printf("a -> bc");
         struct node* memArr[2];
         memArr[0] = (yyvsp[(1) - (2)].exp);
         memArr[1] = (yyvsp[(2) - (2)].exp);
@@ -1322,15 +1323,17 @@ yyreduce:
     break;
 
   case 3:
-#line 44 "parse.y"
+#line 45 "parse.y"
     {
+        //printf("b -> B");ß
         (yyval.exp) = makeleaf((yyvsp[(1) - (1)].data));
     ;}
     break;
 
   case 4:
-#line 50 "parse.y"
+#line 52 "parse.y"
     {
+        //printf("c->cC");
         struct node* memArr[2];
         memArr[1] = makeleaf((yyvsp[(2) - (2)].data));
         memArr[0] = (yyvsp[(1) - (2)].exp);
@@ -1339,15 +1342,16 @@ yyreduce:
     break;
 
   case 5:
-#line 56 "parse.y"
+#line 59 "parse.y"
     {
-       (yyval.exp) =  makeleaf((yyvsp[(1) - (1)].data));
+        //printf("c-> C");
+        (yyval.exp) =  makeleaf((yyvsp[(1) - (1)].data));
     ;}
     break;
 
 
 /* Line 1267 of yacc.c.  */
-#line 1351 "parse.tab.c"
+#line 1355 "parse.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1561,7 +1565,7 @@ yyreturn:
 }
 
 
-#line 61 "parse.y"
+#line 65 "parse.y"
 
 
 int yyerror(char *s)
@@ -1572,6 +1576,7 @@ int yyerror(char *s)
 
 
 struct node* makeleaf(char* nodeStr){
+    printf("%s\n",nodeStr);
     struct node* leaf = (struct node*)malloc(sizeof(struct node));
     leaf->data = nodeStr;
     for(int i = 0; i<10; i++){
