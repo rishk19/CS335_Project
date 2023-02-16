@@ -6,18 +6,8 @@ digraph AST{
 	C_Non_Terminal_3_0 ->{ C_Non_Terminal_4_0 ,c_4_1}
 	C_Non_Terminal_4_0 ->{ C_Non_Terminal_5_0 ,c_5_1}
 	C_Non_Terminal_5_0 ->{ C_Non_Terminal_6_0 ,c_6_1}
-	C_Non_Terminal_6_0 ->{ C_Non_Terminal_7_0 ,c_7_1}
-	C_Non_Terminal_7_0 ->{ C_Non_Terminal_8_0 ,c_8_1}
-	C_Non_Terminal_8_0 ->{ C_Non_Terminal_9_0 ,c_9_1}
-	C_Non_Terminal_9_0 ->{ C_Non_Terminal_10_0 ,c_10_1}
-	C_Non_Terminal_10_0 ->{ C_Non_Terminal_11_0 ,c_11_1}
-	C_Non_Terminal_11_0 ->{ c_12_0 ,c_12_1}
-	c_12_0 ->{}
-	c_12_1 ->{}
-	c_11_1 ->{}
-	c_10_1 ->{}
-	c_9_1 ->{}
-	c_8_1 ->{}
+	C_Non_Terminal_6_0 ->{ c_7_0 ,c_7_1}
+	c_7_0 ->{}
 	c_7_1 ->{}
 	c_6_1 ->{}
 	c_5_1 ->{}

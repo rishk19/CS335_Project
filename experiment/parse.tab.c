@@ -505,7 +505,7 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    35,    35,    45,    52,    59
+       0,    35,    35,    45,    51,    58
 };
 #endif
 
@@ -1076,35 +1076,34 @@ yyreduce:
   case 3: /* b: B  */
 #line 45 "parse.y"
       {
-        //printf("b -> B");ß
-        (yyval.exp) = makeleaf((yyvsp[0].data));
+    (yyval.exp) =  makeleaf((yyvsp[0].data));
     }
-#line 1083 "parse.tab.c"
+#line 1082 "parse.tab.c"
     break;
 
   case 4: /* c: c C  */
-#line 52 "parse.y"
-       {
+#line 51 "parse.y"
+        {
         //printf("c->cC");
         struct node* memArr[2];
         memArr[1] = makeleaf((yyvsp[0].data));
         memArr[0] = (yyvsp[-1].exp);
        (yyval.exp) = makeInternalNode("C_Non_Terminal", memArr,2);
     }
-#line 1095 "parse.tab.c"
+#line 1094 "parse.tab.c"
     break;
 
   case 5: /* c: C  */
-#line 59 "parse.y"
+#line 58 "parse.y"
         {
         //printf("c-> C");
         (yyval.exp) =  makeleaf((yyvsp[0].data));
     }
-#line 1104 "parse.tab.c"
+#line 1103 "parse.tab.c"
     break;
 
 
-#line 1108 "parse.tab.c"
+#line 1107 "parse.tab.c"
 
       default: break;
     }
@@ -1297,7 +1296,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 65 "parse.y"
+#line 64 "parse.y"
 
 
 int yyerror(char *s)

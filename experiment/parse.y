@@ -43,13 +43,12 @@ a:
 
 b:
     B {
-        //printf("b -> B");ß
-        $$ = makeleaf($1);
+    $$ =  makeleaf($1);
     }
 ;
 
 c : 
-    c C{
+    c C {
         //printf("c->cC");
         struct node* memArr[2];
         memArr[1] = makeleaf($2);
