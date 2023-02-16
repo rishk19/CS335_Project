@@ -37,7 +37,7 @@ a:
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $2;
-        root = makeInternalNode("||",memArr,2);
+        root = makeInternalNode("Concat",memArr,2);
     }
 ;
 
@@ -54,7 +54,7 @@ c :
         struct node* memArr[2];
         memArr[1] = makeleaf($2);
         memArr[0] = $1;
-       $$ = makeInternalNode("C (Non-Terminal)", memArr,2);
+       $$ = makeInternalNode("C_Non_Terminal", memArr,2);
     }
     | C {
         //printf("c-> C");
@@ -72,7 +72,7 @@ int yyerror(char *s)
 
 
 struct node* makeleaf(char* nodeStr){
-    printf("%s\n",nodeStr);
+    //printf("%s\n",nodeStr);
     struct node* leaf = (struct node*)malloc(sizeof(struct node));
     leaf->data = nodeStr;
     for(int i = 0; i<10; i++){
@@ -93,7 +93,7 @@ struct node* makeInternalNode(char* rule, struct node* memArr[], int mem){
     return internalNode;
 }
 
-void ast_print(struct node* root){
+void ast_print(struct node* root, int d){
 
     if(root == NULL){
         return;
@@ -104,20 +104,63 @@ void ast_print(struct node* root){
     int i =0;
 
     while(root->arr[i]!= NULL){
-        printf("\t");
-        ast_print(root->arr[i]);
+        for(int i = 0 ; i<=d+1; i++)
+            printf("\t");
+        ast_print(root->arr[i],d+1);
         i++;
 
     }
 }
 
 
+void neighbour_append(struct node* root,FILE* graph, int depth,int child_num){
+    if(root->arr[0]!= NULL){
+        fprintf(graph, "\t%s_%d_%d ->{ %s_%d_0",root->data,depth,child_num,(root->arr[0])->data, depth+1);
+    }
+    else{
+        fprintf(graph, "\t%s_%d_%d ->{}\n",root->data,depth,child_num);
+        return;
+    }
+    for (int i=1 ; i< 10; i++){
+        if(root->arr[i] != NULL){
+            fprintf(graph," ,%s_%d_%d",(root->arr[i])->data,depth+1,i);
+        }
+        else{
+            fprintf(graph,"}\n");
+            return;
+        }
+    }
+    fprintf(graph,"}\n");
+    return;
+}
+
+void graph_maker(struct node* root,FILE* graph,int depth,int child_num){
+    
+    if(root!=NULL){
+        neighbour_append(root,graph,depth,child_num);
+        for(int i = 0; i<10 && root->arr[i]!=NULL; i++){
+            graph_maker(root->arr[i], graph,depth+1,i);
+        }
+
+    }
+    return;
+    
+
+}
+
+
+
+
 int main(int argc, char** argv)
 {   
     yyin = fopen("temp.txt","r");
     yyparse();
-    ast_print(root);
-
+    //ast_print(root,0);
+    FILE* graph = fopen("AST.dot","w");
+    fprintf(graph, "digraph AST{ \n");
+    graph_maker(root, graph,0,0);
+    fprintf(graph, "} \n");
+    fclose(graph);
 
     return 0;
 }
