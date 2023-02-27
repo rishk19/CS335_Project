@@ -98,8 +98,150 @@ _ {return(Underscore);}
             return (CharacterLiteral);}
 \"\"\"(\\.|[^"\\])*\"\"\" {sscanf(yytext,"%s", yylval.data);
             return (TextBlock);}
-"="|"!"|"~"|"?"|":"|"->"|"=="|">="|"<="|"!="|"&&"|"||"|"++"|"--"|"+"|"-"|"*"|"/"|"&"|"|"|"^"|"%"|"<<"|">>"|">>>"|"+="|"-="|"*="|"/="|"&="|"|="|"^="|"%="|"<<="|">>="|">>>=" {sscanf(yytext,"%s", yylval.data);
-            return (Operator);}
+"=" {
+    sscanf(yytext,"%s", yylval.data);
+    return (EqualTo);
+}
+"!" {
+    sscanf(yytext,"%s", yylval.data);
+    return (NotOperator);
+}
+"~" {
+    sscanf(yytext,"%s", yylval.data);
+    return (Tilde);
+}
+"?" {
+    sscanf(yytext,"%s", yylval.data);
+    return (QuestionMark);
+}
+":" {
+    sscanf(yytext,"%s", yylval.data);
+    return (Colon);
+}
+"->" {
+    sscanf(yytext,"%s", yylval.data);
+    return (RightArrow);
+}
+"==" {
+    sscanf(yytext,"%s", yylval.data);
+    return (EqualToEqualTo);
+}
+">=" {
+    sscanf(yytext,"%s", yylval.data);
+    return (GreaterThanEqualTo);
+}
+"<=" {
+    sscanf(yytext,"%s", yylval.data);
+    return (LessThanEqualTo);
+}
+"!=" {
+    sscanf(yytext,"%s", yylval.data);
+    return (NotEqualTo);
+}
+"&&" {
+    sscanf(yytext,"%s", yylval.data);
+    return (AndOperator);
+}
+"||" {
+    sscanf(yytext,"%s", yylval.data);
+    return (OrOperator);
+}
+"++" {
+    sscanf(yytext,"%s", yylval.data);
+    return (PlusPlus);
+}
+"--" {
+    sscanf(yytext,"%s", yylval.data);
+    return (MinusMinus);
+}
+"+" {
+    sscanf(yytext,"%s", yylval.data);
+    return (Addition);
+}
+"-" {
+    sscanf(yytext,"%s", yylval.data);
+    return (Substraction);
+}
+"*" {
+    sscanf(yytext,"%s", yylval.data);
+    return (Product);
+}
+"/" {
+    sscanf(yytext,"%s", yylval.data);
+    return (Divide);
+}
+"&" {
+    sscanf(yytext,"%s", yylval.data);
+    return (BitwiseAnd);
+}
+"|" {
+    sscanf(yytext,"%s", yylval.data);
+    return (BitwiseOr);
+}
+"^" {
+    sscanf(yytext,"%s", yylval.data);
+    return (CircumFlex);
+}
+"%" {
+    sscanf(yytext,"%s", yylval.data);
+    return (Modulo);
+}
+"<<" {
+    sscanf(yytext,"%s", yylval.data);
+    return (LeftShit);
+}
+">>" {
+    sscanf(yytext,"%s", yylval.data);
+    return (RightShift);
+}
+">>>" {
+    sscanf(yytext,"%s", yylval.data);
+    return (TripleGreaterThan);
+}
+"+=" {
+    sscanf(yytext,"%s", yylval.data);
+    return (AdditionEqualTo);
+}
+"-=" {
+    sscanf(yytext,"%s", yylval.data);
+    return (SubstractionEqualTo);
+}
+"*=" {
+    sscanf(yytext,"%s", yylval.data);
+    return (ProductEqualTo);
+}
+"/=" {
+    sscanf(yytext,"%s", yylval.data);
+    return (DivideEqualTo);
+}
+"&=" {
+    sscanf(yytext,"%s", yylval.data);
+    return (BitWiseAndEqualTo);
+}
+"|=" {
+    sscanf(yytext,"%s", yylval.data);
+    return (BitWiseOrEqualTo);
+}
+"^=" {
+    sscanf(yytext,"%s", yylval.data);
+    return (CircumFlexEqualTo);
+}
+"%=" {
+    sscanf(yytext,"%s", yylval.data);
+    return (ModuloEqualTo);
+}
+"<<=" {
+    sscanf(yytext,"%s", yylval.data);
+    return (LeftShitEqualTo);
+}
+">>=" {
+    sscanf(yytext,"%s", yylval.data);
+    return (RightShiftEqualTo);
+}
+">>>=" {
+    sscanf(yytext,"%s", yylval.data);
+    return (TripleGreaterThanEqualTo);
+}
 ">" {
     sscanf(yytext,"%s", yylval.data);
     return (GreaterThan);
