@@ -251,11 +251,22 @@ _ {return(Underscore);}
     return (LessThan);
     }
          
-"["|"]"|"..."|"@"|"::" {
+"::" {
     sscanf(yytext,"%s", yylval.data);
-    return (Seperator);
+    return (Scope);
     }
-
+"@" {
+    sscanf(yytext,"%s", yylval.data);
+    return (AtRate);
+}
+"[" {
+    sscanf(yytext,"%s", yylval.data);
+    return (LeftSquareBracket);
+}
+"]" {
+    sscanf(yytext,"%s", yylval.data);
+    return (RightSquareBracket);
+}
 "(" {
     sscanf(yytext,"%s", yylval.data);
     return (LeftParanthesis);
