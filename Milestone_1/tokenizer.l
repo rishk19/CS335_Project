@@ -1,6 +1,7 @@
 %{
     #include<stdio.h>
     #include"string.h"
+    #include "parser.tab.h"
 %}
 
 %%
@@ -97,10 +98,43 @@ _ {return(Underscore);}
             return (CharacterLiteral);}
 \"\"\"(\\.|[^"\\])*\"\"\" {sscanf(yytext,"%s", yylval.data);
             return (TextBlock);}
-"="|">"|"<"|"!"|"~"|"?"|":"|"->"|"=="|">="|"<="|"!="|"&&"|"||"|"++"|"--"|"+"|"-"|"*"|"/"|"&"|"|"|"^"|"%"|"<<"|">>"|">>>"|"+="|"-="|"*="|"/="|"&="|"|="|"^="|"%="|"<<="|">>="|">>>=" {sscanf(yytext,"%s", yylval.data);
+"="|"!"|"~"|"?"|":"|"->"|"=="|">="|"<="|"!="|"&&"|"||"|"++"|"--"|"+"|"-"|"*"|"/"|"&"|"|"|"^"|"%"|"<<"|">>"|">>>"|"+="|"-="|"*="|"/="|"&="|"|="|"^="|"%="|"<<="|">>="|">>>=" {sscanf(yytext,"%s", yylval.data);
             return (Operator);}
-"("|")"|"{"|"}"|"["|"]"|";"|","|"."|"..."|"@"|"::" {sscanf(yytext,"%s", yylval.data);
-            return (Seperator);}
+">" {
+    sscanf(yytext,"%s", yylval.data);
+    return (GreaterThan);
+    }
+"<" {
+    sscanf(yytext,"%s", yylval.data);
+    return (LessThan);
+    }
+         
+"("|")"|"["|"]"|"."|"..."|"@"|"::" {
+    sscanf(yytext,"%s", yylval.data);
+    return (Seperator);
+    }
+
+"," {
+    sscanf(yytext,"%s", yylval.data);
+            return (Comma);
+    }
+
+"{" {
+    sscanf(yytext,"%s", yylval.data);
+        return (LeftCurlyBrace);
+}
+
+"}" {
+    sscanf(yytext,"%s", yylval.data);
+        return (RightCurlyBrace);
+}
+
+";" {
+    sscanf(yytext,"%s", yylval.data);
+        return (Semicolon);
+}
+
+
 \"(\\.|[^"\\])*\" {sscanf(yytext,"%s", yylval.data);
             return (StringLiteral);}
 " "|"\t"|"\s"|"\f"|"\n"|"r" {}
