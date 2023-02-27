@@ -10,7 +10,7 @@ extern FILE *yyin;
 
 %token Exports Opens Requires Uses Module Permits Sealed Var Non_sealed Provides To With Open Record Transitive Yield Abstract Continue For New Switch Assert Default If Package Synchronized Boolean Do Goto Private This Break Double Implements Protected Throw Byte Else Import Public Throws Case Enum Instanceof Return Transient Catch Extends Int Short Try Char Final Interface Static Void Class Finally Long Strictfp Volatile Const Float Native Super While
 %token BooleanLiteral NullLiteral Identifier DecimalIntegerLiteral HexIntegerLiteral OctalIntegerLiteral FloatingPointIntegerLiteral FloatingPointLiteral BooleanIntegerLiteral CharacterLiteral TextBlock Operator Seperator StringLiteral
-%token Comma LeftCurlyBrace RightCurlyBrace Semicolon Dot
+%token Comma LeftCurlyBrace RightCurlyBrace Semicolon Dot LeftParanthesis RightParanthesis TripleDot
 %token EqualTo NotOperator Tilde QuestionMark Colon RightArrow EqualToEqualTo GreaterThanEqualTo LessThanEqualTo NotEqualTo AndOperator OrOperator PlusPlus MinusMinus Addition Substraction Product Divide BitwiseAnd BitwiseOr CircumFlex Modulo LeftShit RightShift TripleGreaterThan AdditionEqualTo SubstractionEqualTo ProductEqualTo DivideEqualTo BitWiseAndEqualTo BitWiseOrEqualTo CircumFlexEqualTo ModuloEqualTo LeftShitEqualTo RightShiftEqualTo TripleGreaterThanEqualTo GreaterThan LessThan
 %token __EMPTY__
 
@@ -164,10 +164,10 @@ VariableInitializer_extender :
     | EqualTo VariableInitializer
 
 VariableDeclaratorId :
-    Identifier Dims_ntM
+    Identifier Dims_nt
 
-Dims_ntM :
-    | Dims Dims_ntM
+Dims_nt :
+    | Dims 
 
 VariableInitializer :
     Expression
@@ -233,10 +233,113 @@ MethodModifier :
 
 MethodHeader :
     Result MethodDeclarator Throws_nt
-    | TypeParameters Annotation_ntM Result
+    | TypeParameters Annotation_ntM Result MethodDeclarator Throws_nt
 
 Throws_nt : 
-    |Throws_ntk
+    |Throws_ntK
+
+Result :
+    UannType
+    | Void
+
+MethodDeclarator :
+    Identifier LeftParanthesis ReceiverParameter_extender FormalParameterList_nt RightParanthesis Dims_nt
+
+ReceiverParameter_extender :
+    | RecieverParameter Comma 
+
+FormalParameterList_nt : 
+    | FormalParameterList
+
+RecieverParameter :
+    Annotation_ntM UannType Identifier_extender_Dot This
+
+Identifier_extender_Dot :
+    | Identifier Dot
+
+FormalParameterList :
+    FormalParameter FormalParameter_extender
+
+FormalParameter_extender :
+    | Comma FormalParameter FormalParameter_extender
+
+FormalParameter :
+    VariableModifier_ntM UannType VariableDeclaratorId
+    | VariableArityParameter
+
+VariableModifier_ntM :
+    | VariableModifier VariableModifier_ntM
+
+VariableArityParameter :
+    VariableModifier_ntM UannType Annotation_ntM TripleDot Identifier
+
+VariableModifier :
+    Annotation
+    | Final
+
+Throws_ntK : 
+    Throws ExceptionListType
+
+ExceptionListType :
+    ExceptionType ExceptionType_extender
+
+ExceptionType_extender :
+    | Comma ExceptionType ExceptionType_extender
+
+ExceptionType :
+    ClassType
+    | TypeVariable
+
+MethodBody :
+    Block
+    | Semicolon
+
+InstanceInitializer :
+    Block
+
+StaticInitializer :
+    Static Block
+
+ConstructorDeclaration :
+    ConstructorModifier_ntM ConstructorDeclarator Throws_nt ConstructorBody
+
+ConstructorModifier_ntM :
+    | ConstructorModifier ConstructorModifier_ntM
+
+ConstructorModifier :
+    Annotation
+    | Public
+    | Private
+    | Protected
+
+ConstructorDeclarator :
+    TypeParamaters_nt SimpleTypeName LeftParanthesis ReceiverParameter_extender FormalParameterList_nt RightParanthesis
+
+SimpleTypeName :
+    TypeIdentifier
+
+ConstructorBody :
+    LeftCurlyBrace ExplicitConstructorInvokation_nt BlockStatements_nt RightCurlyBrace
+
+ExplicitConstructorInvokation_nt :
+    | ExplicitConstructorInvokation
+
+BlockStatements_nt :
+    | BlockStatements
+
+ExplicitConstructorInvokation :
+    TypeArguments_nt This LeftParanthesis ArgumentList_nt RightParanthesis Semicolon
+    | TypeArguments_nt Super LeftParanthesis ArgumentList_nt RightParanthesis Semicolon
+    | ExpressionName Dot TypeArguments_nt Super LeftParanthesis ArgumentList_nt RightParanthesis Semicolon
+    | Primary Dot TypeArguments_nt Super LeftParanthesis ArgumentList_nt RightParanthesis Semicolon
+
+ArgumentList_nt :
+    | ArgumentList
+
+
+
+
+
 
 
 

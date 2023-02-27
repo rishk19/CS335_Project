@@ -251,10 +251,27 @@ _ {return(Underscore);}
     return (LessThan);
     }
          
-"("|")"|"["|"]"|"..."|"@"|"::" {
+"["|"]"|"..."|"@"|"::" {
     sscanf(yytext,"%s", yylval.data);
     return (Seperator);
     }
+
+"(" {
+    sscanf(yytext,"%s", yylval.data);
+    return (LeftParanthesis);
+}
+
+
+")" {
+    sscanf(yytext,"%s", yylval.data);
+    return (RightParanthesis);
+}   
+
+
+"..." {
+    sscanf(yytext,"%s", yylval.data);
+    return (TripleDot);
+}
 
 "." {
     sscanf(yytext,"%s", yylval.data);
