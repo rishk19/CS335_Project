@@ -117,10 +117,10 @@ TypeName_extender :
 
 
 ClassBody :
-    LeftCurlyBrace ClassBodyDeclaration_nt RightCurlyBrace
+    LeftCurlyBrace ClassBodyDeclaration_ntM RightCurlyBrace
 
-ClassBodyDeclaration_nt :
-    | ClassBodyDeclaration ClassBodyDeclaration_nt
+ClassBodyDeclaration_ntM :
+    | ClassBodyDeclaration ClassBodyDeclaration_ntM
 
 ClassBodyDeclaration :
     ClassMemberDeclaration
@@ -233,10 +233,11 @@ MethodModifier :
 
 MethodHeader :
     Result MethodDeclarator Throws_nt
-    | TypeParameters Annotation_nt Result
+    | TypeParameters Annotation_ntM Result
 
 Throws_nt : 
-    |Throws_nt1 
+    |Throws_ntk
+
 
 
 
