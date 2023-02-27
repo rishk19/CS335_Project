@@ -10,7 +10,7 @@ extern FILE *yyin;
 
 %token Exports Opens Requires Uses Module Permits Sealed Var Non_sealed Provides To With Open Record Transitive Yield Abstract Continue For New Switch Assert Default If Package Synchronized Boolean Do Goto Private This Break Double Implements Protected Throw Byte Else Import Public Throws Case Enum Instanceof Return Transient Catch Extends Int Short Try Char Final Interface Static Void Class Finally Long Strictfp Volatile Const Float Native Super While
 %token BooleanLiteral NullLiteral Identifier DecimalIntegerLiteral HexIntegerLiteral OctalIntegerLiteral FloatingPointIntegerLiteral FloatingPointLiteral BooleanIntegerLiteral CharacterLiteral TextBlock Operator Seperator StringLiteral
-%token Comma LeftCurlyBrace RightCurlyBrace Semicolon Dot LeftParanthesis RightParanthesis TripleDot LeftSquareBracket RightSquareBracket AtRate
+%token Comma LeftCurlyBrace RightCurlyBrace Semicolon Dot LeftParanthesis RightParanthesis TripleDot LeftSquareBracket RightSquareBracket AtRate Scope
 %token EqualTo NotOperator Tilde QuestionMark Colon RightArrow EqualToEqualTo GreaterThanEqualTo LessThanEqualTo NotEqualTo AndOperator OrOperator PlusPlus MinusMinus Addition Substraction Product Divide BitwiseAnd BitwiseOr CircumFlex Modulo LeftShit RightShift TripleGreaterThan AdditionEqualTo SubstractionEqualTo ProductEqualTo DivideEqualTo BitWiseAndEqualTo BitWiseOrEqualTo CircumFlexEqualTo ModuloEqualTo LeftShitEqualTo RightShiftEqualTo TripleGreaterThanEqualTo GreaterThan LessThan
 %token __EMPTY__
 
@@ -810,11 +810,207 @@ MethodInvocation :
     MethodName LeftParanthesis ArgumentList_nt RightParanthesis
     | TypeName Dot TypeArguments_nt Identifier LeftParanthesis ArgumentList_nt RightParanthesis
     | ExpressionName Dot TypeArguments_nt Identifier LeftParanthesis ArgumentList_nt RightParanthesis
+    | Primary Dot TypeArguments_nt Identifier LeftParanthesis ArgumentList_nt RightParanthesis
+    | Super Dot TypeArguments_nt Identifier LeftParanthesis ArgumentList_nt RightParanthesis
+    | TypeName Dot Super Dot TypeArguments_nt Identifier LeftParanthesis ArgumentList_nt RightParanthesis
 
+ArgumentList :
+    Expression Expression_extender
 
+Expression_extender :
+    | Comma Expression Expression_extender
 
+MethodReference :  
+    ExpressionName Scope TypeArguments_nt Identifier
+    | Primary Scope TypeArguments_nt Identifier
+    | ReferenceType Scope TypeArguments_nt Identifier
+    | Super Scope TypeArguments_nt Identifier
+    | TypeName Dot Super Scope TypeArguments_nt Identifier
+    | ClassType Scope TypeArguments_nt New
+    | ArrayType Scope New
 
+ArrayCreationExpression :
+    New PrimitiveType DimExprs Dims_nt
+    | New ClassOrInterfaceType DimExprs Dims_nt
+    | New PrimitiveType Dims ArrayInitializer
+    | New ClassOrInterfaceType Dims ArrayInitializer
 
+DimExprs :
+    DimExpr DimExpr_ntM
+
+DimExpr_ntM :
+    | DimExpr DimExpr_ntM
+
+DimExpr :
+    Annotation_ntM LeftSquareBracket Expression RightSquareBracket
+
+Expression :
+    LambdaExpression
+    |AssignmentExpression
+
+LambdaExpression :
+    LambdaParameters RightArrow LambdaBody
+
+LambdaParameters :
+    LeftParanthesis LambdaParameterList_nt RightParanthesis
+    | Identifier 
+
+LambdaParameterList_nt :
+    | LambdaParameterList 
+
+LambdaParameterList :
+    LambdaParameter LambdaParameter_extender
+    | Identifier Identifier_extender_Comma
+
+LambdaParameter_extender :
+    | Comma LambdaParameter LambdaParameter_extender
+
+Identifier_extender_Comma : 
+    | Comma Identifier Identifier_extender_Comma
+
+LambdaParameter :
+    VariableModifier_ntM LambdaParameterType VariableDeclaratorId
+    | VariableArityParameter 
+
+LambdaParameterType :
+    UannType
+    | Var
+
+LambdaBody :
+    Expression
+    | Block
+
+AssignmentExpression :
+    ConditionalExpression
+    | Assignment
+
+Assignment :    
+    LeftHandSide AssignmentOperator Expression 
+
+LeftHandSide :
+    ExpressionName 
+    | FieldAccess
+    | ArrayAccess
+
+AssignmentOperator :
+    EqualTo
+    | ProductEqualTo
+    | DivideEqualTo
+    | ModuloEqualTo
+    | AdditionEqualTo
+    | SubstractionEqualTo
+    | LeftShitEqualTo
+    | RightShiftEqualTo
+    | TripleGreaterThan
+    | BitWiseAndEqualTo
+    | CircumFlexEqualTo
+    | BitWiseOrEqualTo
+
+ConditionalExpression:
+    | ConditionalOrExpression 
+    | ConditionalOrExpression QuestionMark Expression Colon ConditionalExpression 
+    | ConditionalOrExpression QuestionMark Expression Colon LambdaExpression 
+
+ConditionalOrExpression:
+    | ConditionalAndExpression 
+    | ConditionalOrExpression OrOperator ConditionalAndExpression
+
+ConditionalAndExpression:
+    InclusiveOrExpression 
+    | ConditionalAndExpression AndOperator InclusiveOrExpression
+
+InclusiveOrExpression:
+    ExclusiveOrExpression 
+    | InclusiveOrExpression BitwiseOr ExclusiveOrExpression
+
+ExclusiveOrExpression:
+    AndExpression 
+    | ExclusiveOrExpression CircumFlex AndExpression
+
+AndExpression:
+    EqualityExpression 
+    | AndExpression BitwiseAnd EqualityExpression
+
+EqualityExpression:
+    RelationalExpression 
+    | EqualityExpression EqualToEqualTo RelationalExpression 
+    | EqualityExpression NotEqualTo RelationalExpression
+
+RelationalExpression:
+    ShiftExpression 
+    | RelationalExpression LessThan ShiftExpression 
+    | RelationalExpression GreaterThan ShiftExpression 
+    | RelationalExpression LessThanEqualTo ShiftExpression 
+    | RelationalExpression GreaterThanEqualTo ShiftExpression 
+    | InstanceofExpression
+
+InstanceofExpression:
+    RelationalExpression instanceof ReferenceType 
+    | RelationalExpression instanceof Pattern
+
+ShiftExpression:
+    AdditiveExpression 
+    | ShiftExpression LeftShit AdditiveExpression 
+    | ShiftExpression RightShift AdditiveExpression 
+    | ShiftExpression TripleGreaterThan AdditiveExpression
+
+AdditiveExpression:
+    MultiplicativeExpression 
+    | AdditiveExpression Addition MultiplicativeExpression 
+    | AdditiveExpression Substraction MultiplicativeExpression
+
+MultiplicativeExpression:
+    UnaryExpression 
+    | MultiplicativeExpression Product UnaryExpression 
+    | MultiplicativeExpression Divide UnaryExpression 
+    | MultiplicativeExpression Modulo UnaryExpression
+
+UnaryExpression:
+    PreIncrementExpression 
+    | PreDecrementExpression 
+    | Addition UnaryExpression 
+    | Substraction UnaryExpression 
+    | UnaryExpressionNotPlusMinus
+
+PreIncrementExpression:
+    PlusPlus UnaryExpression
+
+PreDecrementExpression:
+    MinusMinus UnaryExpression
+
+UnaryExpressionNotPlusMinus:
+    PostfixExpression 
+    | Tilde UnaryExpression 
+    | NotOperator UnaryExpression 
+    | CastExpression 
+    | SwitchExpression
+
+PostfixExpression:
+    Primary 
+    | ExpressionName 
+    | PostIncrementExpression 
+    | PostDecrementExpression
+
+PostIncrementExpression:
+    PostfixExpression PlusPlus
+
+PostDecrementExpression:
+    PostfixExpression MinusMinus
+
+CastExpression:
+    LeftParanthesis PrimitiveType RightParanthesis UnaryExpression 
+    | LeftParanthesis ReferenceType AdditionalBound_ntM RightParanthesis UnaryExpressionNotPlusMinus 
+    | LeftParanthesis ReferenceType AdditionalBound_ntM RightParanthesis LambdaExpression 
+
+SwitchExpression:
+    Switch LeftParanthesis Expression RightParanthesis SwitchBlock
+
+ConstantExpression:
+    Expression
+
+VariableAccess :
+    Expression
+    | ArrayInitializer
 
 
 
