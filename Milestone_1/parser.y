@@ -10,7 +10,7 @@ extern FILE *yyin;
 
 %token Exports Opens Requires Uses Module Permits Sealed Var Non_sealed Provides To With Open Record Transitive Yield Abstract Continue For New Switch Assert Default If Package Synchronized Boolean Do Goto Private This Break Double Implements Protected Throw Byte Else Import Public Throws Case Enum Instanceof Return Transient Catch Extends Int Short Try Char Final Interface Static Void Class Finally Long Strictfp Volatile Const Float Native Super While
 %token BooleanLiteral NullLiteral Identifier DecimalIntegerLiteral HexIntegerLiteral OctalIntegerLiteral FloatingPointIntegerLiteral FloatingPointLiteral BooleanIntegerLiteral CharacterLiteral TextBlock Operator Seperator StringLiteral
-%token Comma LeftCurlyBrace RightCurlyBrace Semicolon 
+%token Comma LeftCurlyBrace RightCurlyBrace Semicolon Dot
 %token EqualTo NotOperator Tilde QuestionMark Colon RightArrow EqualToEqualTo GreaterThanEqualTo LessThanEqualTo NotEqualTo AndOperator OrOperator PlusPlus MinusMinus Addition Substraction Product Divide BitwiseAnd BitwiseOr CircumFlex Modulo LeftShit RightShift TripleGreaterThan AdditionEqualTo SubstractionEqualTo ProductEqualTo DivideEqualTo BitWiseAndEqualTo BitWiseOrEqualTo CircumFlexEqualTo ModuloEqualTo LeftShitEqualTo RightShiftEqualTo TripleGreaterThanEqualTo GreaterThan LessThan
 %token __EMPTY__
 
@@ -49,12 +49,12 @@ ClassDeclaration :
 
 
 NormalClassDeclaration : 
-    ClassModifier_nt Class TypeIdentifier TypeParamaters_nt ClassExtends_nt ClassImplements_nt ClassPermits_nt ClassBody {
+    ClassModifier_ntM Class TypeIdentifier TypeParamaters_nt ClassExtends_nt ClassImplements_nt ClassPermits_nt ClassBody {
 
     }
 
-ClassModifier_nt :
-    | ClassModifier ClassModifier_nt
+ClassModifier_ntM :
+    | ClassModifier ClassModifier_ntM
 
 TypeParamaters_nt :
     | TypeParameters
@@ -136,10 +136,10 @@ ClassMemberDeclaration :
     | Semicolon
 
 FieldDeclaration :
-    FieldModifier_nt UannType VariableDeclaratorList Semicolon
+    FieldModifier_ntM UannType VariableDeclaratorList Semicolon
 
-FieldModifier_nt :
-    | FieldModifier FieldModifier_nt
+FieldModifier_ntM :
+    | FieldModifier FieldModifier_ntM
 
 FieldModifier :
     Annotation
@@ -161,7 +161,84 @@ VariableDeclarator :
     VariableDeclaratorId VariableInitializer_extender
 
 VariableInitializer_extender :
-    | 
+    | EqualTo VariableInitializer
+
+VariableDeclaratorId :
+    Identifier Dims_ntM
+
+Dims_ntM :
+    | Dims Dims_ntM
+
+VariableInitializer :
+    Expression
+    | ArrayInitializer
+
+UannType :
+    UannPrimitiveType
+    | UannReferenceType
+
+UannPrimitiveType :
+    NumericType
+    | BooleanLiteral
+
+UannReferenceType :
+    UannClassOrInterfaceType
+    | UannTypeVariable
+    | UannArrayType
+
+UannClassOrInterfaceType :
+    UannClassType
+    | UannInterfaceType
+
+UannClassType :
+    TypeIdentifier TypeArguments_nt
+    | UannClassOrInterfaceType Dot Annotation_ntM TypeIdentifier TypeArguments_nt
+
+TypeArguments_nt :
+    | TypeArgument
+
+Annotation_ntM :
+    | Annotation Annotation_ntM
+
+UannInterfaceType :
+    UannClassType
+
+UannTypeVariable :
+    TypeIdentifier
+
+UannArrayType :
+    UannPrimitiveType Dims
+    | UannClassOrInterfaceType Dims
+    | UannTypeVariable Dims
+
+
+MethodDeclaration :
+    MethodModifier_ntM MethodHeader MethodBody
+
+MethodModifier_ntM :
+    | MethodModifier MethodModifier_ntM
+
+
+MethodModifier :
+    Annotation
+    | Public
+    | Private
+    | Protected
+    | Abstract
+    | Static
+    | Final
+    | Synchronized
+    | Native
+    | Strictfp
+
+MethodHeader :
+    Result MethodDeclarator Throws_nt
+    | TypeParameters Annotation_nt Result
+
+Throws_nt : 
+    |Throws_nt1 
+
+
 
 %%
 
