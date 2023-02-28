@@ -39,13 +39,13 @@ a:
         memArr[1] = $2;
         root = makeInternalNode("Concat",memArr,2);
     }
-;
+
 
 b:
     B {
     $$ =  makeleaf($1);
     }
-;
+
 
 c : 
     c C {
@@ -60,7 +60,7 @@ c :
         $$ =  makeleaf($1);
     }
 
-;
+
 %%
 
 int yyerror(char *s)

@@ -308,11 +308,15 @@ while {return(While);}
     sscanf(yytext,"%s", yylval.data);
         return (Semicolon);
 }
-
+"Rikesh_Rishabh" {
+    sscanf(yytext,"%s", yylval.data);
+            return (__EMPTY__);
+}
 
 \"(\\.|[^"\\])*\" {sscanf(yytext,"%s", yylval.data);
             return (StringLiteral);}
 " "|"\t"|"\s"|"\f"|"\n"|"r" {}
+
 . {printf("error! unrecognised input character :%s, skipping\n", yytext);}
 %%
 
