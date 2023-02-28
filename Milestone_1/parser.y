@@ -1,20 +1,8 @@
 %{
 #include <stdio.h>
-#include "assert.h"
-#define NCHILD 20
 int yyerror(char *s);
 int yylex();
 extern FILE *yyin;
-extern FILE *yyout;
-struct Tree_node *root = NULL;
-
-struct Tree_node{
-    char* data;
-    struct Tree_node* arr[NCHILD];
-
-};
-struct Tree_node* makeInternalTree_node(char* rule, struct Tree_node* memArr[], int mem);
-struct Tree_node* makeleaf(char* Tree_node);
 
 
 %}
@@ -26,200 +14,918 @@ struct Tree_node* makeleaf(char* Tree_node);
 %token EqualTo NotOperator Tilde QuestionMark Colon RightArrow EqualToEqualTo GreaterThanEqualTo LessThanEqualTo NotEqualTo AndOperator OrOperator PlusPlus MinusMinus Addition Substraction Product Divide BitwiseAnd BitwiseOr CircumFlex Modulo LeftShit RightShift TripleGreaterThan AdditionEqualTo SubstractionEqualTo ProductEqualTo DivideEqualTo BitWiseAndEqualTo BitWiseOrEqualTo CircumFlexEqualTo ModuloEqualTo LeftShitEqualTo RightShiftEqualTo TripleGreaterThanEqualTo GreaterThan LessThan
 %token __EMPTY__
 
-%type <data> Exports Opens Requires Uses Module Permits Sealed Var Non_sealed Provides To With Open Record Transitive Yield Abstract Continue For New Switch Assert Default If Package Synchronized Boolean Do Goto Private This Break Double Implements Protected Throw Byte Else Import Public Throws Case Enum Instanceof Return Transient Catch Extends Int Short Try Char Final Interface Static Void Class Finally Long Strictfp Volatile Const Float Native Super While
-%type <data> BooleanLiteral NullLiteral Identifier DecimalIntegerLiteral HexIntegerLiteral OctalIntegerLiteral FloatingPointIntegerLiteral FloatingPointLiteral BooleanIntegerLiteral CharacterLiteral TextBlock Operator Seperator StringLiteral
-%type <data> Comma LeftCurlyBrace RightCurlyBrace Semicolon Dot LeftParanthesis RightParanthesis TripleDot LeftSquareBracket RightSquareBracket AtRate Scope
-%type <data> EqualTo NotOperator Tilde QuestionMark Colon RightArrow EqualToEqualTo GreaterThanEqualTo LessThanEqualTo NotEqualTo AndOperator OrOperator PlusPlus MinusMinus Addition Substraction Product Divide BitwiseAnd BitwiseOr CircumFlex Modulo LeftShit RightShift TripleGreaterThan AdditionEqualTo SubstractionEqualTo ProductEqualTo DivideEqualTo BitWiseAndEqualTo BitWiseOrEqualTo CircumFlexEqualTo ModuloEqualTo LeftShitEqualTo RightShiftEqualTo TripleGreaterThanEqualTo GreaterThan LessThan
-%type <data> __EMPTY__
-
-%union {
-    char data[1000];
-    struct Tree_node *exp;
-}
-
-
-%%
-  Goal
-    :   MainClass ClassDeclarationList      { $$ = new node(++cnt, "Goal"); add_nn($$, $1); add_nl($$, $2); }
-    ;
-
-MainClass
-    :   Class Identifier '{' Public Static Void Main '(' String '[' ']' Identifier ')' '{' Statement '}' '}'    { $$ = new node(++cnt, "MainClass"); add_nt($$, "Class"); add_nn($$, $2); add_nt($$, "{"); add_nt($$, "Public"); add_nt($$, "Static"); add_nt($$, "Void"); add_nt($$, "Main"); add_nt($$, "("); add_nt($$, "String"); add_nt($$, "["); add_nt($$, "]"); add_nn($$, $12); add_nt($$, ")"); add_nt($$, "{"); add_nn($$, $15); add_nt($$, "}"); add_nt($$, "}"); }
-    ;
-
-ClassDeclarationList
-    :   ClassDeclaration ClassDeclarationList { $$ = $2; $2->push_front($1); }
-    |   { $$ = new nodes(); } /* Empty */
-    ;
-
-ClassDeclaration
-    :   Class Identifier '{' VarDeclarationList MethodDeclarationList '}'    { $$ = new node(++cnt, "ClassDeclaration"); add_nt($$, "Class"); add_nn($$, $2); add_nt($$, "{"); add_nl($$, $4); add_nl($$, $5); add_nt($$, "}"); }
-    |   Class Identifier '{' MethodDeclarationList '}'    {$$ = new node(++cnt, "ClassDeclaration"); add_nt($$, "Class"); add_nn($$, $2); add_nt($$, "{"); add_nl($$, $4); add_nt($$, "}"); }
-    |   Class Identifier Extends Identifier '{' VarDeclarationList MethodDeclarationList '}'    {$$ = new node(++cnt, "ClassDeclaration"); add_nt($$, "Class"); add_nn($$, $2); add_nt($$, "Extends"); add_nn($$, $4); add_nt($$, "{"); add_nl($$, $6); add_nl($$, $7); add_nt($$, "}"); }
-    |   Class Identifier Extends Identifier '{' MethodDeclarationList '}'    {$$ = new node(++cnt, "ClassDeclaration"); add_nt($$, "Class"); add_nn($$, $2); add_nt($$, "Extends"); add_nn($$, $4); add_nt($$, "{"); add_nl($$, $6); add_nt($$, "}"); }
-    ;
-
-VarDeclarationList
-    :   VarDeclaration {$$ = new nodes(); $$ -> push_back($1); }
-    |   VarDeclarationList VarDeclaration  { $$ = $1; $1->push_back($2); }
-    ;
-
-VarDeclaration
-    :   Type Identifier ';' {$$ = new node(++cnt, "VarDeclaration", $2 -> _id); add_nn($$, $1); add_nn($$, $2); add_nt($$, ";"); } /* ko ko (cv 810) */
-    ;
-
-MethodDeclarationList
-    :   MethodDeclaration MethodDeclarationList {$$ = $2; $2->push_front($1);}
-    |   {$$ = new nodes();} /* Empty */
-    ;
-
-MethodDeclaration
-    :   Public Type Identifier '(' ParameterList ')' '{' VarDeclarationList StatementList Return Expression ';' '}'    {$$ = new node(++cnt, "MethodDeclaration"); add_nt($$, "Public"); add_nn($$, $2); add_nn($$, $3); add_nt($$, "("); add_nl($$, $5); add_nt($$, ")"); add_nt($$, "{"); add_nl($$, $8); add_nl($$, $9); add_nt($$, "Return"); add_nn($$, $11); add_nt($$, ";"); add_nt($$, "}"); semantic($8, $9); }    /* ko ko (cv 810) */
-    |   Public Type Identifier '(' ParameterList ')' '{' StatementList Return Expression ';' '}'    {$$ = new node(++cnt, "MethodDeclaration"); add_nt($$, "Public"); add_nn($$, $2); add_nn($$, $3); add_nt($$, "("); add_nl($$, $5); add_nt($$, ")"); add_nt($$, "{"); add_nl($$, $8); add_nt($$, "Return"); add_nn($$, $10); add_nt($$, ";"); add_nt($$, "}"); }    
-    ;
-
-ParameterList
-    :   Type Identifier    {$$ = new nodes();$$->push_back($1); $$->push_back($2);}
-    |   Type Identifier ',' ParameterList    {$$ = $4; $4->push_front($2); $4->push_front($1);} /* Missing the comma sign here */
-    |       {$$ = new nodes();} /* Empty */
-    ;
-
-Type
-    :   Integer '[' ']'    {$$ = new node(++cnt, "Type"); add_nt($$, "Integer"); add_nt($$, "["); add_nt($$, "]"); }
-    |   Boolean    {$$ = new node(++cnt, "Type"); add_nt($$, "Boolean"); }
-    |   Integer    {$$ = new node(++cnt, "Type"); add_nt($$, "Integer"); }
-    |   Identifier    {$$ = new node(++cnt, "Type"); add_nn($$, $1); }
-    ;
-
-StatementList
-    :   Statement StatementList    { $$ = $2; $2->push_front($1); }
-    |       {$$ = new nodes();}    /* Empty */
-    ;
-
-Statement
-    :   '{' StatementList '}'    {$$ = new node(++cnt, "Statement"); add_nt($$, "{"); add_nl($$, $2); add_nt($$, "}"); }
-    |   If '(' Expression ')' Statement Else Statement    {$$ = new node(++cnt, "Statement"); add_nt($$, "If"); add_nt($$, "(");  add_nn($$, $3); add_nt($$, ")"); add_nn($$, $5); add_nt($$, "Else");  add_nn($$, $7); }
-    |   While '(' Expression ')' Statement    {$$ = new node(++cnt, "Statement"); add_nt($$, "While"); add_nt($$, "("); add_nn($$, $3); add_nt($$, ")"); add_nn($$, $5); }
-    |   Println '(' Expression ')' ';'    {$$ = new node(++cnt, "Statement"); add_nt($$, "Println"); add_nt($$, "("); add_nn($$, $3); add_nt($$, ")"); add_nt($$, ";"); }
-    |   Identifier '=' Expression ';'    {$$ = new node(++cnt, "Statement", $1 -> _id); add_nn($$, $1); add_nt($$, "="); add_nn($$, $3); add_nt($$, ";"); } /* Check int type */
-    |   Identifier '[' Expression ']' '=' Expression ';'    {$$ = new node(++cnt, "Statement", $1 -> _id); add_nn($$, $1); add_nt($$, "["); add_nn($$, $3); add_nt($$, "]"); add_nt($$, "="); add_nn($$, $6); add_nt($$, ";"); } /* Check IntArray type */
-    ;
-
-ExpressionList
-    :   Expression    {$$ = new nodes(); $$ -> push_back($1); }
-    |   Expression ',' ExpressionList    {$$ = $3; $3 -> push_front($1); }
-    |       {$$ = new nodes();}/* Empty */
-    ;
-
-Expression
-    :   Expression And Expression    {$$ = new node(++cnt, "Expression"); add_nn($$, $1); add_nt($$, "And"); add_nn($$, $3);}  /* Every identifier in expressions shall be checked, like the correction . */
-    |   Expression '<' Expression    {$$ = new node(++cnt, "Expression"); add_nn($$, $1); add_nt($$, "<"); add_nn($$, $3);}
-    |   Expression '+' Expression    {$$ = new node(++cnt, "Expression"); add_nn($$, $1); add_nt($$, "+"); add_nn($$, $3);}
-    |   Expression '-' Expression    {$$ = new node(++cnt, "Expression"); add_nn($$, $1); add_nt($$, "-"); add_nn($$, $3); }
-    |   Expression '*' Expression    {$$ = new node(++cnt, "Expression"); add_nn($$, $1); add_nt($$, "*"); add_nn($$, $3);  }
-    |   Expression '[' Expression ']'    {$$ = new node(++cnt, "Expression"); add_nn($$, $1); add_nt($$, "["); add_nn($$, $3); add_nt($$, "]"); } /* check class or func coherence, varlist to explist */
-    |   Expression '.' ArrayLength    {$$ = new node(++cnt, "Expression"); add_nn($$, $1); add_nt($$, "."); add_nt($$, "ArrayLength"); }
-    |   Expression '.' Identifier '(' ExpressionList ')'    {$$ = new node(++cnt, "Expression"); add_nn($$, $1); add_nt($$, "."); add_nn($$, $3); add_nt($$, "("); add_nl($$, $5); add_nt($$, ")"); }
-    |   Number    {$$ = new node(++cnt, "Expression"); char tmpstr[20]; sprintf(tmpstr, "%g", $1); add_nt($$, string(tmpstr)); }
-    |   True    {$$ = new node(++cnt, "Expression");  add_nt($$, "True"); }
-    |   False    {$$ = new node(++cnt, "Expression"); add_nt($$, "False"); }
-    |   Identifier    {$$ = new node(++cnt, "Expression"); add_nn($$, $1); }
-    |   This    {$$ = new node(++cnt, "Expression"); add_nt($$, "This"); }
-    |   New Integer '[' Expression ']'    {$$ = new node(++cnt, "Expression"); add_nt($$, "New"); add_nt($$, "Integer"); add_nt($$, "["); add_nn($$, $4); add_nt($$, "]");  }
-    |   New Identifier '(' ')'    {$$ = new node(++cnt, "Expression"); add_nt($$, "New"); add_nn($$, $2); add_nt($$, "("); add_nt($$, ")"); }
-    |   '!' Expression    {$$ = new node(++cnt, "Expression"); add_nt($$, "!"); add_nn($$, $2); }
-    |   '(' Expression ')'    {$$ = new node(++cnt, "Expression"); add_nt($$, "("); add_nn($$, $2); add_nt($$, ")"); }
-    ;
-
-Identifier
-    :   Id    {$$ = new node(++cnt, "Identifier", $1); add_nt($$, string($1));  } /* add_nt($$, string($1)); */
-    ;  
 
 %%
 
-int yyerror(char *s)
-{
-    printf("%s\n",s);
-    return 0;
-}
+CompilationUnit : 
+    OrdinaryCompilationUnit
 
-struct Tree_node* makeleaf(char* Tree_nodeStr){
-    //printf("%s\n",Tree_nodeStr);
-    struct Tree_node* leaf = (struct Tree_node*)malloc(sizeof(struct Tree_node));
-    leaf->data = Tree_nodeStr;
-    for(int i = 0; i<10; i++){
-        leaf->arr[i] = NULL;
-    }
-    return leaf;
-}
+OrdinaryCompilationUnit : 
+    |TopLevelClassOrInterfaceDeclaration  OrdinaryCompilationUnit
 
-struct Tree_node* makeInternalnode(char* rule, struct Tree_node* memArr[], int mem){
-    struct Tree_node* internalTree_node = (struct Tree_node*)malloc(sizeof(struct Tree_node));
-    internalTree_node->data = rule;
-    for(int i = 0; i<mem; i++){
-        internalTree_node->arr[i] = memArr[i];
-    }
-    for(int i = mem; i<10; i++){
-        internalTree_node->arr[i] = NULL;
-    }
-    return internalTree_node;
-}
+TopLevelClassOrInterfaceDeclaration :
+    ClassDeclaration
+    | Semicolon
 
-void ast_print(struct Tree_node* root, int d){
+ClassDeclaration :
+    NormalClassDeclaration
 
-    if(root == NULL){
-        return;
-    }
+NormalClassDeclaration : 
+    ClassModifier_ntM Class TypeIdentifier ClassExtends_nt  ClassPermits_nt ClassBody
 
-    printf("%s",root->data);
-    printf("\n");
-    int i =0;
+ClassModifier_ntM :
+    | ClassModifier ClassModifier_ntM
 
-    while(root->arr[i]!= NULL){
-        for(int i = 0 ; i<=d+1; i++)
-            printf("\t");
-        ast_print(root->arr[i],d+1);
-        i++;
+ClassExtends_nt :
+    | ClassExtends
 
-    }
-}
+ClassPermits_nt :
+    | ClassPermits
+
+ClassModifier :
+     Public
+    | Private
+    | Protected
+    | Abstract
+    | Static
+    | Final
+    | Sealed
+    | Non_sealed
+    | Strictfp
+
+ClassExtends : 
+    Extends ClassType
+
+ClassPermits :
+    Permits TypeName Comma_TypeName_extender
+
+Comma_TypeName_extender :
+    | Comma TypeName Comma_TypeName_extender
 
 
-void neighbour_append(struct Tree_node* root,FILE* graph, int depth,int child_num){
-    if(root->arr[0]!= NULL){
-        fprintf(graph, "\t%s_%d_%d ->{ %s_%d_0",root->data,depth,child_num,(root->arr[0])->data, depth+1);
-    }
-    else{
-        fprintf(graph, "\t%s_%d_%d ->{}\n",root->data,depth,child_num);
-        return;
-    }
-    for (int i=1 ; i< 10; i++){
-        if(root->arr[i] != NULL){
-            fprintf(graph," ,%s_%d_%d",(root->arr[i])->data,depth+1,i);
-        }
-        else{
-            fprintf(graph,"}\n");
-            return;
-        }
-    }
-    fprintf(graph,"}\n");
-    return;
-}
+ClassBody :
+    LeftCurlyBrace ClassBodyDeclaration_ntM RightCurlyBrace
 
-void graph_maker(struct Tree_node* root,FILE* graph,int depth,int child_num){
+ClassBodyDeclaration_ntM :
+    | ClassBodyDeclaration ClassBodyDeclaration_ntM
+
+ClassBodyDeclaration :
+    ClassMemberDeclaration
+    | InstanceInitializer
+    | StaticInitializer
+
+ClassMemberDeclaration :
+    MethodDeclaration
+    | ClassDeclaration
+    | Semicolon
+
+
+VariableDeclaratorList :
+    VariableDeclarator Comma_VariableDeclarator_extender
+
+Comma_VariableDeclarator_extender :
+    | Comma VariableDeclarator Comma_VariableDeclarator_extender
+
+VariableDeclarator :
+    VariableDeclaratorId EqualTo_VariableInitializer_extender
+
+EqualTo_VariableInitializer_extender :
+    | EqualTo VariableInitializer
+
+VariableDeclaratorId :
+    Identifier Dims_nt
+
+VariableInitializer :
+    Expression
+    | ArrayInitializer
+
+UannType :
+    UannPrimitiveType
+    | UannReferenceType
+
+UannPrimitiveType :
+    NumericType
+    | Boolean
+
+UannReferenceType :
+    UannClassOrInterfaceType
+    | UannTypeVariable
+    | UannArrayType
+
+UannClassOrInterfaceType :
+    UannClassType
+    | UannInterfaceType
+
+UannClassType :
+    TypeIdentifier TypeArguments_nt
+
+TypeArguments_nt :
+    | TypeArguments
+
+UannInterfaceType :
+    UannClassType
+
+UannTypeVariable :
+    TypeIdentifier
+
+UannArrayType :
+    UannPrimitiveType Dims_nt
+    | UannClassOrInterfaceType Dims_nt
+    | UannTypeVariable Dims_nt
+
+Dims_nt :
+    | Dims
+
+Dims :
+    LeftSquareBracket RightSquareBracket | LeftSquareBracket RightSquareBracket Dims
+
+MethodDeclaration :
+    MethodModifier_ntM MethodHeader MethodBody
+
+MethodModifier_ntM :
+    | MethodModifier MethodModifier_ntM
+
+MethodModifier :
+     Public
+    | Private
+    | Protected
+    | Abstract
+    | Static
+    | Final
+    | Synchronized
+    | Native
+    | Strictfp
+
+MethodHeader :
+    Result MethodDeclarator Throws_nt
+
+Throws_nt : 
+    |Throws_ntK
+
+Result :
+    UannType
+    | Void
+
+MethodDeclarator :
+    Identifier LeftParanthesis ReceiverParameter_Comma_extender FormalParameterList_nt RightParanthesis Dims_nt
+
+ReceiverParameter_Comma_extender :
+    | RecieverParameter Comma 
+
+FormalParameterList_nt : 
+    | FormalParameterList
+
+RecieverParameter :
+    UannType Identifier_Dot_extender This
+
+Identifier_Dot_extender :
+    | Identifier Dot
+
+FormalParameterList :
+    FormalParameter Comma_FormalParameter_extender
+
+Comma_FormalParameter_extender :
+    | Comma FormalParameter Comma_FormalParameter_extender
+
+FormalParameter :
+    VariableModifier_ntM UannType VariableDeclaratorId
+    | VariableArityParameter
+
+VariableModifier_ntM :
+    | VariableModifier VariableModifier_ntM
+
+VariableArityParameter :
+    VariableModifier_ntM UannType TripleDot Identifier
+
+VariableModifier :
+    Final
+
+Throws_ntK : 
+    Throws ExceptionListType
+
+ExceptionListType :
+    ExceptionType Comma_ExceptionType_extender
+
+Comma_ExceptionType_extender :
+    | Comma ExceptionType Comma_ExceptionType_extender
+
+ExceptionType :
+    ClassType
+    | TypeVariable
+
+MethodBody :
+    Block
+    | Semicolon
+
+InstanceInitializer :
+    Block
+
+StaticInitializer :
+    Static Block
+
+ConstructorDeclaration :
+    ConstructorModifier_ntM ConstructorDeclarator Throws_nt ConstructorBody
+
+ConstructorModifier_ntM :
+    | ConstructorModifier ConstructorModifier_ntM
+
+ConstructorModifier :
+    Public
+    | Private
+    | Protected
+
+ConstructorDeclarator :
+    TypeParameters_nt SimpleTypeName LeftParanthesis ReceiverParameter_extender FormalParameterList_nt RightParanthesis
+
+SimpleTypeName :
+    TypeIdentifier
+
+ConstructorBody :
+    LeftCurlyBrace ExplicitConstructorInvocation_nt BlockStatements_nt RightCurlyBrace
+
+ExplicitConstructorInvocation_nt :
+    | ExplicitConstructorInvocation
+
+BlockStatements_nt :
+    | BlockStatements
+
+ExplicitConstructorInvocation :
+    TypeArguments_nt This LeftParanthesis ArgumentList_nt RightParanthesis Semicolon
+    | TypeArguments_nt Super LeftParanthesis ArgumentList_nt RightParanthesis Semicolon
+    | ExpressionName Dot TypeArguments_nt Super LeftParanthesis ArgumentList_nt RightParanthesis Semicolon
+    | Primary Dot TypeArguments_nt Super LeftParanthesis ArgumentList_nt RightParanthesis Semicolon
+
+ArgumentList_nt :
+    | ArgumentList
+
+TypeIdentifier :
+    Identifier
+
+Literal :
+    DecimalIntegerLiteral
+    | FloatingPointIntegerLiteral
+    | BooleanLiteral
+    | CharacterLiteral
+    | StringLiteral
+    | TextBlock
+    | NullLiteral
+
+Type :
+    PrimitiveType
+    | ReferenceType
+
+PrimitiveType : 
+    Annotation_ntM NumericType
+    | Annotation_ntM Boolean
+
+NumericType :
+    IntegralType
+    | FloatingPointType
+
+IntegralType :
+    Byte
+    | Short
+    | Int
+    | Long
+    | Char
+
+FloatingPointType :
+    Float
+    | Double
+
+ReferenceType :
+    ClassOrInterfaceType
+    | TypeVariable
+    | UannArrayType
+
+ClassOrInterfaceType :
+    ClassType
+    | InterfaceType
+
+ClassType :
+    Annotation_ntM TypeIdentifier TypeArguments_nt
+    | ClassOrInterfaceType Dot Annotation_ntM TypeIdentifier TypeArguments_nt
+
+InterfaceType :
+    ClassType
+
+TypeVariable :
+    Annotation_ntM TypeIdentifier
+
+ArrayType :
+    PrimitiveType Dims
+    | ClassOrInterfaceType Dims
+    | TypeVarable Dims
+
+TypeParameter :
+    TypeParameterModifier_ntM TypeIdentifier TypeBound_nt
+
+TypeParameterModifier_ntM :
+    | TypeParameterModifier TypeParameterModifier_ntM
+
+TypeBound_nt :
+    | TypeBound
+
+TypeParameterModifier : Annotation
+
+TypeBound :
+    Extends TypeVariable
+    | Extends ClassOrInterfaceType AdditionalBound_ntM
+
+AdditionalBound_ntM :
+    | AdditionalBound AdditionalBound_ntM
+
+AdditionalBound :
+    BitwiseAnd InterfaceType
+
+TypeArguments :
+    LessThan TypeArgumentList GreaterThan
+
+TypeArgumentList :
+    TypeArgument TypeArgument_extender
+
+TypeArgument_extender :
+    | Comma TypeArgument TypeArgument_extender
+
+TypeArgument :
+    ReferenceType
+    | WildCard
+
+WildCard :
+    Annotation_ntM QuestionMark WildCardBounds_nt
+
+WildCardBounds_nt :
+    | WildCardBounds
+
+WildCardBounds :
+    Extends ReferenceType
+    | Super ReferenceType
+
+
+ModuleName :
+    Identifier 
+    | ModuleName Dot Identifier
+
+PackageName :
+    Identifier
+    | PackageName Dot Identifier
+
+TypeName :
+    TypeIdentifier
+    | PackageOrTypeName Dot TypeIdentifier
+
+ExpressionName :
+    Identifier
+    | AmbiguousName Dot Identifier
+
+MethodName :
+    UnqualifiedMethodIdentifier
+
+PackageOrTypeName :
+    Identifier
+    | PackageOrTypeName Dot Identifier
+
+AmbiguousName :
+    Identifier
+    | AmbiguousName Dot Identifier
+
+ArrayInitializer :
+    LeftCurlyBrace VariableInitializerList_nt  Comma_nt RightCurlyBrace
+
+VariableInitializerList_nt :
+    | VariableInitializerList
+
+Comma_nt :
+    | Comma
+
+VariableInitializerList :
+    VariableInitializer VariableInitializer_comma_ntM
+
+VariableInitializer_comma_ntM :
+    | Comma VariableInitializer VariableInitializer_comma_ntM
+
+
+Block :
+    LeftCurlyBrace BlockStatements_nt RightCurlyBrace
+
+BlockStatements :
+    BlockStatement BlockStatement_ntM
+
+BlockStatement_ntM :
+    | BlockStatement BlockStatement_ntM
+
+
+BlockStatement :
+    LocalClassOrInterfaceDeclaration
+    | LocalVariableDeclarationStatement
+    | Statement
+
+LocalClassOrInterfaceDeclaration :
+    ClassDeclaration
+    | NormalInterfaceDeclaration
+
+LocalVariableDeclarationStatement :
+    LocalVariableDeclaration Semicolon
+
+LocalVariableDeclaration :
+    VariableModifier_ntM LocalVariableType VariableDeclaratorList
+
+LocalVariableType :
+    UannType
+    | Var
+
+Statement:
+    StatementWithoutTrailingSubstatement 
+    | LabeledStatement 
+    | IfThenStatement 
+    | IfThenElseStatement 
+    | WhileStatement 
+    | ForStatement
+
+StatementNoShortIf:
+    StatementWithoutTrailingSubstatement 
+    | LabeledStatementNoShortIf 
+    | IfThenElseStatementNoShortIf 
+    | WhileStatementNoShortIf 
+    | ForStatementNoShortIf
+
+StatementWithoutTrailingSubstatement:
+    Block 
+    | EmptyStatement 
+    | ExpressionStatement 
+    | AssertStatement 
+    | SwitchStatement 
+    | DoStatement 
+    | BreakStatement 
+    | ContinueStatement 
+    | ReturnStatement 
+    | SynchronizedStatement 
+    | ThrowStatement 
+    | TryStatement 
+    | YieldStatement
+
+EmptyStatement:
+    Semicolon
+
+LabeledStatement:
+    Identifier Colon Statement
+
+LabeledStatementNoShortIf:
+    Identifier Colon StatementNoShortIf
+
+ExpressionStatement:
+    StatementExpression Semicolon
+
+StatementExpression:
+    Assignment 
+    | PreIncrementExpression 
+    | PreDecrementExpression 
+    | PostIncrementExpression 
+    | PostDecrementExpression 
+    | MethodInvocation 
+    | ClassInstanceCreationExpression
+
+IfThenStatement :
+    If LeftParanthesis Expression RightParanthesis Statement
+
+IfThenElseStatement :
+    If LeftParanthesis Expression RightParanthesis StatementNoShortIf Else Statement
+
+IfThenElseStatementNoShortIf :
+    If LeftParanthesis Expression RightParanthesis StatementNoShortIf Else StatementNoShortIf
+
+AssertStatement :
+    Assert Expression Semicolon
+    | Assert Expression Colon Expression Semicolon
+
+SwitchStatement :
+    Switch LeftParanthesis Expression RightParanthesis SwitchBlock
+
+SwitchBlock :
+    LeftCurlyBrace SwitchRule SwitchRule_ntM RightCurlyBrace
+    | LeftCurlyBrace SwitchBlockStatementGroup_ntM SwitchLabel_extender RightCurlyBrace
+
+SwitchRule_ntM :
+    | SwitchRule SwitchRule_ntM
+
+SwitchBlockStatementGroup_ntM :
+    | SwitchBlockStatementGroup SwitchBlockStatementGroup_ntM
+
+SwitchLabel_extender :
+    | SwitchLabel Colon SwitchLabel_extender
+
+SwitchRule :
+    SwitchLabel RightArrow Expression Semicolon
+    | SwitchLabel RightArrow Block
+    | SwitchLabel RightArrow ThrowStatement
+
+SwitchBlockStatementGroup :
+    SwitchLabel Colon SwitchLabel_extender BlockStatements
+
+SwitchLabel :
+    Case CaseConstant CaseConstant_extender
+    | Default
+
+CaseConstant_extender :
+    | Comma CaseConstant CaseConstant_extender
+
+CaseConstant :
+    ConditionalExpression
     
-    if(root!=NULL){
-        neighbour_append(root,graph,depth,child_num);
-        for(int i = 0; i<10 && root->arr[i]!=NULL; i++){
-            graph_maker(root->arr[i], graph,depth+1,i);
-        }
+WhileStatement :
+    While LeftParanthesis Expression RightParanthesis Statement
 
-    }
-    return;
+WhileStatementNoShortIf :
+    While LeftParanthesis Expression RightParanthesis StatementNoShortIf
+
+DoStatement :   
+    Do Statement While LeftParanthesis Expression RightParanthesis Semicolon
+
+ForStatement :
+    BasicForStatement 
+    | EnhancedForStatement
+
+ForStatementNoShortIf :
+    BasicForStatementNoShortIf
+    | EnhancedForStatementNoShortIf
+
+BasicForStatement :
+    For LeftParanthesis ForInit_nt Semicolon Expression_nt Semicolon ForUpdate_nt RightParanthesis Statement
+
+Expression_nt :
+    | Expression
+
+ForInit_nt :
+    | ForInit
+
+ForUpdate_nt :
+    | ForUpdate
+
+BasicForStatementNoShortIf :
+    For LeftParanthesis ForInit_nt Semicolon Expression_nt Semicolon ForUpdate_nt RightParanthesis StatementNoShortIf
+
+ForInit :
+    StatementExpressionList
+    | LocalVariableDeclaration
+
+ForUpdate :
+    StatementExpressionList
     
+StatementExpressionList :
+    StatementExpression StatementExpression_extender
 
-}
+StatementExpression_extender :
+    | Comma StatementExpression StatementExpression_extender
 
+EnhancedForStatement :  
+    For LeftParanthesis  LocalVariableDeclaration Colon Expression RightParanthesis Statement
+
+EnhancedForStatementNoShortIf :
+    For LeftParanthesis LocalVariableDeclaration Colon Expression RightParanthesis StatementNoShortIf
+
+BreakStatement :
+    Break Identifier_nt Semicolon
+
+Identifier_nt :
+    | Identifier
+
+YieldStatement :
+    Yield Expression Semicolon
+
+ContinueStatement :
+    Continue Identifier_nt Semicolon
+
+ReturnStatement :
+    Return Expression_nt Semicolon
+
+ThrowStatement :
+    Throw Expression Semicolon
+
+SynchronizedStatement :
+    Synchronized LeftParanthesis Expression RightParanthesis Block
+
+TryStatement :
+    Try Block Catches
+    | Try Block Catches_nt Finally_ntK
+    TryWithResourcesStatement
+
+Catches :
+    CatchClause CatchClause_ntM
+
+CatchClause_ntM :
+    | CatchClause CatchClause_ntM
+
+CatchClause :
+    Catch LeftParanthesis CatchFormalParameter RightParanthesis Block
+
+CatchFormalParameter :
+    VariableModifier_ntM CatchType VariableDeclaratorId
+
+CatchType :
+    UannClassType ClassType_extender
+
+ClassType_extender :
+    | BitwiseOr ClassType ClassType_extender
+
+Finally_ntK :
+    Finally Block
+
+TryWithResourcesStatement :
+    Try ResourceSpecification Block Catches_nt Finally_ntK_nT
+
+Finally_ntK_nT :
+    | Finally_ntK 
+
+ResourceSpecification :
+    LeftParanthesis ResourceList Semicolon_nt RightParanthesis
+
+Semicolon_nt :
+    | Semicolon
+
+ResourceList :
+    Resource Resource_extender
+
+Resource_extender :
+    | Semicolon Resource Resource_extender
+
+Resource :
+    LocalVariableDeclaration
+    | VariableAccess
+
+Pattern :
+    TypePattern
+
+TypePattern :
+    LocalVariableDeclaration
+
+
+
+Primary :
+    PrimaryNoNewArray
+    | ArrayCreationExpression
+
+PrimaryNoNewArray:
+    Literal 
+    | ClassLiteral 
+    | This 
+    | TypeName Dot This 
+    | LeftParanthesis Expression RightParanthesis 
+    | ClassInstanceCreationExpression 
+    | FieldAccess 
+    | ArrayAccess 
+    | MethodInvocation 
+    | MethodReference
+
+ClassLiteral :
+    TypeName SquareBracket_ntM Dot Class
+    | NumericType SquareBracket_ntM Dot Class
+    | Boolean SquareBracket_ntM Dot Class
+    | Void Dot Class
+
+SquareBracket_ntM :
+    | LeftSquareBracket RightSquareBracket SquareBracket_ntM
+
+ClassInstanceCreationExpression :
+    UnqualifiedClassInstanceCreationExpression
+    | ExpressionName Dot UnqualifiedClassInstanceCreationExpression
+    | Primary Dot UnqualifiedClassInstanceCreationExpression
+
+UnqualifiedClassInstanceCreationExpression :
+    New TypeArguments_nt ClassOrInterfaceTypeToInstantiate LeftParanthesis ArgumentList_nt RightParanthesis ClassBody_nt
+
+ClassBody_nt :
+    | ClassBody
+
+ClassOrInterfaceTypeToInstantiate :
+    Annotation_ntM Identifier Annotation_Identifier_extender TypeArgumentsOrDiamond_nt
+
+Annotation_Identifier_extender :
+    | Dot Annotation_ntM Identifier Annotation_Identifier_extender
+
+TypeArgumentsOrDiamond_nt :
+    | TypeArgumentsOrDiamond
+
+TypeArgumentsOrDiamond :
+    TypeArguments
+    | LessThan GreaterThan
+
+FieldAccess :
+    Primary Dot Identifier
+    | Super Dot Identifier
+    | TypeName Dot Super Dot Identifier
+    
+ArrayAccess :
+    ExpressionName LeftSquareBracket Expression RightSquareBracket
+    | PrimaryNoNewArray LeftSquareBracket Expression RightShiftBracket
+
+MethodInvocation :
+    MethodName LeftParanthesis ArgumentList_nt RightParanthesis
+    | TypeName Dot TypeArguments_nt Identifier LeftParanthesis ArgumentList_nt RightParanthesis
+    | ExpressionName Dot TypeArguments_nt Identifier LeftParanthesis ArgumentList_nt RightParanthesis
+    | Primary Dot TypeArguments_nt Identifier LeftParanthesis ArgumentList_nt RightParanthesis
+    | Super Dot TypeArguments_nt Identifier LeftParanthesis ArgumentList_nt RightParanthesis
+    | TypeName Dot Super Dot TypeArguments_nt Identifier LeftParanthesis ArgumentList_nt RightParanthesis
+
+ArgumentList :
+    Expression Expression_extender
+
+Expression_extender :
+    | Comma Expression Expression_extender
+
+MethodReference :  
+    ExpressionName Scope TypeArguments_nt Identifier
+    | Primary Scope TypeArguments_nt Identifier
+    | ReferenceType Scope TypeArguments_nt Identifier
+    | Super Scope TypeArguments_nt Identifier
+    | TypeName Dot Super Scope TypeArguments_nt Identifier
+    | ClassType Scope TypeArguments_nt New
+    | ArrayType Scope New
+
+ArrayCreationExpression :
+    New PrimitiveType DimExprs Dims_nt
+    | New ClassOrInterfaceType DimExprs Dims_nt
+    | New PrimitiveType Dims ArrayInitializer
+    | New ClassOrInterfaceType Dims ArrayInitializer
+
+DimExprs :
+    DimExpr DimExpr_ntM
+
+DimExpr_ntM :
+    | DimExpr DimExpr_ntM
+
+DimExpr :
+    Annotation_ntM LeftSquareBracket Expression RightSquareBracket
+
+Expression :
+    LambdaExpression
+    |AssignmentExpression
+
+LambdaExpression :
+    LambdaParameters RightArrow LambdaBody
+
+LambdaParameters :
+    LeftParanthesis LambdaParameterList_nt RightParanthesis
+    | Identifier 
+
+LambdaParameterList_nt :
+    | LambdaParameterList 
+
+LambdaParameterList :
+    LambdaParameter LambdaParameter_extender
+    | Identifier Identifier_extender_Comma
+
+LambdaParameter_extender :
+    | Comma LambdaParameter LambdaParameter_extender
+
+Identifier_extender_Comma : 
+    | Comma Identifier Identifier_extender_Comma
+
+LambdaParameter :
+    VariableModifier_ntM LambdaParameterType VariableDeclaratorId
+    | VariableArityParameter 
+
+LambdaParameterType :
+    UannType
+    | Var
+
+LambdaBody :
+    Expression
+    | Block
+
+AssignmentExpression :
+    ConditionalExpression
+    | Assignment
+
+Assignment :    
+    LeftHandSide AssignmentOperator Expression 
+
+LeftHandSide :
+    ExpressionName 
+    | FieldAccess
+    | ArrayAccess
+
+AssignmentOperator :
+    EqualTo
+    | ProductEqualTo
+    | DivideEqualTo
+    | ModuloEqualTo
+    | AdditionEqualTo
+    | SubstractionEqualTo
+    | LeftShitEqualTo
+    | RightShiftEqualTo
+    | TripleGreaterThan
+    | BitWiseAndEqualTo
+    | CircumFlexEqualTo
+    | BitWiseOrEqualTo
+
+ConditionalExpression:
+    | ConditionalOrExpression 
+    | ConditionalOrExpression QuestionMark Expression Colon ConditionalExpression 
+    | ConditionalOrExpression QuestionMark Expression Colon LambdaExpression 
+
+ConditionalOrExpression:
+    | ConditionalAndExpression 
+    | ConditionalOrExpression OrOperator ConditionalAndExpression
+
+ConditionalAndExpression:
+    InclusiveOrExpression 
+    | ConditionalAndExpression AndOperator InclusiveOrExpression
+
+InclusiveOrExpression:
+    ExclusiveOrExpression 
+    | InclusiveOrExpression BitwiseOr ExclusiveOrExpression
+
+ExclusiveOrExpression:
+    AndExpression 
+    | ExclusiveOrExpression CircumFlex AndExpression
+
+AndExpression:
+    EqualityExpression 
+    | AndExpression BitwiseAnd EqualityExpression
+
+EqualityExpression:
+    RelationalExpression 
+    | EqualityExpression EqualToEqualTo RelationalExpression 
+    | EqualityExpression NotEqualTo RelationalExpression
+
+RelationalExpression:
+    ShiftExpression 
+    | RelationalExpression LessThan ShiftExpression 
+    | RelationalExpression GreaterThan ShiftExpression 
+    | RelationalExpression LessThanEqualTo ShiftExpression 
+    | RelationalExpression GreaterThanEqualTo ShiftExpression 
+    | InstanceofExpression
+
+InstanceofExpression:
+    RelationalExpression instanceof ReferenceType 
+    | RelationalExpression instanceof Pattern
+
+ShiftExpression:
+    AdditiveExpression 
+    | ShiftExpression LeftShit AdditiveExpression 
+    | ShiftExpression RightShift AdditiveExpression 
+    | ShiftExpression TripleGreaterThan AdditiveExpression
+
+AdditiveExpression:
+    MultiplicativeExpression 
+    | AdditiveExpression Addition MultiplicativeExpression 
+    | AdditiveExpression Substraction MultiplicativeExpression
+
+MultiplicativeExpression:
+    UnaryExpression 
+    | MultiplicativeExpression Product UnaryExpression 
+    | MultiplicativeExpression Divide UnaryExpression 
+    | MultiplicativeExpression Modulo UnaryExpression
+
+UnaryExpression:
+    PreIncrementExpression 
+    | PreDecrementExpression 
+    | Addition UnaryExpression 
+    | Substraction UnaryExpression 
+    | UnaryExpressionNotPlusMinus
+
+PreIncrementExpression:
+    PlusPlus UnaryExpression
+
+PreDecrementExpression:
+    MinusMinus UnaryExpression
+
+UnaryExpressionNotPlusMinus:
+    PostfixExpression 
+    | Tilde UnaryExpression 
+    | NotOperator UnaryExpression 
+    | CastExpression 
+    | SwitchExpression
+
+PostfixExpression:
+    Primary 
+    | ExpressionName 
+    | PostIncrementExpression 
+    | PostDecrementExpression
+
+PostIncrementExpression:
+    PostfixExpression PlusPlus
+
+PostDecrementExpression:
+    PostfixExpression MinusMinus
+
+CastExpression:
+    LeftParanthesis PrimitiveType RightParanthesis UnaryExpression 
+    | LeftParanthesis ReferenceType AdditionalBound_ntM RightParanthesis UnaryExpressionNotPlusMinus 
+    | LeftParanthesis ReferenceType AdditionalBound_ntM RightParanthesis LambdaExpression 
+
+SwitchExpression:
+    Switch LeftParanthesis Expression RightParanthesis SwitchBlock
+
+ConstantExpression:
+    Expression
+
+VariableAccess :
+    Expression
+    | ArrayInitializer
+
+
+%%
 
 int main(int argc , char** argv)
 {   
@@ -240,3 +946,6 @@ int main(int argc , char** argv)
     return 0;
 
 }
+
+
+
