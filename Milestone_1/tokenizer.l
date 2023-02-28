@@ -76,7 +76,7 @@ float {return(Float);}
 native {return(Native);}
 super {return(Super);}
 while {return(While);}
-_ {return(Underscore);}
+
 
 [a-zA-Z_][a-zA-Z0-9_]* {sscanf(yytext,"%s", yylval.data);
             return (Identifier);}
