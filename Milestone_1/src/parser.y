@@ -553,7 +553,9 @@ ArgumentList:
 
 ArrayCreationExpression: 
     New PrimitiveType DimExprs Dims_opt 
-    | New ClassOrInterfaceType DimExprs Dims_opt
+    | New ClassOrInterfaceType DimExprs Dims_opt {
+        
+    }
 
 Dims_opt: 
     |Dims {
@@ -565,7 +567,7 @@ DimExprs:
         $$ = $1;
     }
     | DimExprs DimExpr {
-        
+
         $$ = makeleaf();
     }
 
