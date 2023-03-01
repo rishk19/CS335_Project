@@ -19,10 +19,47 @@ extern FILE *yyin;
     char data[1000];
 }
 
+%left PlusPlus
+%left MinusMinus
+%left Product
+%left Divide
+%left Modulo
+%left Addition
+%left Substraction
+%left LeftShit
+%left RightShift
+
+%left LessThan 
+%left LessThanEqualTo
+%left GreaterThan
+%left GreaterThanEqualTo
+
+%left EqualToEqualTo
+%left NotEqualTo
+%left BitwiseAnd
+%left CircumFlex
+%left BitwiseOr
+%left AndOperator
+%left OrOperator
+
+%right EqualTo
+%right AdditionEqualTo
+%right SubstractionEqualTo
+%right ProductEqualTo
+%right DivideEqualTo
+%right ModuloEqualTo
+%right RightShiftEqualTo
+%right LeftShitEqualTo
+%right BitWiseAndEqualTo
+%right CircumFlexEqualTo
+%right BitWiseOrEqualTo
+
+
 %%
 Goal: CompilationUnit {
     printf("Reached Goal !\n");
 }
+
 
 Literal: IntegerLiteral | FloatingPointLiteral | BooleanLiteral | CharacterLiteral | StringLiteral | NullLiteral
 
@@ -180,13 +217,15 @@ BlockStatements_opt : | BlockStatements
 
 BlockStatements: BlockStatement | BlockStatements BlockStatement
 
-BlockStatement: LocalVariableDeclarationStatement | Statement
+BlockStatement: LocalVariableDeclarationStatement | Statement { printf("BlockStatement -> Statement \n");}
 
 LocalVariableDeclarationStatement: LocalVariableDeclaration Semicolon
 
 LocalVariableDeclaration: Type VariableDeclarators
 
-Statement: StatementWithoutTrailingSubstatement | LabeledStatement| IfThenStatement | IfThenElseStatement | WhileStatement | ForStatement
+Statement: StatementWithoutTrailingSubstatement {  printf("Statement -> StatementWithoutTrailingSubstatement \n");}
+        | LabeledStatement| IfThenStatement { printf("Statement -> IfThenStatement \n");}
+        | IfThenElseStatement | WhileStatement | ForStatement
 
 StatementNoShortIf: StatementWithoutTrailingSubstatement | LabeledStatementNoShortIf | IfThenElseStatementNoShortIf | WhileStatementNoShortIf | ForStatementNoShortIf
 
