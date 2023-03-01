@@ -20,7 +20,9 @@ extern FILE *yyin;
 }
 
 %%
-Goal: CompilationUnit
+Goal: CompilationUnit {
+    printf("Reached Goal !\n");
+}
 
 Literal: IntegerLiteral | FloatingPointLiteral | BooleanLiteral | CharacterLiteral | StringLiteral | NullLiteral
 
@@ -188,7 +190,7 @@ Statement: StatementWithoutTrailingSubstatement | LabeledStatement| IfThenStatem
 
 StatementNoShortIf: StatementWithoutTrailingSubstatement | LabeledStatementNoShortIf | IfThenElseStatementNoShortIf | WhileStatementNoShortIf | ForStatementNoShortIf
 
-StatementWithoutTrailingSubstatement: Block | EmptyStatement | ExpressionStatement | SwitchStatement | DoStatement | BreakStatement | ContinueStatement | ReturnStatement | SynchronizedStatement | ThrowStatement | TryStatement
+StatementWithoutTrailingSubstatement: Block | EmptyStatement | ExpressionStatement | BreakStatement | ContinueStatement | ReturnStatement | SynchronizedStatement | ThrowStatement | TryStatement
 
 EmptyStatement: Semicolon
 
@@ -206,27 +208,9 @@ IfThenElseStatement: If LeftParanthesis Expression RightParanthesis StatementNoS
 
 IfThenElseStatementNoShortIf: If LeftParanthesis Expression RightParanthesis StatementNoShortIf Else StatementNoShortIf
 
-SwitchStatement: Switch LeftParanthesis Expression RightParanthesis SwitchBlock
-
-SwitchBlock: LeftCurlyBrace SwitchBlockStatementGroups_opt SwitchLabels_opt RightCurlyBrace
-
-SwitchBlockStatementGroups_opt: | SwitchBlockStatementGroups
-
-SwitchLabels_opt: | SwitchLabels
-
-SwitchBlockStatementGroups: SwitchBlockStatementGroup | SwitchBlockStatementGroups SwitchBlockStatementGroup
-
-SwitchBlockStatementGroup: SwitchLabels BlockStatements
-
-SwitchLabels: SwitchLabel | SwitchLabels SwitchLabel
-
-SwitchLabel: Case ConstantExpression Semicolon | Default Semicolon
-
 WhileStatement: While LeftParanthesis Expression RightParanthesis Statement
 
 WhileStatementNoShortIf: While LeftParanthesis Expression RightParanthesis StatementNoShortIf
-
-DoStatement: Do Statement While LeftParanthesis Expression RightParanthesis Semicolon
 
 ForStatement: For LeftParanthesis ForInit_opt Semicolon Expression_opt Semicolon ForUpdate_opt RightParanthesis Statement
 
@@ -337,8 +321,6 @@ LeftHandSide: Name | FieldAccess | ArrayAccess
 AssignmentOperator: EqualTo | ProductEqualTo | DivideEqualTo | ModuloEqualTo | AdditionEqualTo | SubstractionEqualTo | LeftShitEqualTo | RightShiftEqualTo | TripleGreaterThanEqualTo | BitWiseAndEqualTo | CircumFlexEqualTo | BitWiseOrEqualTo
 
 Expression: AssignmentExpression
-
-ConstantExpression: Expression
 
 
 %%
