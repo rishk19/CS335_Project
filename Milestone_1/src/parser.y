@@ -1,6 +1,8 @@
 %{
 #include <stdio.h>
 #include "assert.h"
+#include "string.h"
+#include "stdlib.h"
 int yyerror(char *s);
 int yylex();
 extern FILE *yyin;
@@ -16,6 +18,7 @@ struct node{
 };
 struct node* makeInternalNode(char* rule, struct node* memArr[], int mem);
 struct node* makeleaf(char* node);
+char* concatenate_string(char* s, char* s1);
 
 %}
 
@@ -113,53 +116,107 @@ Goal: CompilationUnit {
 
 
 Literal: 
-    IntegerLiteral 
-    | FloatingPointLiteral 
-    | BooleanLiteral 
-    | CharacterLiteral 
-    | StringLiteral 
-    | NullLiteral
+    IntegerLiteral {
+        $$ = $1;
+    }
+    | FloatingPointLiteral {
+        $$ = makeleaf($1);
+    }
+    | BooleanLiteral {
+        $$ = makeleaf($1);
+    }
+    | CharacterLiteral {
+        $$ = makeleaf($1);
+    }
+    | StringLiteral {
+        $$ = makeleaf($1);
+    }
+    | NullLiteral{
+        $$ = makeleaf($1);
+    }
 
 IntegerLiteral: 
-    DecimalIntegerLiteral 
-    | HexIntegerLiteral 
-    | OctalIntegerLiteral
+    DecimalIntegerLiteral {
+        $$ = makeleaf($1);
+    }
+    | HexIntegerLiteral {
+        $$ = makeleaf($1);
+    }
+    | OctalIntegerLiteral {
+        $$ = makeleaf($1);
+    }
 
 Type: 
-    PrimitiveType 
-    | ReferenceType
+    PrimitiveType {
+        $$ = $1;
+    }
+    | ReferenceType {
+        $$ = $1;
+    }
 
 PrimitiveType: 
-    NumericType 
-    | Boolean
+    NumericType {
+        $$ = $1;
+    }
+    | Boolean {
+        $$ = makeleaf($1);
+    }
 
 NumericType: 
-    IntegralType
-    | FloatingPointType
+    IntegralType {
+        $$ = $1;
+    }
+    | FloatingPointType {
+        $$ = $1;
+    }
 
 IntegralType: 
-    Byte 
-    | Short 
-    | Int 
-    | Long 
-    | Char
+    Byte {
+        $$ = makeleaf($1);
+    }
+    | Short {
+        $$ = makeleaf($1);
+    }
+    | Int {
+        $$ = makeleaf($1);
+    }
+    | Long {
+        $$ = makeleaf($1);
+    }
+    | Char {
+        $$ = makeleaf($1);
+    }
 
 FloatingPointType: 
-    Float 
-    | Double
+    Float {
+        $$ = makeleaf($1);
+    }
+    | Double {
+        $$ = makeleaf($1);
+    }
 
 ReferenceType: 
-    ClassOrInterfaceType 
-    | ArrayType
+    ClassOrInterfaceType  {
+        $$ = $1;
+    }
+    | ArrayType {
+        $$ = $1;
+    }
 
 ClassOrInterfaceType: 
-    Name
+    Name {
+        $$ = $1;
+    }
 
 ClassType: 
-    ClassOrInterfaceType
+    ClassOrInterfaceType {
+        $$ = $1;
+    }
 
 InterfaceType: 
-    ClassOrInterfaceType
+    ClassOrInterfaceType {
+        $$ = $1;
+    }
 
 ArrayType: 
     PrimitiveType LeftSquareBracket RightSquareBracket 
@@ -167,11 +224,17 @@ ArrayType:
     | ArrayType LeftSquareBracket RightSquareBracket
 
 Name: 
-    SimpleName 
-    | QualifiedName
+    SimpleName {
+        $$ = $1;
+    }
+    | QualifiedName {
+        $$ = $1;
+    }
 
 SimpleName: 
-    Identifier
+    Identifier {
+        $$ = $1;
+    }
 
 QualifiedName: 
     Name Dot Identifier
@@ -179,29 +242,43 @@ QualifiedName:
 CompilationUnit: 
     PackageDeclaration_opt ImportDeclarations_opt TypeDeclarations_opt
 
-ImportDeclarations_opt : 
-    | ImportDeclarations
+ImportDeclarations_opt : { $$ = NULL }
+    | ImportDeclarations {
+        $$ = $1;
+    }
 
 ImportDeclarations: 
-    ImportDeclaration 
+    ImportDeclaration {
+        $$ = $1;
+    }
     | ImportDeclarations ImportDeclaration
 
-TypeDeclarations_opt : 
-    | TypeDeclarations
+TypeDeclarations_opt : { $$ = NULL }
+    | TypeDeclarations {
+        $$ = $1;
+    }
 
 TypeDeclarations: 
-    TypeDeclaration 
+    TypeDeclaration {
+        $$ = $1;
+    }
     | TypeDeclarations TypeDeclaration
 
-PackageDeclaration_opt : 
-    | PackageDeclaration
+PackageDeclaration_opt : { $$ = NULL }
+    | PackageDeclaration {
+        $$ = $1;
+    }
 
 PackageDeclaration: 
-    Package Name Semicolon
+    Package Name Semicolon 
 
 ImportDeclaration: 
-    SingleTypeImportDeclaration 
-    | TypeImportOnDemandDeclaration
+    SingleTypeImportDeclaration {
+        $$ = $1;
+    }
+    | TypeImportOnDemandDeclaration {
+        $$ = $1;
+    }
 
 SingleTypeImportDeclaration: 
     Import Name Semicolon
@@ -210,36 +287,71 @@ TypeImportOnDemandDeclaration:
     Import Name Dot Product Semicolon
 
 TypeDeclaration: 
-    ClassDeclaration 
-    | InterfaceDeclaration 
-    | Semicolon
+    ClassDeclaration {
+        $$ = $1;
+    }
+    | InterfaceDeclaration {
+        $$ = $1;
+    }
+    | Semicolon {
+        $$ = makeleaf($1);
+    }
 
 Modifiers: 
-    Modifier 
+    Modifier {
+        $$ = $1;
+    }
     | Modifiers Modifier
 
 Modifier: 
-    Public 
-    | Protected 
-    | Private 
-    | Static 
-    | Abstract 
-    | Final 
-    | Native 
-    | Synchronized 
-    | Transient Volatile
+    Public {
+        $$ = makeleaf($1);
+    }
+    | Protected {
+        $$ = makeleaf($1);
+    }
+    | Private {
+        $$ = makeleaf($1);
+    }
+    | Static {
+        $$ = makeleaf($1);
+    }
+    | Abstract {
+        $$ = makeleaf($1);
+    }
+    | Final {
+        $$ = makeleaf($1);
+    }
+    | Native {
+        $$ = makeleaf($1);
+    }
+    | Synchronized {
+        $$ = makeleaf($1);
+    }
+    | Transient {
+        $$ = makeleaf($1);
+    }
+    | Volatile {
+        $$ = makeleaf($1);
+    }
 
 ClassDeclaration: 
     Modifiers_opt Class Identifier ClassExtend_opt Interfaces_opt ClassBody
 
-Modifiers_opt : 
-    | Modifiers
+Modifiers_opt : { $$ = NULL }
+    | Modifiers {
+        $$ = $1;
+    }
 
-ClassExtend_opt : 
-    | ClassExtend
+ClassExtend_opt : { $$ = NULL }
+    | ClassExtend {
+        $$ = $1;
+    }
 
-Interfaces_opt : 
-    | Interfaces
+Interfaces_opt : { $$ = NULL }
+    | Interfaces {
+        $$ = $1;
+    }
 
 ClassExtend : 
     Extends ClassType
@@ -248,46 +360,72 @@ Interfaces:
     Implements InterfaceTypeList
 
 InterfaceTypeList: 
-    InterfaceType 
+    InterfaceType {
+        $$ = $1;
+    }
     | InterfaceTypeList Comma InterfaceType
 
 ClassBody: 
     LeftCurlyBrace ClassBodyDeclarations_opt RightCurlyBrace
 
-ClassBodyDeclarations_opt : 
-    ClassBodyDeclarations
+ClassBodyDeclarations_opt : { $$ = NULL }
+    ClassBodyDeclarations {
+        $$ = $1;
+    }
 
 ClassBodyDeclarations: 
-    ClassBodyDeclaration 
+    ClassBodyDeclaration {
+        $$ = $1;
+    }
     | ClassBodyDeclarations ClassBodyDeclaration
 
 ClassBodyDeclaration: 
-    ClassMemberDeclaration 
-    | StaticInitializer 
-    | ConstructorDeclaration
+    ClassMemberDeclaration {
+        $$ = $1;
+    }
+    | StaticInitializer {
+        $$ = $1;
+    }
+    | ConstructorDeclaration {
+        $$ = $1;
+    }
 
 ClassMemberDeclaration: 
-    FieldDeclaration 
-    | MethodDeclaration
+    FieldDeclaration {
+        $$ = $1;
+    }
+    | MethodDeclaration {
+        $$ = $1;
+    }
 
 FieldDeclaration: 
     Modifiers_opt Type VariableDeclarators Semicolon
 
 VariableDeclarators: 
-    VariableDeclarator 
+    VariableDeclarator {
+        $$ = $1;
+    }
     | VariableDeclarators Comma VariableDeclarator
 
 VariableDeclarator: 
-    VariableDeclaratorId 
+    VariableDeclaratorId {
+        $$ = $1;
+    }
     | VariableDeclaratorId EqualTo VariableInitializer
 
 VariableDeclaratorId: 
-    Identifier 
+    Identifier {
+        $$ = $1;
+    }
     | VariableDeclaratorId LeftSquareBracket RightSquareBracket
 
 VariableInitializer:
-    Expression 
-    | ArrayInitializer
+    Expression {
+        $$ = $1;
+    }
+    | ArrayInitializer {
+        $$ = $1;
+    }
 
 MethodDeclaration: 
     MethodHeader MethodBody
@@ -296,18 +434,24 @@ MethodHeader:
     Modifiers_opt Type MethodDeclarator Throws_opt 
     | Modifiers_opt Void MethodDeclarator Throws_opt
 
-Throws_opt : 
-    | Throws
+Throws_opt : { $$ = NULL }
+    | Throws {
+        $$ = makeleaf($1);
+    }
 
 MethodDeclarator: 
     Identifier LeftParanthesis FormalParameterList_opt RightParanthesis 
     | MethodDeclarator LeftSquareBracket RightSquareBracket
 
-FormalParameterList_opt : 
-    | FormalParameterList
+FormalParameterList_opt : { $$ = NULL }
+    | FormalParameterList {
+        $$ = $1;
+    }
 
 FormalParameterList: 
-    FormalParameter 
+    FormalParameter {
+        $$ = $1;
+    }
     | FormalParameterList Comma FormalParameter
 
 FormalParameter: 
@@ -317,12 +461,18 @@ Throws:
     THROWS ClassTypeList
 
 ClassTypeList: 
-    ClassType 
+    ClassType {
+        $$ = $1;
+    }
     | ClassTypeList Comma ClassType
 
 MethodBody: 
-    Block 
-    | Semicolon
+    Block {
+        $$ = $1;
+    }
+    | Semicolon {
+        $$ = makeleaf($1);
+    }
 
 StaticInitializer: 
     Static Block
@@ -336,20 +486,27 @@ ConstructorDeclarator:
 ConstructorBody: 
     LeftCurlyBrace ExplicitConstructorInvocation_opt BlockStatements_opt RightCurlyBrace
 
-ExplicitConstructorInvocation_opt : 
-    | ExplicitConstructorInvocation
+ExplicitConstructorInvocation_opt : { $$ = NULL }
+    | ExplicitConstructorInvocation {
+        $$ = $1;
+    }
 
 ExplicitConstructorInvocation: 
-    This LeftParanthesis ArgumentList_opt RightParanthesis Semicolon | Super LeftParanthesis ArgumentList_opt RightParanthesis Semicolon
+    This LeftParanthesis ArgumentList_opt RightParanthesis Semicolon 
+    | Super LeftParanthesis ArgumentList_opt RightParanthesis Semicolon
 
-ArgumentList_opt: 
-    | ArgumentList
+ArgumentList_opt: { $$ = NULL }
+    | ArgumentList {
+        $$ = $1;
+    }
 
 InterfaceDeclaration: 
     Modifiers_opt Interface Identifier ExtendsInterfaces_opt InterfaceBody
 
-ExtendsInterfaces_opt : 
-    | ExtendsInterfaces
+ExtendsInterfaces_opt : { $$ = NULL }
+    | ExtendsInterfaces {
+        $$ = $1;
+    }
 
 ExtendsInterfaces: 
     Extends InterfaceType 
@@ -358,19 +515,31 @@ ExtendsInterfaces:
 InterfaceBody: 
     LeftCurlyBrace InterfaceMemberDeclarations_opt RightCurlyBrace
 
-InterfaceMemberDeclarations_opt: 
-    | InterfaceMemberDeclarations
+InterfaceMemberDeclarations_opt: { $$ = NULL }
+    | InterfaceMemberDeclarations {
+        $$ = $1;
+    }
 
 InterfaceMemberDeclarations: 
-    InterfaceMemberDeclaration 
-    | InterfaceMemberDeclarations InterfaceMemberDeclaration
+    InterfaceMemberDeclaration {
+        $$ = $1;
+    }
+    | InterfaceMemberDeclarations InterfaceMemberDeclaration {
+        $$ = $1;
+    }
 
 InterfaceMemberDeclaration: 
-    ConstantDeclaration 
-    | AbstractMethodDeclaration
+    ConstantDeclaration {
+        $$ = $1;
+    }
+    | AbstractMethodDeclaration {
+        $$ = $1;
+    }
 
 ConstantDeclaration: 
-    FieldDeclaration
+    FieldDeclaration {
+        $$ = $1;
+    }
 
 AbstractMethodDeclaration: 
     MethodHeader Semicolon
@@ -378,64 +547,120 @@ AbstractMethodDeclaration:
 ArrayInitializer: 
     LeftCurlyBrace VariableInitializers_opt Comma_opt RightCurlyBrace
 
-VariableInitializers_opt: 
-    | VariableInitializers
+VariableInitializers_opt: { $$ = NULL }
+    | VariableInitializers {
+        $$ = $1;
+    }
 
-Comma_opt : 
-    | Comma
+Comma_opt : { $$ = NULL }
+    | Comma {
+        $$ = makeleaf($1);
+    }
 
 VariableInitializers: 
-    VariableInitializer 
+    VariableInitializer {
+        $$ = $1;
+    }
     | VariableInitializers Comma VariableInitializer
 
 Block: 
     LeftCurlyBrace BlockStatements_opt RightCurlyBrace
 
-BlockStatements_opt : 
-    | BlockStatements
+BlockStatements_opt : { $$ = NULL }
+    | BlockStatements {
+        $$ = $1;
+    }
 
 BlockStatements: 
-    BlockStatement 
+    BlockStatement {
+        $$ = $1;
+    }
     | BlockStatements BlockStatement
 
 BlockStatement: 
-    LocalVariableDeclarationStatement 
-    | Statement
+    LocalVariableDeclarationStatement {
+        $$ = $1;
+    }
+    | Statement {
+        $$ = $1;
+    }
 
 LocalVariableDeclarationStatement:
     LocalVariableDeclaration Semicolon
 
 LocalVariableDeclaration: 
-    Type VariableDeclarators
+    Type VariableDeclarators 
 
 Statement: 
-    StatementWithoutTrailingSubstatement
-    | LabeledStatement
-    | IfThenStatement
-    | IfThenElseStatement 
-    | WhileStatement 
-    | ForStatement
+    StatementWithoutTrailingSubstatement {
+        $$ = $1;
+    }
+    | LabeledStatement {
+        $$ = $1;
+    }
+    | IfThenStatement{
+        $$ = $1;
+    }
+    | IfThenElseStatement {
+        $$ = $1;
+    }
+    | WhileStatement {
+        $$ = $1;
+    }
+    | ForStatement {
+        $$ = $1;
+    }
 
 StatementNoShortIf: 
-    StatementWithoutTrailingSubstatement 
-    | LabeledStatementNoShortIf 
-    | IfThenElseStatementNoShortIf 
-    | WhileStatementNoShortIf 
-    | ForStatementNoShortIf
+    StatementWithoutTrailingSubstatement {
+        $$ = $1;
+    }
+    | LabeledStatementNoShortIf {
+        $$ = $1;
+    }
+    | IfThenElseStatementNoShortIf {
+        $$ = $1;
+    }
+    | WhileStatementNoShortIf {
+        $$ = $1;
+    }
+    | ForStatementNoShortIf {
+        $$ = $1;
+    }
 
 StatementWithoutTrailingSubstatement: 
-    Block 
-    | EmptyStatement 
-    | ExpressionStatement 
-    | BreakStatement 
-    | ContinueStatement 
-    | ReturnStatement 
-    | SynchronizedStatement 
-    | ThrowStatement 
-    | TryStatement
+    Block {
+        $$ = $1;
+    }
+    | EmptyStatement {
+        $$ = $1;
+    }
+    | ExpressionStatement {
+        $$ = $1;
+    }
+    | BreakStatement {
+        $$ = $1;
+    }
+    | ContinueStatement {
+        $$ = $1;
+    }
+    | ReturnStatement {
+        $$ = $1;
+    }
+    | SynchronizedStatement {
+        $$ = $1;
+    }
+    | ThrowStatement {
+        $$ = $1;
+    }
+    | TryStatement {
+        $$ = $1;
+    }
 
 EmptyStatement: 
-    Semicolon
+    Semicolon {
+        $$ = makeleaf($1);
+    }
 
 LabeledStatement: 
     Identifier Semicolon Statement
@@ -447,13 +672,27 @@ ExpressionStatement:
     StatementExpression Semicolon
 
 StatementExpression:  
-    Assignment 
-    | PreIncrementExpression 
-    | PreDecrementExpression 
-    | PostIncrementExpression 
-    | PostDecrementExpression 
-    | MethodInvocation 
-    | ClassInstanceCreationExpression
+    Assignment {
+        $$ = $1;
+    }
+    | PreIncrementExpression {
+        $$ = $1;
+    }
+    | PreDecrementExpression {
+        $$ = $1;
+    }
+    | PostIncrementExpression {
+        $$ = $1;
+    }
+    | PostDecrementExpression {
+        $$ = $1;
+    }
+    | MethodInvocation {
+        $$ = $1;
+    }
+    | ClassInstanceCreationExpression{
+        $$ = $1;
+    }
 
 IfThenStatement: 
     If LeftParanthesis Expression RightParanthesis Statement
@@ -476,31 +715,47 @@ ForStatement:
 ForStatementNoShortIf: 
     For LeftParanthesis ForInit_opt Semicolon Expression_opt Semicolon ForUpdate_opt RightParanthesis StatementNoShortIf
 
-ForInit_opt: 
-    | ForInit
+ForInit_opt: { $$ = NULL }
+    | ForInit {
+        $$ = $1;
+    }
 
-Expression_opt: 
-    | Expression
+Expression_opt: { $$ = NULL }
+    | Expression {
+        $$ = $1;
+    }
 
-ForUpdate_opt: 
-    | ForUpdate
+ForUpdate_opt: { $$ = NULL }
+    | ForUpdate {
+        $$ = $1;
+    }
 
 ForInit: 
-    StatementExpressionList 
-    | LocalVariableDeclaration
+    StatementExpressionList  {
+        $$ = $1;
+    }
+    | LocalVariableDeclaration {
+        $$ = $1;
+    }
 
 ForUpdate: 
-    StatementExpressionList
+    StatementExpressionList {
+        $$ = $1;
+    }
 
 StatementExpressionList: 
-    StatementExpression 
+    StatementExpression {
+        $$ = $1;
+    }
     | StatementExpressionList Comma StatementExpression
 
 BreakStatement:
     Break Identifier_opt Semicolon
 
 Identifier_opt: 
-    | Identifier
+    | Identifier {
+        $$ = $1;
+    }
 
 ContinueStatement: 
     Continue Identifier_opt Semicolon
@@ -518,11 +773,15 @@ TryStatement:
     Try Block Catches 
     | Try Block Catches_opt Finally
 
-Catches_opt: 
-    | Catches
+Catches_opt: { $$ = NULL }
+    | Catches {
+        $$ = $1;
+    }
 
 Catches: 
-    CatchClause 
+    CatchClause {
+        $$ = $1;
+    }
     | Catches CatchClause
 
 CatchClause:
@@ -532,32 +791,46 @@ Finally:
     FINALLY Block
 
 Primary: 
-    PrimaryNoNewArray 
-    | ArrayCreationExpression
+    PrimaryNoNewArray {
+        $$ = $1;
+    }
+    | ArrayCreationExpression {
+        $$ = $1;
+    }
 
 PrimaryNoNewArray: 
-    Literal 
-    | This 
+    Literal {
+        $$ = $1;
+    }
+    | This {
+        $$ = makeleaf($1);
+    }
     | LeftParanthesis Expression RightParanthesis 
     | ClassInstanceCreationExpression 
-    | FieldAccess 
-    | MethodInvocation 
-    | ArrayAccess
+    | FieldAccess {
+        $$ = $1;
+    }
+    | MethodInvocation {
+        $$ = $1;
+    }
+    | ArrayAccess {
+        $$ = $1;
+    }
 
 ClassInstanceCreationExpression: 
     New ClassType LeftParanthesis ArgumentList_opt RightParanthesis
 
 ArgumentList: 
-    Expression 
+    Expression {
+        $$ = $1;
+    }
     | ArgumentList Comma Expression
 
 ArrayCreationExpression: 
     New PrimitiveType DimExprs Dims_opt 
-    | New ClassOrInterfaceType DimExprs Dims_opt {
-        
-    }
+    | New ClassOrInterfaceType DimExprs Dims_opt
 
-Dims_opt: 
+Dims_opt: { $$ = NULL }
     |Dims {
         $$ = $1;
     }
@@ -968,6 +1241,31 @@ Expression: AssignmentExpression {
 int yyerror(char* s)
 {
     printf("%s\n",s);
+}
+
+
+
+char* concatenate_string(char* s, char* s1)
+{
+    char* c = (char*) malloc(sizeof(char)*100);
+    int i;
+    
+    int j = 0;
+
+    while(s[j]!= '\0'){
+        c[j] = s[j];
+        j+=1;
+    }
+
+    printf("%c\n",s[j]);
+ 
+    for (i = 0; s1[i] != '\0'; i++) {
+        c[i+j] = s1[i];
+     }
+ 
+    c[i + j] = '\0';
+ 
+    return c;
 }
 
 
