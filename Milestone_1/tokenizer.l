@@ -5,11 +5,16 @@
 %}
 
 %%
-true|false {sscanf(yytext,"%s", yylval.data);
+true|false {
+    sscanf(yytext,"%s", yylval.data);
             return (BooleanLiteral);
-            }
-null {sscanf(yytext,"%s", yylval.data);
-            return (NullLiteral);}
+}
+
+null {
+    sscanf(yytext,"%s", yylval.data);
+    return (NullLiteral);
+}
+
 exports {return(Exports);}
 opens {return(Opens);}
 requires {return(Requires);} 
@@ -45,12 +50,12 @@ break {return(Break);}
 double {return(Double);}
 implements {return(Implements);}
 protected {return(Protected);}
-throw {return(Throw);}
+throw {return(THROW);}
 byte {return(Byte);}
 else {return(Else);}
 import {return(Import);}
 public {return(Public);}
-throws {return(Throws);}
+throws {return(THROWS);}
 case {return(Case);}
 enum {return(Enum);}
 instanceof {return(Instanceof);}
@@ -67,7 +72,7 @@ interface {return(Interface);}
 static {return(Static);}
 void {return(Void);}
 class {return(Class);}
-finally {return(Finally);}
+finally {return(FINALLY);}
 long {return(Long);}
 strictfp {return(Strictfp);}
 volatile {return(Volatile);}
@@ -78,26 +83,50 @@ super {return(Super);}
 while {return(While);}
 
 
-[a-zA-Z_][a-zA-Z0-9_]* {sscanf(yytext,"%s", yylval.data);
-            return (Identifier);}
+[a-zA-Z_][a-zA-Z0-9_]* {
+    sscanf(yytext,"%s", yylval.data);
+    return (Identifier);
+}
 "//"+.* {}
+
 "/*"+([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*(\*)*+"*/" {}
-[-+]?[0-9_]*\.?[0-9_]+ {sscanf(yytext,"%s", yylval.data);
-            return (DecimalIntegerLiteral);}
-[-+]?(0x|0X)[0-9a-fA-F_]*\.?[0-9a-fA-F_]+ {sscanf(yytext,"%s", yylval.data);
-            return (HexIntegerLiteral);}
+
+[-+]?[0-9_]*\.?[0-9_]+ {
+    sscanf(yytext,"%s", yylval.data);
+    return (DecimalIntegerLiteral);
+}
+
+[-+]?(0x|0X)[0-9a-fA-F_]*\.?[0-9a-fA-F_]+ {
+    sscanf(yytext,"%s", yylval.data);
+    return (HexIntegerLiteral);
+}
+
 [-+]?0[0-7_]*\.?[0-7_]+([eE][-+]?[0-7_]+)? {sscanf(yytext,"%s", yylval.data);
             return (OctalIntegerLiteral);}
-[-+]?[0-9_]*\.?[0-9_]+([eE][-+]?[0-9_]+)?(f?|F?|d?|D?) {sscanf(yytext,"%s", yylval.data);
-            return (FloatingPointIntegerLiteral);}
-[-+]?(0x|0X)[0-9a-fA-F_]*\.?[0-9a-fA-F_]+([eE|pP][-+]?[0-9a-fA-F_]+)?(f?|F?|d?|D?) {sscanf(yytext,"%s", yylval.data);
-            return (FloatingPointLiteral);}
-[-+]?(0b|0B)[0-1_]*\.?[0-1_]+([eE][-+]?[0-1_]+)? {sscanf(yytext,"%s", yylval.data);
-            return (BooleanIntegerLiteral);}
-"'"+(.)+"'" {sscanf(yytext,"%s", yylval.data);
-            return (CharacterLiteral);}
-\"\"\"(\\.|[^"\\])*\"\"\" {sscanf(yytext,"%s", yylval.data);
-            return (TextBlock);}
+
+[-+]?[0-9_]*\.?[0-9_]+([eE][-+]?[0-9_]+)?(f?|F?|d?|D?) {
+    sscanf(yytext,"%s", yylval.data);
+    return (FloatingPointIntegerLiteral);
+}
+[-+]?(0x|0X)[0-9a-fA-F_]*\.?[0-9a-fA-F_]+([eE|pP][-+]?[0-9a-fA-F_]+)?(f?|F?|d?|D?) {
+    sscanf(yytext,"%s", yylval.data);
+    return (FloatingPointLiteral);
+}
+
+[-+]?(0b|0B)[0-1_]*\.?[0-1_]+([eE][-+]?[0-1_]+)? {
+    sscanf(yytext,"%s", yylval.data);
+    return (BooleanIntegerLiteral);
+}
+
+"'"+(.)+"'" {
+    sscanf(yytext,"%s", yylval.data);
+    return (CharacterLiteral);
+}
+
+\"\"\"(\\.|[^"\\])*\"\"\" {
+    sscanf(yytext,"%s", yylval.data);
+    return (TextBlock);
+}
 "=" {
     sscanf(yytext,"%s", yylval.data);
     return (EqualTo);
@@ -308,13 +337,11 @@ while {return(While);}
     sscanf(yytext,"%s", yylval.data);
         return (Semicolon);
 }
-"Rikesh_Rishabh" {
-    sscanf(yytext,"%s", yylval.data);
-            return (__EMPTY__);
-}
 
-\"(\\.|[^"\\])*\" {sscanf(yytext,"%s", yylval.data);
-            return (StringLiteral);}
+\"(\\.|[^"\\])*\" {
+    sscanf(yytext,"%s", yylval.data);
+            return (StringLiteral);
+}
 " "|"\t"|"\s"|"\f"|"\n"|"r" {}
 
 . {printf("error! unrecognised input character :%s, skipping\n", yytext);}

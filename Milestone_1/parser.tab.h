@@ -89,12 +89,12 @@ extern int yydebug;
     Double = 290,                  /* Double  */
     Implements = 291,              /* Implements  */
     Protected = 292,               /* Protected  */
-    Throw = 293,                   /* Throw  */
+    THROW = 293,                   /* THROW  */
     Byte = 294,                    /* Byte  */
     Else = 295,                    /* Else  */
     Import = 296,                  /* Import  */
     Public = 297,                  /* Public  */
-    Throws = 298,                  /* Throws  */
+    THROWS = 298,                  /* THROWS  */
     Case = 299,                    /* Case  */
     Enum = 300,                    /* Enum  */
     Instanceof = 301,              /* Instanceof  */
@@ -111,7 +111,7 @@ extern int yydebug;
     Static = 312,                  /* Static  */
     Void = 313,                    /* Void  */
     Class = 314,                   /* Class  */
-    Finally = 315,                 /* Finally  */
+    FINALLY = 315,                 /* FINALLY  */
     Long = 316,                    /* Long  */
     Strictfp = 317,                /* Strictfp  */
     Volatile = 318,                /* Volatile  */
@@ -193,12 +193,11 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 35 "parser.y"
+#line 18 "parser.y"
 
     char data[1000];
-    struct Tree_node *exp;
 
-#line 202 "parser.tab.h"
+#line 201 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
