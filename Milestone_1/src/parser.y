@@ -342,65 +342,158 @@ Finally: FINALLY Block
 
 Primary: PrimaryNoNewArray | ArrayCreationExpression
 
-PrimaryNoNewArray: Literal | This | LeftParanthesis Expression RightParanthesis | ClassInstanceCreationExpression | FieldAccess | MethodInvocation | ArrayAccess
+PrimaryNoNewArray: 
+    Literal 
+    | This 
+    | LeftParanthesis Expression RightParanthesis 
+    | ClassInstanceCreationExpression 
+    | FieldAccess 
+    | MethodInvocation 
+    | ArrayAccess
 
-ClassInstanceCreationExpression: New ClassType LeftParanthesis ArgumentList_opt RightParanthesis
+ClassInstanceCreationExpression: 
+    New ClassType LeftParanthesis ArgumentList_opt RightParanthesis
 
-ArgumentList: Expression | ArgumentList Comma Expression
+ArgumentList: 
+    Expression 
+    | ArgumentList Comma Expression
 
-ArrayCreationExpression: New PrimitiveType DimExprs Dims_opt | New ClassOrInterfaceType DimExprs Dims_opt
+ArrayCreationExpression: 
+    New PrimitiveType DimExprs Dims_opt 
+    | New ClassOrInterfaceType DimExprs Dims_opt
 
-Dims_opt: | Dims
+Dims_opt: 
+    |Dims
 
-DimExprs: DimExpr | DimExprs DimExpr
+DimExprs:
+    DimExpr 
+    | DimExprs DimExpr
 
-DimExpr: LeftSquareBracket Expression RightSquareBracket
+DimExpr: 
+    LeftSquareBracket Expression RightSquareBracket
 
-Dims: LeftSquareBracket RightSquareBracket | Dims LeftSquareBracket RightSquareBracket
+Dims: 
+    LeftSquareBracket RightSquareBracket 
+    | Dims LeftSquareBracket RightSquareBracket
 
-FieldAccess: Primary Dot Identifier | Super Dot Identifier
+FieldAccess: 
+    Primary Dot Identifier 
+    | Super Dot Identifier
 
-MethodInvocation: Name LeftParanthesis ArgumentList_opt RightParanthesis | Primary Dot Identifier LeftParanthesis ArgumentList_opt RightParanthesis | Super Dot Identifier LeftParanthesis ArgumentList_opt RightParanthesis
+MethodInvocation: 
+    Name LeftParanthesis ArgumentList_opt RightParanthesis 
+    | Primary Dot Identifier LeftParanthesis ArgumentList_opt RightParanthesis 
+    | Super Dot Identifier LeftParanthesis ArgumentList_opt RightParanthesis
 
-ArrayAccess: Name LeftSquareBracket Expression RightSquareBracket | PrimaryNoNewArray LeftSquareBracket Expression RightSquareBracket
+ArrayAccess: 
+    Name LeftSquareBracket Expression RightSquareBracket
+    | PrimaryNoNewArray LeftSquareBracket Expression RightSquareBracket
 
-PostfixExpression: Primary | Name | PostIncrementExpression | PostDecrementExpression
+PostfixExpression: 
+    Primary 
+    | Name 
+    | PostIncrementExpression 
+    | PostDecrementExpression
 
-PostIncrementExpression: PostfixExpression PlusPlus
+PostIncrementExpression: 
+    PostfixExpression PlusPlus
 
-PostDecrementExpression: PostfixExpression MinusMinus
+PostDecrementExpression: 
+    PostfixExpression MinusMinus
 
-UnaryExpression: PreIncrementExpression | PreDecrementExpression | Addition UnaryExpression | Substraction UnaryExpression | UnaryExpressionNotPlusMinus
+UnaryExpression:
+    PreIncrementExpression 
+    | PreDecrementExpression 
+    | Addition UnaryExpression 
+    | Substraction UnaryExpression 
+    | UnaryExpressionNotPlusMinus
 
-PreIncrementExpression: PlusPlus UnaryExpression
+PreIncrementExpression: 
+    PlusPlus UnaryExpression
 
-PreDecrementExpression: MinusMinus UnaryExpression
+PreDecrementExpression: 
+    MinusMinus UnaryExpression
 
-UnaryExpressionNotPlusMinus: PostfixExpression | Tilde UnaryExpression | NotOperator UnaryExpression | CastExpression
+UnaryExpressionNotPlusMinus: 
+    PostfixExpression 
+    | Tilde UnaryExpression 
+    | NotOperator UnaryExpression 
+    | CastExpression
 
-CastExpression: LeftParanthesis PrimitiveType Dims_opt RightParanthesis UnaryExpression | LeftParanthesis Expression RightParanthesis UnaryExpressionNotPlusMinus | LeftParanthesis Name Dims RightParanthesis UnaryExpressionNotPlusMinus
+CastExpression: 
+    LeftParanthesis PrimitiveType Dims_opt RightParanthesis UnaryExpression 
+    | LeftParanthesis Expression RightParanthesis UnaryExpressionNotPlusMinus 
+    | LeftParanthesis Name Dims RightParanthesis UnaryExpressionNotPlusMinus
 
-MultiplicativeExpression: UnaryExpression | MultiplicativeExpression Product UnaryExpression | MultiplicativeExpression Divide UnaryExpression | MultiplicativeExpression Modulo UnaryExpression
+MultiplicativeExpression: 
+    UnaryExpression 
+    | MultiplicativeExpression Product UnaryExpression 
+    | MultiplicativeExpression Divide UnaryExpression 
+    | MultiplicativeExpression Modulo UnaryExpression
 
-AdditiveExpression: MultiplicativeExpression | AdditiveExpression Addition MultiplicativeExpression | AdditiveExpression Substraction MultiplicativeExpression
+AdditiveExpression: 
+    MultiplicativeExpression 
+    | AdditiveExpression Addition MultiplicativeExpression 
+    | AdditiveExpression Substraction MultiplicativeExpression
 
-ShiftExpression: AdditiveExpression | ShiftExpression LeftShit AdditiveExpression | ShiftExpression RightShift AdditiveExpression | ShiftExpression TripleGreaterThan AdditiveExpression
+ShiftExpression: 
+    AdditiveExpression 
+    | ShiftExpression LeftShit AdditiveExpression 
+    | ShiftExpression RightShift AdditiveExpression 
+    | ShiftExpression TripleGreaterThan AdditiveExpression
 
-RelationalExpression: ShiftExpression | RelationalExpression LessThan ShiftExpression | RelationalExpression GreaterThan ShiftExpression | RelationalExpression LessThanEqualTo ShiftExpression | RelationalExpression GreaterThanEqualTo ShiftExpression | RelationalExpression Instanceof ReferenceType
+RelationalExpression: 
+    ShiftExpression {
+        $$ = $1;
+    }
+    | RelationalExpression LessThan ShiftExpression 
+    | RelationalExpression GreaterThan ShiftExpression 
+    | RelationalExpression LessThanEqualTo ShiftExpression 
+    | RelationalExpression GreaterThanEqualTo ShiftExpression 
+    | RelationalExpression Instanceof ReferenceType
 
-EqualityExpression: RelationalExpression | EqualityExpression EqualToEqualTo RelationalExpression | EqualityExpression NotEqualTo RelationalExpression
+EqualityExpression: 
+    RelationalExpression {
+        $$ = $1;
+    }
+    | EqualityExpression EqualToEqualTo RelationalExpression 
+    | EqualityExpression NotEqualTo RelationalExpression
 
-AndExpression: EqualityExpression | AndExpression BitwiseAnd EqualityExpression
+AndExpression: 
+    EqualityExpression {
+        $$ = $1;
+    }
+    | AndExpression BitwiseAnd EqualityExpression
 
-ExclusiveOrExpression: AndExpression | ExclusiveOrExpression CircumFlex AndExpression
+ExclusiveOrExpression:
+    AndExpression {
+        $$ = $1;
+    }
+    | ExclusiveOrExpression CircumFlex AndExpression
 
-InclusiveOrExpression: ExclusiveOrExpression | InclusiveOrExpression BitwiseOr ExclusiveOrExpression
+InclusiveOrExpression:
+    ExclusiveOrExpression {
+        $$ = $1;
+    }
+    | InclusiveOrExpression BitwiseOr ExclusiveOrExpression
 
-ConditionalAndExpression: InclusiveOrExpression | ConditionalAndExpression AndOperator InclusiveOrExpression
+ConditionalAndExpression:
+    InclusiveOrExpression {
+        $$ = $1;
+    }
+    | ConditionalAndExpression AndOperator InclusiveOrExpression
 
-ConditionalOrExpression: ConditionalAndExpression | ConditionalOrExpression OrOperator ConditionalAndExpression
+ConditionalOrExpression: 
+    ConditionalAndExpression {
+        $$ = $1;
+    }
+    | ConditionalOrExpression OrOperator ConditionalAndExpression
 
-ConditionalExpression: ConditionalOrExpression | ConditionalOrExpression QuestionMark Expression Colon ConditionalExpression
+ConditionalExpression: 
+    ConditionalOrExpression {
+        $$ = $1;
+    }
+    | ConditionalOrExpression QuestionMark Expression Colon ConditionalExpression
 
 AssignmentExpression: 
     ConditionalExpression {
