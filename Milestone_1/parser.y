@@ -124,7 +124,7 @@ FormalParameterList_opt : | FormalParameterList
 
 FormalParameterList: FormalParameter | FormalParameterList Comma FormalParameter
 
-FormalParameter: Type | VariableDeclaratorId
+FormalParameter: Type VariableDeclaratorId
 
 Throws: THROWS ClassTypeList
 
