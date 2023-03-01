@@ -19,6 +19,8 @@ struct node{
 struct node* makeInternalNode(char* rule, struct node* memArr[], int mem);
 struct node* makeleaf(char* node);
 char* concatenate_string(char* s, char* s1);
+void help();
+int verbose_flag = 0;
 
 %}
 
@@ -1124,41 +1126,23 @@ struct node* makeInternalNode(char* rule, struct node* memArr[], int mem){
 
 }
 
-void ast_print(struct node* root, int d){
-
-    if(root == NULL){
-        return;
-    }
-
-    printf("%s",root->data);
-    printf("\n");
-    int i =0;
-
-    while(root->arr[i]!= NULL){
-        for(int i = 0 ; i<=d+1; i++)
-            printf("\t");
-        ast_print(root->arr[i],d+1);
-        i++;
-
-    }
-}
-
-
 void neighbour_append(struct node* root,FILE* graph, int depth,int child_num){
-    if(root->arr[0]!= NULL){
-        fprintf(graph, "\t%s_%d_%d ->{ %s_%d_0",root->data,depth,child_num,(root->arr[0])->data, depth+1);
+    int i , leaf_flag =0;
+    for(i =0 ; i<N_NodeChild; i++){
+        if(root->arr[i]!= NULL){
+        fprintf(graph, "\t%s_%d_%d ->{ %s_%d_0",root->data,depth,child_num,(root->arr[i])->data, depth+1);
+        leaf_flag =1;
+        break;
+        }
     }
-    else{
+    if(!leaf_flag){
         fprintf(graph, "\t%s_%d_%d ->{}\n",root->data,depth,child_num);
         return;
     }
+
     for (int i=1 ; i< N_NodeChild; i++){
         if(root->arr[i] != NULL){
             fprintf(graph," ,%s_%d_%d",(root->arr[i])->data,depth+1,i);
-        }
-        else{
-            fprintf(graph,"}\n");
-            return;
         }
     }
     fprintf(graph,"}\n");
@@ -1169,8 +1153,10 @@ void graph_maker(struct node* root,FILE* graph,int depth,int child_num){
     
     if(root!=NULL){
         neighbour_append(root,graph,depth,child_num);
-        for(int i = 0; i<N_NodeChild && root->arr[i]!=NULL; i++){
-            graph_maker(root->arr[i], graph,depth+1,i);
+        for(int i = 0; i<N_NodeChild; i++){
+            if (root->arr[i]!=NULL){
+                graph_maker(root->arr[i], graph,depth+1,i);
+            }
         }
 
     }
@@ -1180,14 +1166,120 @@ void graph_maker(struct node* root,FILE* graph,int depth,int child_num){
 }
 
 
-
+void help()
+{
+    printf("Welcome to Help Mode !");
+}
 
 
 int main(int argc , char** argv)
 {   
-    assert(argc == 2);       // Need to add path to inputfile and output file
+    FILE* fp;
+    char * line = NULL;
+    char * input_file = NULL;
+    char * output_file = NULL;
+    size_t len = 0;
+    ssize_t read;
+    int help_flag = 0;
 
-    yyin = fopen(argv[1] , "r");
+    fp = fopen("temp.txt","w");
+    int i;
+    for(i=1; i<argc; i++){
+        fprintf(fp,"%s ",argv[i]);
+    }
+    fclose(fp);
+
+
+
+    /* Help Mode */
+    system("grep -o '[-][-]help' temp.txt > help.txt");
+
+    fp = fopen("help.txt","r");
+
+    if((read = getline(&output_file, &len, fp)) != -1) {
+        if(read > 0){
+            help_flag = 1;
+        }
+    }
+
+    fclose(fp);
+    system("rm help.txt");
+
+    if(help_flag){
+        help();
+        return 0;
+    }
+
+    /* Verbose Mode */
+
+    system("grep -o '[-][-]verbose' temp.txt > verbose.txt");
+
+    fp = fopen("verbose.txt","r");
+
+    if((read = getline(&output_file, &len, fp)) != -1) {
+        if(read > 0){
+            verbose_flag = 1;
+        }
+    }
+
+    fclose(fp);
+    system("rm verbose.txt");
+
+    /* Finding Input File */
+
+    system("grep -o '[-][-]input[ ]*=[ ]*[a-zA-Z0-9._]*' temp.txt > output1.txt");
+
+
+
+    fp = fopen("output1.txt","r");
+    while ((read = getline(&input_file, &len, fp)) != -1) {
+        if(read > 0){
+            while(input_file[0]!= '='){
+                input_file += 1;
+            }
+            input_file +=1;
+            while(input_file[0] == ' '){
+                input_file +=1;
+            }
+            printf("%s \n",input_file);
+        }
+        else{
+            printf("No input file specified.\n");
+            return 0;
+        }
+    }
+    system("rm output1.txt");
+
+    /* Finding Output File */
+
+    system("grep -o '[-][-]output[ ]*=[ ]*[a-zA-Z0-9._]*' temp.txt > output2.txt");
+
+    fp = fopen("output2.txt","r");
+    while((read = getline(&output_file, &len, fp)) != -1) {
+        if(read > 0){
+            while(output_file[0]!= '='){
+                output_file += 1;
+            }
+            output_file +=1;
+            while(output_file[0] == ' '){
+                output_file +=1;
+            }
+            printf("%s \n",output_file);
+        }
+        else{
+            printf("No output file specified.\n");
+            return 0;
+        }
+    }
+
+    system("grep -c '[-][-]help' temp.txt");
+
+    system("rm output2.txt");
+
+    /* Parsing Algorithm */
+
+    yyin = fopen(input_file,"r");
+    
     if(yyin == NULL){
         printf("No such file found ! \n");
         return 0;
