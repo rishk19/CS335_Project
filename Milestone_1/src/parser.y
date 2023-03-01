@@ -108,239 +108,432 @@ struct node* makeleaf(char* node);
 
 %%
 Goal: CompilationUnit {
-    printf("Reached Goal !\n");
+    printf("Parsing was successful !\n");
 }
 
 
-Literal: IntegerLiteral | FloatingPointLiteral | BooleanLiteral | CharacterLiteral | StringLiteral | NullLiteral
+Literal: 
+    IntegerLiteral 
+    | FloatingPointLiteral 
+    | BooleanLiteral 
+    | CharacterLiteral 
+    | StringLiteral 
+    | NullLiteral
 
-IntegerLiteral: DecimalIntegerLiteral | HexIntegerLiteral | OctalIntegerLiteral
+IntegerLiteral: 
+    DecimalIntegerLiteral 
+    | HexIntegerLiteral 
+    | OctalIntegerLiteral
+
+Type: 
+    PrimitiveType 
+    | ReferenceType
+
+PrimitiveType: 
+    NumericType 
+    | Boolean
+
+NumericType: 
+    IntegralType
+    | FloatingPointType
+
+IntegralType: 
+    Byte 
+    | Short 
+    | Int 
+    | Long 
+    | Char
+
+FloatingPointType: 
+    Float 
+    | Double
 
-Type: PrimitiveType | ReferenceType
+ReferenceType: 
+    ClassOrInterfaceType 
+    | ArrayType
 
-PrimitiveType: NumericType | Boolean
+ClassOrInterfaceType: 
+    Name
 
-NumericType: IntegralType| FloatingPointType
+ClassType: 
+    ClassOrInterfaceType
 
-IntegralType: Byte | Short | Int | Long | Char
+InterfaceType: 
+    ClassOrInterfaceType
 
-FloatingPointType: Float | Double
+ArrayType: 
+    PrimitiveType LeftSquareBracket RightSquareBracket 
+    | Name LeftSquareBracket RightSquareBracket 
+    | ArrayType LeftSquareBracket RightSquareBracket
+
+Name: 
+    SimpleName 
+    | QualifiedName
+
+SimpleName: 
+    Identifier
 
-ReferenceType: ClassOrInterfaceType | ArrayType
+QualifiedName: 
+    Name Dot Identifier
 
-ClassOrInterfaceType: Name
+CompilationUnit: 
+    PackageDeclaration_opt ImportDeclarations_opt TypeDeclarations_opt
 
-ClassType: ClassOrInterfaceType
+ImportDeclarations_opt : 
+    | ImportDeclarations
 
-InterfaceType: ClassOrInterfaceType
+ImportDeclarations: 
+    ImportDeclaration 
+    | ImportDeclarations ImportDeclaration
 
-ArrayType: PrimitiveType LeftSquareBracket RightSquareBracket | Name LeftSquareBracket RightSquareBracket | ArrayType LeftSquareBracket RightSquareBracket
+TypeDeclarations_opt : 
+    | TypeDeclarations
 
-Name: SimpleName | QualifiedName
+TypeDeclarations: 
+    TypeDeclaration 
+    | TypeDeclarations TypeDeclaration
 
-SimpleName: Identifier
+PackageDeclaration_opt : 
+    | PackageDeclaration
 
-QualifiedName: Name Dot Identifier
+PackageDeclaration: 
+    Package Name Semicolon
 
-CompilationUnit: PackageDeclaration_opt ImportDeclarations_opt TypeDeclarations_opt
+ImportDeclaration: 
+    SingleTypeImportDeclaration 
+    | TypeImportOnDemandDeclaration
 
-ImportDeclarations_opt : | ImportDeclarations
+SingleTypeImportDeclaration: 
+    Import Name Semicolon
 
-ImportDeclarations: ImportDeclaration | ImportDeclarations ImportDeclaration
+TypeImportOnDemandDeclaration: 
+    Import Name Dot Product Semicolon
 
-TypeDeclarations_opt : | TypeDeclarations
+TypeDeclaration: 
+    ClassDeclaration 
+    | InterfaceDeclaration 
+    | Semicolon
 
-TypeDeclarations: TypeDeclaration | TypeDeclarations TypeDeclaration
+Modifiers: 
+    Modifier 
+    | Modifiers Modifier
 
-PackageDeclaration_opt : | PackageDeclaration
+Modifier: 
+    Public 
+    | Protected 
+    | Private 
+    | Static 
+    | Abstract 
+    | Final 
+    | Native 
+    | Synchronized 
+    | Transient Volatile
 
-PackageDeclaration: Package Name Semicolon
+ClassDeclaration: 
+    Modifiers_opt Class Identifier ClassExtend_opt Interfaces_opt ClassBody
 
-ImportDeclaration: SingleTypeImportDeclaration | TypeImportOnDemandDeclaration
+Modifiers_opt : 
+    | Modifiers
 
-SingleTypeImportDeclaration: Import Name Semicolon
+ClassExtend_opt : 
+    | ClassExtend
 
-TypeImportOnDemandDeclaration: Import Name Dot Product Semicolon
+Interfaces_opt : 
+    | Interfaces
 
-TypeDeclaration: ClassDeclaration | InterfaceDeclaration | Semicolon
+ClassExtend : 
+    Extends ClassType
 
-Modifiers: Modifier | Modifiers Modifier
+Interfaces: 
+    Implements InterfaceTypeList
 
-Modifier: Public | Protected | Private | Static | Abstract | Final | Native | Synchronized | Transient Volatile
+InterfaceTypeList: 
+    InterfaceType 
+    | InterfaceTypeList Comma InterfaceType
 
-ClassDeclaration: Modifiers_opt Class Identifier ClassExtend_opt Interfaces_opt ClassBody
+ClassBody: 
+    LeftCurlyBrace ClassBodyDeclarations_opt RightCurlyBrace
 
-Modifiers_opt : | Modifiers
+ClassBodyDeclarations_opt : 
+    ClassBodyDeclarations
 
-ClassExtend_opt : | ClassExtend
+ClassBodyDeclarations: 
+    ClassBodyDeclaration 
+    | ClassBodyDeclarations ClassBodyDeclaration
 
-Interfaces_opt : | Interfaces
+ClassBodyDeclaration: 
+    ClassMemberDeclaration 
+    | StaticInitializer 
+    | ConstructorDeclaration
 
-ClassExtend : Extends ClassType
+ClassMemberDeclaration: 
+    FieldDeclaration 
+    | MethodDeclaration
 
-Interfaces: Implements InterfaceTypeList
+FieldDeclaration: 
+    Modifiers_opt Type VariableDeclarators Semicolon
 
-InterfaceTypeList: InterfaceType | InterfaceTypeList Comma InterfaceType
+VariableDeclarators: 
+    VariableDeclarator 
+    | VariableDeclarators Comma VariableDeclarator
 
-ClassBody: LeftCurlyBrace ClassBodyDeclarations_opt RightCurlyBrace
+VariableDeclarator: 
+    VariableDeclaratorId 
+    | VariableDeclaratorId EqualTo VariableInitializer
 
-ClassBodyDeclarations_opt : ClassBodyDeclarations
+VariableDeclaratorId: 
+    Identifier 
+    | VariableDeclaratorId LeftSquareBracket RightSquareBracket
 
-ClassBodyDeclarations: ClassBodyDeclaration | ClassBodyDeclarations ClassBodyDeclaration
+VariableInitializer:
+    Expression 
+    | ArrayInitializer
 
-ClassBodyDeclaration: ClassMemberDeclaration | StaticInitializer | ConstructorDeclaration
+MethodDeclaration: 
+    MethodHeader MethodBody
 
-ClassMemberDeclaration: FieldDeclaration | MethodDeclaration
+MethodHeader:
+    Modifiers_opt Type MethodDeclarator Throws_opt 
+    | Modifiers_opt Void MethodDeclarator Throws_opt
 
-FieldDeclaration: Modifiers_opt Type VariableDeclarators Semicolon
+Throws_opt : 
+    | Throws
 
-VariableDeclarators: VariableDeclarator | VariableDeclarators Comma VariableDeclarator
+MethodDeclarator: 
+    Identifier LeftParanthesis FormalParameterList_opt RightParanthesis 
+    | MethodDeclarator LeftSquareBracket RightSquareBracket
 
-VariableDeclarator: VariableDeclaratorId | VariableDeclaratorId EqualTo VariableInitializer
+FormalParameterList_opt : 
+    | FormalParameterList
 
-VariableDeclaratorId: Identifier | VariableDeclaratorId LeftSquareBracket RightSquareBracket
+FormalParameterList: 
+    FormalParameter 
+    | FormalParameterList Comma FormalParameter
 
-VariableInitializer: Expression | ArrayInitializer
+FormalParameter: 
+    Type VariableDeclaratorId
 
-MethodDeclaration: MethodHeader MethodBody
+Throws: 
+    THROWS ClassTypeList
 
-MethodHeader: Modifiers_opt Type MethodDeclarator Throws_opt | Modifiers_opt Void MethodDeclarator Throws_opt
+ClassTypeList: 
+    ClassType 
+    | ClassTypeList Comma ClassType
 
-Throws_opt : | Throws
+MethodBody: 
+    Block 
+    | Semicolon
 
-MethodDeclarator: Identifier LeftParanthesis FormalParameterList_opt RightParanthesis | MethodDeclarator LeftSquareBracket RightSquareBracket
+StaticInitializer: 
+    Static Block
 
-FormalParameterList_opt : | FormalParameterList
+ConstructorDeclaration: 
+    Modifiers_opt ConstructorDeclarator Throws_opt ConstructorBody
 
-FormalParameterList: FormalParameter | FormalParameterList Comma FormalParameter
+ConstructorDeclarator: 
+    SimpleName LeftParanthesis FormalParameterList_opt RightParanthesis
 
-FormalParameter: Type VariableDeclaratorId
+ConstructorBody: 
+    LeftCurlyBrace ExplicitConstructorInvocation_opt BlockStatements_opt RightCurlyBrace
 
-Throws: THROWS ClassTypeList
+ExplicitConstructorInvocation_opt : 
+    | ExplicitConstructorInvocation
 
-ClassTypeList: ClassType | ClassTypeList Comma ClassType
+ExplicitConstructorInvocation: 
+    This LeftParanthesis ArgumentList_opt RightParanthesis Semicolon | Super LeftParanthesis ArgumentList_opt RightParanthesis Semicolon
 
-MethodBody: Block | Semicolon
+ArgumentList_opt: 
+    | ArgumentList
 
-StaticInitializer: Static Block
+InterfaceDeclaration: 
+    Modifiers_opt Interface Identifier ExtendsInterfaces_opt InterfaceBody
 
-ConstructorDeclaration: Modifiers_opt ConstructorDeclarator Throws_opt ConstructorBody
+ExtendsInterfaces_opt : 
+    | ExtendsInterfaces
 
-ConstructorDeclarator: SimpleName LeftParanthesis FormalParameterList_opt RightParanthesis
+ExtendsInterfaces: 
+    Extends InterfaceType 
+    | ExtendsInterfaces Comma InterfaceType
 
-ConstructorBody: LeftCurlyBrace ExplicitConstructorInvocation_opt BlockStatements_opt RightCurlyBrace
+InterfaceBody: 
+    LeftCurlyBrace InterfaceMemberDeclarations_opt RightCurlyBrace
 
-ExplicitConstructorInvocation_opt : | ExplicitConstructorInvocation
+InterfaceMemberDeclarations_opt: 
+    | InterfaceMemberDeclarations
 
-ExplicitConstructorInvocation: This LeftParanthesis ArgumentList_opt RightParanthesis Semicolon | Super LeftParanthesis ArgumentList_opt RightParanthesis Semicolon
+InterfaceMemberDeclarations: 
+    InterfaceMemberDeclaration 
+    | InterfaceMemberDeclarations InterfaceMemberDeclaration
 
-ArgumentList_opt: | ArgumentList
+InterfaceMemberDeclaration: 
+    ConstantDeclaration 
+    | AbstractMethodDeclaration
 
-InterfaceDeclaration: Modifiers_opt Interface Identifier ExtendsInterfaces_opt InterfaceBody
+ConstantDeclaration: 
+    FieldDeclaration
 
-ExtendsInterfaces_opt : | ExtendsInterfaces
+AbstractMethodDeclaration: 
+    MethodHeader Semicolon
 
-ExtendsInterfaces: Extends InterfaceType | ExtendsInterfaces Comma InterfaceType
+ArrayInitializer: 
+    LeftCurlyBrace VariableInitializers_opt Comma_opt RightCurlyBrace
 
-InterfaceBody: LeftCurlyBrace InterfaceMemberDeclarations_opt RightCurlyBrace
+VariableInitializers_opt: 
+    | VariableInitializers
 
-InterfaceMemberDeclarations_opt: | InterfaceMemberDeclarations
+Comma_opt : 
+    | Comma
 
-InterfaceMemberDeclarations: InterfaceMemberDeclaration | InterfaceMemberDeclarations InterfaceMemberDeclaration
+VariableInitializers: 
+    VariableInitializer 
+    | VariableInitializers Comma VariableInitializer
 
-InterfaceMemberDeclaration: ConstantDeclaration | AbstractMethodDeclaration
+Block: 
+    LeftCurlyBrace BlockStatements_opt RightCurlyBrace
 
-ConstantDeclaration: FieldDeclaration
+BlockStatements_opt : 
+    | BlockStatements
 
-AbstractMethodDeclaration: MethodHeader Semicolon
+BlockStatements: 
+    BlockStatement 
+    | BlockStatements BlockStatement
 
-ArrayInitializer: LeftCurlyBrace VariableInitializers_opt Comma_opt RightCurlyBrace
+BlockStatement: 
+    LocalVariableDeclarationStatement 
+    | Statement
 
-VariableInitializers_opt: | VariableInitializers
+LocalVariableDeclarationStatement:
+    LocalVariableDeclaration Semicolon
 
-Comma_opt : | Comma
+LocalVariableDeclaration: 
+    Type VariableDeclarators
 
-VariableInitializers: VariableInitializer | VariableInitializers Comma VariableInitializer
+Statement: 
+    StatementWithoutTrailingSubstatement
+    | LabeledStatement
+    | IfThenStatement
+    | IfThenElseStatement 
+    | WhileStatement 
+    | ForStatement
 
-Block: LeftCurlyBrace BlockStatements_opt RightCurlyBrace
+StatementNoShortIf: 
+    StatementWithoutTrailingSubstatement 
+    | LabeledStatementNoShortIf 
+    | IfThenElseStatementNoShortIf 
+    | WhileStatementNoShortIf 
+    | ForStatementNoShortIf
 
-BlockStatements_opt : | BlockStatements
+StatementWithoutTrailingSubstatement: 
+    Block 
+    | EmptyStatement 
+    | ExpressionStatement 
+    | BreakStatement 
+    | ContinueStatement 
+    | ReturnStatement 
+    | SynchronizedStatement 
+    | ThrowStatement 
+    | TryStatement
 
-BlockStatements: BlockStatement | BlockStatements BlockStatement
+EmptyStatement: 
+    Semicolon
 
-BlockStatement: LocalVariableDeclarationStatement | Statement
+LabeledStatement: 
+    Identifier Semicolon Statement
 
-LocalVariableDeclarationStatement: LocalVariableDeclaration Semicolon
+LabeledStatementNoShortIf: 
+    Identifier Semicolon StatementNoShortIf
 
-LocalVariableDeclaration: Type VariableDeclarators
+ExpressionStatement: 
+    StatementExpression Semicolon
 
-Statement: StatementWithoutTrailingSubstatement
-        | LabeledStatement| IfThenStatement
-        | IfThenElseStatement | WhileStatement | ForStatement
+StatementExpression:  
+    Assignment 
+    | PreIncrementExpression 
+    | PreDecrementExpression 
+    | PostIncrementExpression 
+    | PostDecrementExpression 
+    | MethodInvocation 
+    | ClassInstanceCreationExpression
 
-StatementNoShortIf: StatementWithoutTrailingSubstatement | LabeledStatementNoShortIf | IfThenElseStatementNoShortIf | WhileStatementNoShortIf | ForStatementNoShortIf
+IfThenStatement: 
+    If LeftParanthesis Expression RightParanthesis Statement
 
-StatementWithoutTrailingSubstatement: Block | EmptyStatement | ExpressionStatement | BreakStatement | ContinueStatement | ReturnStatement | SynchronizedStatement | ThrowStatement | TryStatement
+IfThenElseStatement: 
+    If LeftParanthesis Expression RightParanthesis StatementNoShortIf Else Statement
 
-EmptyStatement: Semicolon
+IfThenElseStatementNoShortIf: 
+    If LeftParanthesis Expression RightParanthesis StatementNoShortIf Else StatementNoShortIf
 
-LabeledStatement: Identifier Semicolon Statement
+WhileStatement: 
+    While LeftParanthesis Expression RightParanthesis Statement
 
-LabeledStatementNoShortIf: Identifier Semicolon StatementNoShortIf
+WhileStatementNoShortIf: 
+    While LeftParanthesis Expression RightParanthesis StatementNoShortIf
 
-ExpressionStatement: StatementExpression Semicolon
+ForStatement: 
+    For LeftParanthesis ForInit_opt Semicolon Expression_opt Semicolon ForUpdate_opt RightParanthesis Statement
 
-StatementExpression:  Assignment | PreIncrementExpression | PreDecrementExpression | PostIncrementExpression | PostDecrementExpression | MethodInvocation | ClassInstanceCreationExpression
+ForStatementNoShortIf: 
+    For LeftParanthesis ForInit_opt Semicolon Expression_opt Semicolon ForUpdate_opt RightParanthesis StatementNoShortIf
 
-IfThenStatement: If LeftParanthesis Expression RightParanthesis Statement
+ForInit_opt: 
+    | ForInit
 
-IfThenElseStatement: If LeftParanthesis Expression RightParanthesis StatementNoShortIf Else Statement
+Expression_opt: 
+    | Expression
 
-IfThenElseStatementNoShortIf: If LeftParanthesis Expression RightParanthesis StatementNoShortIf Else StatementNoShortIf
+ForUpdate_opt: 
+    | ForUpdate
 
-WhileStatement: While LeftParanthesis Expression RightParanthesis Statement
+ForInit: 
+    StatementExpressionList 
+    | LocalVariableDeclaration
 
-WhileStatementNoShortIf: While LeftParanthesis Expression RightParanthesis StatementNoShortIf
+ForUpdate: 
+    StatementExpressionList
 
-ForStatement: For LeftParanthesis ForInit_opt Semicolon Expression_opt Semicolon ForUpdate_opt RightParanthesis Statement
+StatementExpressionList: 
+    StatementExpression 
+    | StatementExpressionList Comma StatementExpression
 
-ForStatementNoShortIf: For LeftParanthesis ForInit_opt Semicolon Expression_opt Semicolon ForUpdate_opt RightParanthesis StatementNoShortIf
+BreakStatement:
+    Break Identifier_opt Semicolon
 
-ForInit_opt: | ForInit
+Identifier_opt: 
+    | Identifier
 
-Expression_opt: | Expression
+ContinueStatement: 
+    Continue Identifier_opt Semicolon
 
-ForUpdate_opt: | ForUpdate
+ReturnStatement: 
+    Return Expression_opt Semicolon
 
-ForInit: StatementExpressionList | LocalVariableDeclaration
+ThrowStatement: 
+    THROW Expression Semicolon
 
-ForUpdate: StatementExpressionList
+SynchronizedStatement: 
+    Synchronized LeftParanthesis Expression RightParanthesis Block
 
-StatementExpressionList: StatementExpression | StatementExpressionList Comma StatementExpression
+TryStatement: 
+    Try Block Catches 
+    | Try Block Catches_opt Finally
 
-BreakStatement: Break Identifier_opt Semicolon
+Catches_opt: 
+    | Catches
 
-Identifier_opt: | Identifier
+Catches: 
+    CatchClause 
+    | Catches CatchClause
 
-ContinueStatement: Continue Identifier_opt Semicolon
+CatchClause:
+    Catch LeftParanthesis FormalParameter RightParanthesis Block
 
-ReturnStatement: Return Expression_opt Semicolon
+Finally: 
+    FINALLY Block
 
-ThrowStatement: THROW Expression Semicolon
-
-SynchronizedStatement: Synchronized LeftParanthesis Expression RightParanthesis Block
-
-TryStatement: Try Block Catches | Try Block Catches_opt Finally
-
-Catches_opt: | Catches
-
-Catches: CatchClause | Catches CatchClause
-
-CatchClause: Catch LeftParanthesis FormalParameter RightParanthesis Block
-
-Finally: FINALLY Block
-
-Primary: PrimaryNoNewArray | ArrayCreationExpression
+Primary: 
+    PrimaryNoNewArray 
+    | ArrayCreationExpression
 
 PrimaryNoNewArray: 
     Literal 
@@ -363,10 +556,14 @@ ArrayCreationExpression:
     | New ClassOrInterfaceType DimExprs Dims_opt
 
 Dims_opt: 
-    |Dims
+    |Dims {
+        $$ = $1;
+    }
 
 DimExprs:
-    DimExpr 
+    DimExpr {
+        $$ = $1;
+    }
     | DimExprs DimExpr
 
 DimExpr: 
@@ -390,10 +587,18 @@ ArrayAccess:
     | PrimaryNoNewArray LeftSquareBracket Expression RightSquareBracket
 
 PostfixExpression: 
-    Primary 
-    | Name 
-    | PostIncrementExpression 
-    | PostDecrementExpression
+    Primary {
+        $$ = $1;
+    }
+    | Name {
+        $$ = $1;
+    }
+    | PostIncrementExpression {
+        $$ = $1;
+    }
+    | PostDecrementExpression {
+        $$ = $1;
+    }
 
 PostIncrementExpression: 
     PostfixExpression PlusPlus
@@ -402,11 +607,21 @@ PostDecrementExpression:
     PostfixExpression MinusMinus
 
 UnaryExpression:
-    PreIncrementExpression 
-    | PreDecrementExpression 
-    | Addition UnaryExpression 
-    | Substraction UnaryExpression 
-    | UnaryExpressionNotPlusMinus
+    PreIncrementExpression {
+        $$ = $1;
+    }
+    | PreDecrementExpression {
+        $$ = $1;
+    }
+    | Addition UnaryExpression {
+        $$ = $1;
+    }
+    | Substraction UnaryExpression {
+        $$ = $1;
+    }
+    | UnaryExpressionNotPlusMinus {
+        $$ = $1;
+    }
 
 PreIncrementExpression: 
     PlusPlus UnaryExpression
@@ -415,10 +630,14 @@ PreDecrementExpression:
     MinusMinus UnaryExpression
 
 UnaryExpressionNotPlusMinus: 
-    PostfixExpression 
+    PostfixExpression {
+        $$ = $1;
+    }
     | Tilde UnaryExpression 
     | NotOperator UnaryExpression 
-    | CastExpression
+    | CastExpression {
+        $$ = $1;
+    }
 
 CastExpression: 
     LeftParanthesis PrimitiveType Dims_opt RightParanthesis UnaryExpression 
@@ -426,18 +645,24 @@ CastExpression:
     | LeftParanthesis Name Dims RightParanthesis UnaryExpressionNotPlusMinus
 
 MultiplicativeExpression: 
-    UnaryExpression 
+    UnaryExpression {
+        $$ = $1;
+    }
     | MultiplicativeExpression Product UnaryExpression 
     | MultiplicativeExpression Divide UnaryExpression 
     | MultiplicativeExpression Modulo UnaryExpression
 
 AdditiveExpression: 
-    MultiplicativeExpression 
+    MultiplicativeExpression {
+        $$ = $1;
+    }
     | AdditiveExpression Addition MultiplicativeExpression 
     | AdditiveExpression Substraction MultiplicativeExpression
 
 ShiftExpression: 
-    AdditiveExpression 
+    AdditiveExpression {
+        $$ = $1;
+    }
     | ShiftExpression LeftShit AdditiveExpression 
     | ShiftExpression RightShift AdditiveExpression 
     | ShiftExpression TripleGreaterThan AdditiveExpression
@@ -503,7 +728,8 @@ AssignmentExpression:
         $$ = $1;
     }
 
-Assignment: LeftHandSide AssignmentOperator AssignmentExpression {
+Assignment: 
+    LeftHandSide AssignmentOperator AssignmentExpression {
     struct node * temp = $2;
     struct node* memArr[2];
     memArr[0] = $1;
@@ -511,7 +737,16 @@ Assignment: LeftHandSide AssignmentOperator AssignmentExpression {
     $$ = makeInternalNode(temp->data, memArr, 2);
 }
 
-LeftHandSide: Name | FieldAccess | ArrayAccess
+LeftHandSide: 
+    Name {
+        $$ = $1;
+    }
+    | FieldAccess {
+        $$ = $1;
+    }
+    | ArrayAccess {
+        $$ = $1;
+    }
 
 AssignmentOperator: 
     EqualTo {
