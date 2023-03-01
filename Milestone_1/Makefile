@@ -1,5 +1,7 @@
 parse:
 	clear
-	flex tokenizer.l
-	bison -d -t parser.y 
-	gcc parser.tab.c lex.yy.c -o parser
+	mkdir bin
+	flex -o bin/lex.yy.c src/tokenizer.l
+	bison -d -t -o bin/parser.tab.c src/parser.y 
+	gcc bin/parser.tab.c bin/lex.yy.c -o bin/parser
+

@@ -1,5 +1,6 @@
+#line 1 "bin/lex.yy.c"
 
-#line 2 "lex.yy.c"
+#line 3 "bin/lex.yy.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -775,13 +776,13 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "tokenizer.l"
-#line 2 "tokenizer.l"
+#line 1 "src/tokenizer.l"
+#line 2 "src/tokenizer.l"
     #include<stdio.h>
     #include"string.h"
     #include "parser.tab.h"
-#line 783 "lex.yy.c"
-#line 784 "lex.yy.c"
+#line 784 "bin/lex.yy.c"
+#line 785 "bin/lex.yy.c"
 
 #define INITIAL 0
 
@@ -998,9 +999,9 @@ YY_DECL
 		}
 
 	{
-#line 7 "tokenizer.l"
+#line 7 "src/tokenizer.l"
 
-#line 1003 "lex.yy.c"
+#line 1004 "bin/lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1059,7 +1060,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 8 "tokenizer.l"
+#line 8 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
             return (BooleanLiteral);
@@ -1067,7 +1068,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 13 "tokenizer.l"
+#line 13 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (NullLiteral);
@@ -1075,337 +1076,337 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 18 "tokenizer.l"
+#line 18 "src/tokenizer.l"
 {return(Exports);}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 19 "tokenizer.l"
+#line 19 "src/tokenizer.l"
 {return(Opens);}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 20 "tokenizer.l"
+#line 20 "src/tokenizer.l"
 {return(Requires);} 
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 21 "tokenizer.l"
+#line 21 "src/tokenizer.l"
 {return(Uses);}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 22 "tokenizer.l"
+#line 22 "src/tokenizer.l"
 {return(Module);}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 23 "tokenizer.l"
+#line 23 "src/tokenizer.l"
 {return(Permits);}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 24 "tokenizer.l"
+#line 24 "src/tokenizer.l"
 {return(Sealed);}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 25 "tokenizer.l"
+#line 25 "src/tokenizer.l"
 {return(Var);}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 26 "tokenizer.l"
+#line 26 "src/tokenizer.l"
 {return(Non_sealed);}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 27 "tokenizer.l"
+#line 27 "src/tokenizer.l"
 {return(Provides);}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 28 "tokenizer.l"
+#line 28 "src/tokenizer.l"
 {return(To);}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 29 "tokenizer.l"
+#line 29 "src/tokenizer.l"
 {return(With);}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 30 "tokenizer.l"
+#line 30 "src/tokenizer.l"
 {return(Open);}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 31 "tokenizer.l"
+#line 31 "src/tokenizer.l"
 {return(Record);}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 32 "tokenizer.l"
+#line 32 "src/tokenizer.l"
 {return(Transitive);}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 33 "tokenizer.l"
+#line 33 "src/tokenizer.l"
 {return(Yield);}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 34 "tokenizer.l"
+#line 34 "src/tokenizer.l"
 {return(Abstract);}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 35 "tokenizer.l"
+#line 35 "src/tokenizer.l"
 {return(Continue);}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 36 "tokenizer.l"
+#line 36 "src/tokenizer.l"
 {return(For);}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 37 "tokenizer.l"
+#line 37 "src/tokenizer.l"
 {return(New);}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 38 "tokenizer.l"
+#line 38 "src/tokenizer.l"
 {return(Switch);}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 39 "tokenizer.l"
+#line 39 "src/tokenizer.l"
 {return(Assert);}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 40 "tokenizer.l"
+#line 40 "src/tokenizer.l"
 {return(Default);}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 41 "tokenizer.l"
+#line 41 "src/tokenizer.l"
 {return(If);}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 42 "tokenizer.l"
+#line 42 "src/tokenizer.l"
 {return(Package);}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 43 "tokenizer.l"
+#line 43 "src/tokenizer.l"
 {return(Synchronized);}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 44 "tokenizer.l"
+#line 44 "src/tokenizer.l"
 {return(Boolean);}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 45 "tokenizer.l"
+#line 45 "src/tokenizer.l"
 {return(Do);}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 46 "tokenizer.l"
+#line 46 "src/tokenizer.l"
 {return(Goto);}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 47 "tokenizer.l"
+#line 47 "src/tokenizer.l"
 {return(Private);}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 48 "tokenizer.l"
+#line 48 "src/tokenizer.l"
 {return(This);}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 49 "tokenizer.l"
+#line 49 "src/tokenizer.l"
 {return(Break);}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 50 "tokenizer.l"
+#line 50 "src/tokenizer.l"
 {return(Double);}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 51 "tokenizer.l"
+#line 51 "src/tokenizer.l"
 {return(Implements);}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 52 "tokenizer.l"
+#line 52 "src/tokenizer.l"
 {return(Protected);}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 53 "tokenizer.l"
+#line 53 "src/tokenizer.l"
 {return(THROW);}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 54 "tokenizer.l"
+#line 54 "src/tokenizer.l"
 {return(Byte);}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 55 "tokenizer.l"
+#line 55 "src/tokenizer.l"
 {return(Else);}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 56 "tokenizer.l"
+#line 56 "src/tokenizer.l"
 {return(Import);}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 57 "tokenizer.l"
+#line 57 "src/tokenizer.l"
 {return(Public);}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 58 "tokenizer.l"
+#line 58 "src/tokenizer.l"
 {return(THROWS);}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 59 "tokenizer.l"
+#line 59 "src/tokenizer.l"
 {return(Case);}
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 60 "tokenizer.l"
+#line 60 "src/tokenizer.l"
 {return(Enum);}
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 61 "tokenizer.l"
+#line 61 "src/tokenizer.l"
 {return(Instanceof);}
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 62 "tokenizer.l"
+#line 62 "src/tokenizer.l"
 {return(Return);}
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 63 "tokenizer.l"
+#line 63 "src/tokenizer.l"
 {return(Transient);}
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 64 "tokenizer.l"
+#line 64 "src/tokenizer.l"
 {return(Catch);}
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 65 "tokenizer.l"
+#line 65 "src/tokenizer.l"
 {return(Extends);}
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 66 "tokenizer.l"
+#line 66 "src/tokenizer.l"
 {return(Int);}
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 67 "tokenizer.l"
+#line 67 "src/tokenizer.l"
 {return(Short);}
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 68 "tokenizer.l"
+#line 68 "src/tokenizer.l"
 {return(Try);}
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 69 "tokenizer.l"
+#line 69 "src/tokenizer.l"
 {return(Char);}
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 70 "tokenizer.l"
+#line 70 "src/tokenizer.l"
 {return(Final);}
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 71 "tokenizer.l"
+#line 71 "src/tokenizer.l"
 {return(Interface);}
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 72 "tokenizer.l"
+#line 72 "src/tokenizer.l"
 {return(Static);}
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 73 "tokenizer.l"
+#line 73 "src/tokenizer.l"
 {return(Void);}
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 74 "tokenizer.l"
+#line 74 "src/tokenizer.l"
 {return(Class);}
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 75 "tokenizer.l"
+#line 75 "src/tokenizer.l"
 {return(FINALLY);}
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 76 "tokenizer.l"
+#line 76 "src/tokenizer.l"
 {return(Long);}
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 77 "tokenizer.l"
+#line 77 "src/tokenizer.l"
 {return(Strictfp);}
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 78 "tokenizer.l"
+#line 78 "src/tokenizer.l"
 {return(Volatile);}
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 79 "tokenizer.l"
+#line 79 "src/tokenizer.l"
 {return(Const);}
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 80 "tokenizer.l"
+#line 80 "src/tokenizer.l"
 {return(Float);}
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 81 "tokenizer.l"
+#line 81 "src/tokenizer.l"
 {return(Native);}
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 82 "tokenizer.l"
+#line 82 "src/tokenizer.l"
 {return(Super);}
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 83 "tokenizer.l"
+#line 83 "src/tokenizer.l"
 {return(While);}
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 86 "tokenizer.l"
+#line 86 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (Identifier);
@@ -1413,18 +1414,18 @@ YY_RULE_SETUP
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 90 "tokenizer.l"
+#line 90 "src/tokenizer.l"
 {}
 	YY_BREAK
 case 71:
 /* rule 71 can match eol */
 YY_RULE_SETUP
-#line 92 "tokenizer.l"
+#line 92 "src/tokenizer.l"
 {}
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 94 "tokenizer.l"
+#line 94 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (DecimalIntegerLiteral);
@@ -1432,7 +1433,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 99 "tokenizer.l"
+#line 99 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (HexIntegerLiteral);
@@ -1440,13 +1441,13 @@ YY_RULE_SETUP
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 104 "tokenizer.l"
+#line 104 "src/tokenizer.l"
 {sscanf(yytext,"%s", yylval.data);
             return (OctalIntegerLiteral);}
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 107 "tokenizer.l"
+#line 107 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (FloatingPointIntegerLiteral);
@@ -1454,7 +1455,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 111 "tokenizer.l"
+#line 111 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (FloatingPointLiteral);
@@ -1462,7 +1463,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 116 "tokenizer.l"
+#line 116 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (BooleanIntegerLiteral);
@@ -1470,7 +1471,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 121 "tokenizer.l"
+#line 121 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (CharacterLiteral);
@@ -1479,7 +1480,7 @@ YY_RULE_SETUP
 case 79:
 /* rule 79 can match eol */
 YY_RULE_SETUP
-#line 126 "tokenizer.l"
+#line 126 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (TextBlock);
@@ -1487,7 +1488,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 130 "tokenizer.l"
+#line 130 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (EqualTo);
@@ -1495,7 +1496,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 134 "tokenizer.l"
+#line 134 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (NotOperator);
@@ -1503,7 +1504,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 138 "tokenizer.l"
+#line 138 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (Tilde);
@@ -1511,7 +1512,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 142 "tokenizer.l"
+#line 142 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (QuestionMark);
@@ -1519,7 +1520,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 146 "tokenizer.l"
+#line 146 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (Colon);
@@ -1527,7 +1528,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 150 "tokenizer.l"
+#line 150 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (RightArrow);
@@ -1535,7 +1536,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 154 "tokenizer.l"
+#line 154 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (EqualToEqualTo);
@@ -1543,7 +1544,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 158 "tokenizer.l"
+#line 158 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (GreaterThanEqualTo);
@@ -1551,7 +1552,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 162 "tokenizer.l"
+#line 162 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (LessThanEqualTo);
@@ -1559,7 +1560,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 166 "tokenizer.l"
+#line 166 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (NotEqualTo);
@@ -1567,7 +1568,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 170 "tokenizer.l"
+#line 170 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (AndOperator);
@@ -1575,7 +1576,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 174 "tokenizer.l"
+#line 174 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (OrOperator);
@@ -1583,7 +1584,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 178 "tokenizer.l"
+#line 178 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (PlusPlus);
@@ -1591,7 +1592,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-#line 182 "tokenizer.l"
+#line 182 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (MinusMinus);
@@ -1599,7 +1600,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 186 "tokenizer.l"
+#line 186 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (Addition);
@@ -1607,7 +1608,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 190 "tokenizer.l"
+#line 190 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (Substraction);
@@ -1615,7 +1616,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 96:
 YY_RULE_SETUP
-#line 194 "tokenizer.l"
+#line 194 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (Product);
@@ -1623,7 +1624,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 97:
 YY_RULE_SETUP
-#line 198 "tokenizer.l"
+#line 198 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (Divide);
@@ -1631,7 +1632,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 98:
 YY_RULE_SETUP
-#line 202 "tokenizer.l"
+#line 202 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (BitwiseAnd);
@@ -1639,7 +1640,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 99:
 YY_RULE_SETUP
-#line 206 "tokenizer.l"
+#line 206 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (BitwiseOr);
@@ -1647,7 +1648,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 100:
 YY_RULE_SETUP
-#line 210 "tokenizer.l"
+#line 210 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (CircumFlex);
@@ -1655,7 +1656,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 101:
 YY_RULE_SETUP
-#line 214 "tokenizer.l"
+#line 214 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (Modulo);
@@ -1663,7 +1664,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 102:
 YY_RULE_SETUP
-#line 218 "tokenizer.l"
+#line 218 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (LeftShit);
@@ -1671,7 +1672,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 103:
 YY_RULE_SETUP
-#line 222 "tokenizer.l"
+#line 222 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (RightShift);
@@ -1679,7 +1680,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 104:
 YY_RULE_SETUP
-#line 226 "tokenizer.l"
+#line 226 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (TripleGreaterThan);
@@ -1687,7 +1688,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 105:
 YY_RULE_SETUP
-#line 230 "tokenizer.l"
+#line 230 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (AdditionEqualTo);
@@ -1695,7 +1696,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 106:
 YY_RULE_SETUP
-#line 234 "tokenizer.l"
+#line 234 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (SubstractionEqualTo);
@@ -1703,7 +1704,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 107:
 YY_RULE_SETUP
-#line 238 "tokenizer.l"
+#line 238 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (ProductEqualTo);
@@ -1711,7 +1712,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 108:
 YY_RULE_SETUP
-#line 242 "tokenizer.l"
+#line 242 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (DivideEqualTo);
@@ -1719,7 +1720,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 109:
 YY_RULE_SETUP
-#line 246 "tokenizer.l"
+#line 246 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (BitWiseAndEqualTo);
@@ -1727,7 +1728,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 110:
 YY_RULE_SETUP
-#line 250 "tokenizer.l"
+#line 250 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (BitWiseOrEqualTo);
@@ -1735,7 +1736,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 111:
 YY_RULE_SETUP
-#line 254 "tokenizer.l"
+#line 254 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (CircumFlexEqualTo);
@@ -1743,7 +1744,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 112:
 YY_RULE_SETUP
-#line 258 "tokenizer.l"
+#line 258 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (ModuloEqualTo);
@@ -1751,7 +1752,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 113:
 YY_RULE_SETUP
-#line 262 "tokenizer.l"
+#line 262 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (LeftShitEqualTo);
@@ -1759,7 +1760,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 114:
 YY_RULE_SETUP
-#line 266 "tokenizer.l"
+#line 266 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (RightShiftEqualTo);
@@ -1767,7 +1768,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 115:
 YY_RULE_SETUP
-#line 270 "tokenizer.l"
+#line 270 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (TripleGreaterThanEqualTo);
@@ -1775,7 +1776,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 116:
 YY_RULE_SETUP
-#line 274 "tokenizer.l"
+#line 274 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (GreaterThan);
@@ -1783,7 +1784,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 117:
 YY_RULE_SETUP
-#line 278 "tokenizer.l"
+#line 278 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (LessThan);
@@ -1791,7 +1792,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 118:
 YY_RULE_SETUP
-#line 283 "tokenizer.l"
+#line 283 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (Scope);
@@ -1799,7 +1800,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 119:
 YY_RULE_SETUP
-#line 287 "tokenizer.l"
+#line 287 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (AtRate);
@@ -1807,7 +1808,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 120:
 YY_RULE_SETUP
-#line 291 "tokenizer.l"
+#line 291 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (LeftSquareBracket);
@@ -1815,7 +1816,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 121:
 YY_RULE_SETUP
-#line 295 "tokenizer.l"
+#line 295 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (RightSquareBracket);
@@ -1823,7 +1824,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 122:
 YY_RULE_SETUP
-#line 299 "tokenizer.l"
+#line 299 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (LeftParanthesis);
@@ -1831,7 +1832,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 123:
 YY_RULE_SETUP
-#line 305 "tokenizer.l"
+#line 305 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (RightParanthesis);
@@ -1839,7 +1840,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 124:
 YY_RULE_SETUP
-#line 311 "tokenizer.l"
+#line 311 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
     return (TripleDot);
@@ -1847,7 +1848,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 125:
 YY_RULE_SETUP
-#line 316 "tokenizer.l"
+#line 316 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
         return (Dot);
@@ -1855,7 +1856,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 126:
 YY_RULE_SETUP
-#line 321 "tokenizer.l"
+#line 321 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
             return (Comma);
@@ -1863,7 +1864,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 127:
 YY_RULE_SETUP
-#line 326 "tokenizer.l"
+#line 326 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
         return (LeftCurlyBrace);
@@ -1871,7 +1872,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 128:
 YY_RULE_SETUP
-#line 331 "tokenizer.l"
+#line 331 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
         return (RightCurlyBrace);
@@ -1879,7 +1880,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 129:
 YY_RULE_SETUP
-#line 336 "tokenizer.l"
+#line 336 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
         return (Semicolon);
@@ -1888,7 +1889,7 @@ YY_RULE_SETUP
 case 130:
 /* rule 130 can match eol */
 YY_RULE_SETUP
-#line 341 "tokenizer.l"
+#line 341 "src/tokenizer.l"
 {
     sscanf(yytext,"%s", yylval.data);
             return (StringLiteral);
@@ -1897,20 +1898,20 @@ YY_RULE_SETUP
 case 131:
 /* rule 131 can match eol */
 YY_RULE_SETUP
-#line 345 "tokenizer.l"
+#line 345 "src/tokenizer.l"
 {}
 	YY_BREAK
 case 132:
 YY_RULE_SETUP
-#line 347 "tokenizer.l"
+#line 347 "src/tokenizer.l"
 {printf("error! unrecognised input character :%s, skipping\n", yytext);}
 	YY_BREAK
 case 133:
 YY_RULE_SETUP
-#line 348 "tokenizer.l"
+#line 348 "src/tokenizer.l"
 ECHO;
 	YY_BREAK
-#line 1913 "lex.yy.c"
+#line 1914 "bin/lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2915,7 +2916,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 348 "tokenizer.l"
+#line 348 "src/tokenizer.l"
 
 
 

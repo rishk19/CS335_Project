@@ -4,7 +4,15 @@
 int yyerror(char *s);
 int yylex();
 extern FILE *yyin;
+struct node *root = NULL;
 
+struct node{
+    char* data;
+    struct node* arr[10];
+
+};
+struct node* makeInternalNode(char* rule, struct node* memArr[], int mem);
+struct node* makeleaf(char* node);
 
 %}
 
@@ -17,6 +25,7 @@ extern FILE *yyin;
 
 %union{
     char data[1000];
+    struct node *exp;
 }
 
 %left PlusPlus
@@ -217,14 +226,14 @@ BlockStatements_opt : | BlockStatements
 
 BlockStatements: BlockStatement | BlockStatements BlockStatement
 
-BlockStatement: LocalVariableDeclarationStatement | Statement { printf("BlockStatement -> Statement \n");}
+BlockStatement: LocalVariableDeclarationStatement | Statement
 
 LocalVariableDeclarationStatement: LocalVariableDeclaration Semicolon
 
 LocalVariableDeclaration: Type VariableDeclarators
 
-Statement: StatementWithoutTrailingSubstatement {  printf("Statement -> StatementWithoutTrailingSubstatement \n");}
-        | LabeledStatement| IfThenStatement { printf("Statement -> IfThenStatement \n");}
+Statement: StatementWithoutTrailingSubstatement
+        | LabeledStatement| IfThenStatement
         | IfThenElseStatement | WhileStatement | ForStatement
 
 StatementNoShortIf: StatementWithoutTrailingSubstatement | LabeledStatementNoShortIf | IfThenElseStatementNoShortIf | WhileStatementNoShortIf | ForStatementNoShortIf
@@ -363,6 +372,9 @@ Expression: AssignmentExpression
 
 
 %%
+
+
+
 
 int yyerror(char* s)
 {

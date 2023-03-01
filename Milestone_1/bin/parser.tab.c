@@ -67,7 +67,7 @@
 
 
 /* First part of user prologue.  */
-#line 1 "parser.y"
+#line 1 "src/parser.y"
 
 #include <stdio.h>
 #include "assert.h"
@@ -77,7 +77,7 @@ extern FILE *yyin;
 
 
 
-#line 81 "parser.tab.c"
+#line 81 "bin/parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -1972,33 +1972,15 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* Goal: CompilationUnit  */
-#line 59 "parser.y"
+#line 59 "src/parser.y"
                       {
     printf("Reached Goal !\n");
 }
-#line 1980 "parser.tab.c"
-    break;
-
-  case 150: /* BlockStatement: Statement  */
-#line 220 "parser.y"
-                                                              { printf("BlockStatement -> Statement \n");}
-#line 1986 "parser.tab.c"
-    break;
-
-  case 153: /* Statement: StatementWithoutTrailingSubstatement  */
-#line 226 "parser.y"
-                                                {  printf("Statement -> StatementWithoutTrailingSubstatement \n");}
-#line 1992 "parser.tab.c"
-    break;
-
-  case 155: /* Statement: IfThenStatement  */
-#line 227 "parser.y"
-                                            { printf("Statement -> IfThenStatement \n");}
-#line 1998 "parser.tab.c"
+#line 1980 "bin/parser.tab.c"
     break;
 
 
-#line 2002 "parser.tab.c"
+#line 1984 "bin/parser.tab.c"
 
       default: break;
     }
@@ -2191,7 +2173,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 365 "parser.y"
+#line 365 "src/parser.y"
 
 
 int yyerror(char* s)
