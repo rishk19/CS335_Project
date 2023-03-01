@@ -74,10 +74,21 @@
 int yyerror(char *s);
 int yylex();
 extern FILE *yyin;
+struct node *root = NULL;
+
+#define N_NodeChild 100
+#define N_DataSize 1000
+
+struct node{
+    char* data;
+    struct node* arr[N_NodeChild];
+
+};
+struct node* makeInternalNode(char* rule, struct node* memArr[], int mem);
+struct node* makeleaf(char* node);
 
 
-
-#line 81 "bin/parser.tab.c"
+#line 92 "bin/parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -788,38 +799,38 @@ static const yytype_uint8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    59,    59,    64,    64,    64,    64,    64,    64,    66,
-      66,    66,    68,    68,    70,    70,    72,    72,    74,    74,
-      74,    74,    74,    76,    76,    78,    78,    80,    82,    84,
-      86,    86,    86,    88,    88,    90,    92,    94,    96,    96,
-      98,    98,   100,   100,   102,   102,   104,   104,   106,   108,
-     108,   110,   112,   114,   114,   114,   116,   116,   118,   118,
-     118,   118,   118,   118,   118,   118,   118,   120,   122,   122,
-     124,   124,   126,   126,   128,   130,   132,   132,   134,   136,
-     138,   138,   140,   140,   140,   142,   142,   144,   146,   146,
-     148,   148,   150,   150,   152,   152,   154,   156,   156,   158,
-     158,   160,   160,   162,   162,   164,   164,   166,   168,   170,
-     170,   172,   172,   174,   176,   178,   180,   182,   182,   184,
-     184,   186,   186,   188,   190,   190,   192,   192,   194,   196,
-     196,   198,   198,   200,   200,   202,   204,   206,   208,   208,
-     210,   210,   212,   212,   214,   216,   216,   218,   218,   220,
-     220,   222,   224,   226,   227,   227,   228,   228,   228,   230,
-     230,   230,   230,   230,   232,   232,   232,   232,   232,   232,
-     232,   232,   232,   234,   236,   238,   240,   242,   242,   242,
-     242,   242,   242,   242,   244,   246,   248,   250,   252,   254,
-     256,   258,   258,   260,   260,   262,   262,   264,   264,   266,
-     268,   268,   270,   272,   272,   274,   276,   278,   280,   282,
-     282,   284,   284,   286,   286,   288,   290,   292,   292,   294,
-     294,   294,   294,   294,   294,   294,   296,   298,   298,   300,
-     300,   302,   302,   304,   304,   306,   308,   308,   310,   310,
-     312,   312,   312,   314,   314,   316,   316,   316,   316,   318,
-     320,   322,   322,   322,   322,   322,   324,   326,   328,   328,
-     328,   328,   330,   330,   330,   332,   332,   332,   332,   334,
-     334,   334,   336,   336,   336,   336,   338,   338,   338,   338,
-     338,   338,   340,   340,   340,   342,   342,   344,   344,   346,
-     346,   348,   348,   350,   350,   352,   352,   354,   354,   356,
-     358,   358,   358,   360,   360,   360,   360,   360,   360,   360,
-     360,   360,   360,   360,   360,   362
+       0,   110,   110,   115,   115,   115,   115,   115,   115,   117,
+     117,   117,   119,   119,   121,   121,   123,   123,   125,   125,
+     125,   125,   125,   127,   127,   129,   129,   131,   133,   135,
+     137,   137,   137,   139,   139,   141,   143,   145,   147,   147,
+     149,   149,   151,   151,   153,   153,   155,   155,   157,   159,
+     159,   161,   163,   165,   165,   165,   167,   167,   169,   169,
+     169,   169,   169,   169,   169,   169,   169,   171,   173,   173,
+     175,   175,   177,   177,   179,   181,   183,   183,   185,   187,
+     189,   189,   191,   191,   191,   193,   193,   195,   197,   197,
+     199,   199,   201,   201,   203,   203,   205,   207,   207,   209,
+     209,   211,   211,   213,   213,   215,   215,   217,   219,   221,
+     221,   223,   223,   225,   227,   229,   231,   233,   233,   235,
+     235,   237,   237,   239,   241,   241,   243,   243,   245,   247,
+     247,   249,   249,   251,   251,   253,   255,   257,   259,   259,
+     261,   261,   263,   263,   265,   267,   267,   269,   269,   271,
+     271,   273,   275,   277,   278,   278,   279,   279,   279,   281,
+     281,   281,   281,   281,   283,   283,   283,   283,   283,   283,
+     283,   283,   283,   285,   287,   289,   291,   293,   293,   293,
+     293,   293,   293,   293,   295,   297,   299,   301,   303,   305,
+     307,   309,   309,   311,   311,   313,   313,   315,   315,   317,
+     319,   319,   321,   323,   323,   325,   327,   329,   331,   333,
+     333,   335,   335,   337,   337,   339,   341,   343,   343,   345,
+     345,   345,   345,   345,   345,   345,   347,   349,   349,   351,
+     351,   353,   353,   355,   355,   357,   359,   359,   361,   361,
+     363,   363,   363,   365,   365,   367,   367,   367,   367,   369,
+     371,   373,   373,   373,   373,   373,   375,   377,   379,   379,
+     379,   379,   381,   381,   381,   383,   383,   383,   383,   385,
+     385,   385,   387,   387,   387,   387,   389,   389,   389,   389,
+     389,   389,   391,   391,   391,   393,   393,   395,   395,   397,
+     397,   399,   399,   401,   401,   403,   403,   405,   405,   407,
+     415,   415,   415,   418,   421,   424,   427,   430,   433,   436,
+     439,   442,   445,   448,   451,   455
 };
 #endif
 
@@ -1972,15 +1983,123 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* Goal: CompilationUnit  */
-#line 59 "src/parser.y"
+#line 110 "src/parser.y"
                       {
     printf("Reached Goal !\n");
 }
-#line 1980 "bin/parser.tab.c"
+#line 1991 "bin/parser.tab.c"
+    break;
+
+  case 299: /* Assignment: LeftHandSide AssignmentOperator AssignmentExpression  */
+#line 407 "src/parser.y"
+                                                                 {
+    struct node * temp = (yyvsp[-1].exp);
+    struct node* memArr[2];
+    memArr[0] = (yyvsp[-2].exp);
+    memArr[1] = (yyvsp[0].exp);
+    (yyval.exp) = makeInternalNode(temp->data, memArr, 2);
+}
+#line 2003 "bin/parser.tab.c"
+    break;
+
+  case 303: /* AssignmentOperator: EqualTo  */
+#line 418 "src/parser.y"
+            {
+        (yyval.exp) = makeleaf((yyvsp[0].data));
+    }
+#line 2011 "bin/parser.tab.c"
+    break;
+
+  case 304: /* AssignmentOperator: ProductEqualTo  */
+#line 421 "src/parser.y"
+                     {
+        (yyval.exp) = makeleaf((yyvsp[0].data));
+    }
+#line 2019 "bin/parser.tab.c"
+    break;
+
+  case 305: /* AssignmentOperator: DivideEqualTo  */
+#line 424 "src/parser.y"
+                    {
+        (yyval.exp) = makeleaf((yyvsp[0].data));
+    }
+#line 2027 "bin/parser.tab.c"
+    break;
+
+  case 306: /* AssignmentOperator: ModuloEqualTo  */
+#line 427 "src/parser.y"
+                     {
+        (yyval.exp) = makeleaf((yyvsp[0].data));
+    }
+#line 2035 "bin/parser.tab.c"
+    break;
+
+  case 307: /* AssignmentOperator: AdditionEqualTo  */
+#line 430 "src/parser.y"
+                      {
+        (yyval.exp) = makeleaf((yyvsp[0].data));
+    }
+#line 2043 "bin/parser.tab.c"
+    break;
+
+  case 308: /* AssignmentOperator: SubstractionEqualTo  */
+#line 433 "src/parser.y"
+                           {
+        (yyval.exp) = makeleaf((yyvsp[0].data));
+    }
+#line 2051 "bin/parser.tab.c"
+    break;
+
+  case 309: /* AssignmentOperator: LeftShitEqualTo  */
+#line 436 "src/parser.y"
+                       {
+        (yyval.exp) = makeleaf((yyvsp[0].data));
+    }
+#line 2059 "bin/parser.tab.c"
+    break;
+
+  case 310: /* AssignmentOperator: RightShiftEqualTo  */
+#line 439 "src/parser.y"
+                         {
+        (yyval.exp) = makeleaf((yyvsp[0].data));
+    }
+#line 2067 "bin/parser.tab.c"
+    break;
+
+  case 311: /* AssignmentOperator: TripleGreaterThanEqualTo  */
+#line 442 "src/parser.y"
+                                {
+        (yyval.exp) = makeleaf((yyvsp[0].data));
+    }
+#line 2075 "bin/parser.tab.c"
+    break;
+
+  case 312: /* AssignmentOperator: BitWiseAndEqualTo  */
+#line 445 "src/parser.y"
+                         {
+        (yyval.exp) = makeleaf((yyvsp[0].data));
+    }
+#line 2083 "bin/parser.tab.c"
+    break;
+
+  case 313: /* AssignmentOperator: CircumFlexEqualTo  */
+#line 448 "src/parser.y"
+                         {
+        (yyval.exp) = makeleaf((yyvsp[0].data));
+    }
+#line 2091 "bin/parser.tab.c"
+    break;
+
+  case 314: /* AssignmentOperator: BitWiseOrEqualTo  */
+#line 451 "src/parser.y"
+                       {
+        (yyval.exp) = makeleaf((yyvsp[0].data));
+    }
+#line 2099 "bin/parser.tab.c"
     break;
 
 
-#line 1984 "bin/parser.tab.c"
+#line 2103 "bin/parser.tab.c"
 
       default: break;
     }
@@ -2173,13 +2292,100 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 365 "src/parser.y"
+#line 458 "src/parser.y"
+
 
 
 int yyerror(char* s)
 {
     printf("%s\n",s);
 }
+
+
+
+
+struct node* makeleaf(char* nodeStr){
+    //printf("%s\n",nodeStr);
+    struct node* leaf = (struct node*)malloc(sizeof(struct node));
+    leaf->data = nodeStr;
+    for(int i = 0; i<N_NodeChild; i++){
+        leaf->arr[i] = NULL;
+    }
+    return leaf;
+}
+
+struct node* makeInternalNode(char* rule, struct node* memArr[], int mem){
+
+    struct node* internalNode = (struct node*)malloc(sizeof(struct node));
+    internalNode->data = rule;
+    for(int i = 0; i<mem; i++){
+        internalNode->arr[i] = memArr[i];
+    }
+    for(int i = mem; i<N_NodeChild; i++){
+        internalNode->arr[i] = NULL;
+    }
+    return internalNode;
+
+}
+
+void ast_print(struct node* root, int d){
+
+    if(root == NULL){
+        return;
+    }
+
+    printf("%s",root->data);
+    printf("\n");
+    int i =0;
+
+    while(root->arr[i]!= NULL){
+        for(int i = 0 ; i<=d+1; i++)
+            printf("\t");
+        ast_print(root->arr[i],d+1);
+        i++;
+
+    }
+}
+
+
+void neighbour_append(struct node* root,FILE* graph, int depth,int child_num){
+    if(root->arr[0]!= NULL){
+        fprintf(graph, "\t%s_%d_%d ->{ %s_%d_0",root->data,depth,child_num,(root->arr[0])->data, depth+1);
+    }
+    else{
+        fprintf(graph, "\t%s_%d_%d ->{}\n",root->data,depth,child_num);
+        return;
+    }
+    for (int i=1 ; i< N_NodeChild; i++){
+        if(root->arr[i] != NULL){
+            fprintf(graph," ,%s_%d_%d",(root->arr[i])->data,depth+1,i);
+        }
+        else{
+            fprintf(graph,"}\n");
+            return;
+        }
+    }
+    fprintf(graph,"}\n");
+    return;
+}
+
+void graph_maker(struct node* root,FILE* graph,int depth,int child_num){
+    
+    if(root!=NULL){
+        neighbour_append(root,graph,depth,child_num);
+        for(int i = 0; i<N_NodeChild && root->arr[i]!=NULL; i++){
+            graph_maker(root->arr[i], graph,depth+1,i);
+        }
+
+    }
+    return;
+    
+
+}
+
+
+
+
 
 int main(int argc , char** argv)
 {   

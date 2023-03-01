@@ -6,9 +6,12 @@ int yylex();
 extern FILE *yyin;
 struct node *root = NULL;
 
+#define N_NodeChild 100
+#define N_DataSize 1000
+
 struct node{
     char* data;
-    struct node* arr[10];
+    struct node* arr[N_NodeChild];
 
 };
 struct node* makeInternalNode(char* rule, struct node* memArr[], int mem);
@@ -62,6 +65,45 @@ struct node* makeleaf(char* node);
 %right BitWiseAndEqualTo
 %right CircumFlexEqualTo
 %right BitWiseOrEqualTo
+
+
+%type<exp> Goal Literal IntegerLiteral Type PrimitiveType 
+%type<exp> NumericType IntegralType FloatingPointType ReferenceType ClassOrInterfaceType 
+%type<exp> ClassType InterfaceType ArrayType Name SimpleName 
+%type<exp> QualifiedName CompilationUnit ImportDeclarations_opt  ImportDeclarations TypeDeclarations_opt  
+%type<exp> TypeDeclarations PackageDeclaration_opt  PackageDeclaration ImportDeclaration SingleTypeImportDeclaration 
+%type<exp> TypeImportOnDemandDeclaration TypeDeclaration Modifiers Modifier ClassDeclaration 
+%type<exp> Modifiers_opt  ClassExtend_opt  Interfaces_opt  ClassExtend  Interfaces 
+%type<exp> InterfaceTypeList ClassBody ClassBodyDeclarations_opt  ClassBodyDeclarations ClassBodyDeclaration 
+%type<exp> ClassMemberDeclaration FieldDeclaration VariableDeclarators VariableDeclarator VariableDeclaratorId 
+%type<exp> VariableInitializer MethodDeclaration MethodHeader Throws_opt  MethodDeclarator 
+%type<exp> FormalParameterList_opt  FormalParameterList FormalParameter Throws ClassTypeList 
+%type<exp> MethodBody StaticInitializer ConstructorDeclaration ConstructorDeclarator ConstructorBody 
+%type<exp> ExplicitConstructorInvocation_opt  ExplicitConstructorInvocation ArgumentList_opt InterfaceDeclaration ExtendsInterfaces_opt  
+%type<exp> ExtendsInterfaces InterfaceBody InterfaceMemberDeclarations_opt InterfaceMemberDeclarations InterfaceMemberDeclaration 
+%type<exp> ConstantDeclaration AbstractMethodDeclaration ArrayInitializer VariableInitializers_opt Comma_opt  
+%type<exp> VariableInitializers Block BlockStatements_opt  BlockStatements BlockStatement 
+%type<exp> LocalVariableDeclarationStatement LocalVariableDeclaration Statement StatementNoShortIf StatementWithoutTrailingSubstatement 
+%type<exp> EmptyStatement LabeledStatement LabeledStatementNoShortIf ExpressionStatement StatementExpression 
+%type<exp> IfThenStatement IfThenElseStatement IfThenElseStatementNoShortIf WhileStatement WhileStatementNoShortIf 
+%type<exp> ForStatement ForStatementNoShortIf ForInit_opt Expression_opt ForUpdate_opt 
+%type<exp> ForInit ForUpdate StatementExpressionList BreakStatement Identifier_opt 
+%type<exp> ContinueStatement ReturnStatement ThrowStatement SynchronizedStatement TryStatement 
+%type<exp> Catches_opt Catches CatchClause Finally Primary 
+%type<exp> PrimaryNoNewArray ClassInstanceCreationExpression ArgumentList ArrayCreationExpression Dims_opt 
+%type<exp> DimExprs DimExpr Dims FieldAccess MethodInvocation 
+%type<exp> ArrayAccess PostfixExpression PostIncrementExpression PostDecrementExpression UnaryExpression 
+%type<exp> PreIncrementExpression PreDecrementExpression UnaryExpressionNotPlusMinus CastExpression MultiplicativeExpression 
+%type<exp> AdditiveExpression ShiftExpression RelationalExpression EqualityExpression AndExpression 
+%type<exp> ExclusiveOrExpression InclusiveOrExpression ConditionalAndExpression ConditionalOrExpression ConditionalExpression 
+%type<exp> AssignmentExpression Assignment LeftHandSide AssignmentOperator Expression 
+
+%type<data> Exports Opens Requires Uses Module Permits Sealed Var Non_sealed Provides To With Open Record Transitive Yield Abstract Continue For New Switch Assert Default If Package Synchronized Boolean Do Goto Private This Break Double Implements Protected THROW Byte Else Import Public THROWS Case Enum Instanceof Return Transient Catch Extends Int Short Try Char Final Interface Static Void Class FINALLY Long Strictfp Volatile Const Float Native Super While
+%type<data> BooleanLiteral NullLiteral Identifier DecimalIntegerLiteral HexIntegerLiteral OctalIntegerLiteral FloatingPointIntegerLiteral FloatingPointLiteral BooleanIntegerLiteral CharacterLiteral TextBlock Operator Seperator StringLiteral
+%type<data> Comma LeftCurlyBrace RightCurlyBrace Semicolon Dot LeftParanthesis RightParanthesis TripleDot LeftSquareBracket RightSquareBracket AtRate Scope
+%type<data> EqualTo NotOperator Tilde QuestionMark Colon RightArrow EqualToEqualTo GreaterThanEqualTo LessThanEqualTo NotEqualTo AndOperator OrOperator PlusPlus MinusMinus Addition Substraction Product Divide BitwiseAnd BitwiseOr CircumFlex Modulo LeftShit RightShift TripleGreaterThan AdditionEqualTo SubstractionEqualTo ProductEqualTo DivideEqualTo BitWiseAndEqualTo BitWiseOrEqualTo CircumFlexEqualTo ModuloEqualTo LeftShitEqualTo RightShiftEqualTo TripleGreaterThanEqualTo GreaterThan LessThan
+%type<data> __EMPTY__
+
 
 
 %%
@@ -360,26 +402,160 @@ ConditionalOrExpression: ConditionalAndExpression | ConditionalOrExpression OrOp
 
 ConditionalExpression: ConditionalOrExpression | ConditionalOrExpression QuestionMark Expression Colon ConditionalExpression
 
-AssignmentExpression: ConditionalExpression | Assignment
+AssignmentExpression: 
+    ConditionalExpression {
+        $$ = $1;
+    }
+    | Assignment{
+        $$ = $1;
+    }
 
-Assignment: LeftHandSide AssignmentOperator AssignmentExpression
+Assignment: LeftHandSide AssignmentOperator AssignmentExpression {
+    struct node * temp = $2;
+    struct node* memArr[2];
+    memArr[0] = $1;
+    memArr[1] = $3;
+    $$ = makeInternalNode(temp->data, memArr, 2);
+}
 
 LeftHandSide: Name | FieldAccess | ArrayAccess
 
-AssignmentOperator: EqualTo | ProductEqualTo | DivideEqualTo | ModuloEqualTo | AdditionEqualTo | SubstractionEqualTo | LeftShitEqualTo | RightShiftEqualTo | TripleGreaterThanEqualTo | BitWiseAndEqualTo | CircumFlexEqualTo | BitWiseOrEqualTo
+AssignmentOperator: 
+    EqualTo {
+        $$ = makeleaf($1);
+    }
+    | ProductEqualTo {
+        $$ = makeleaf($1);
+    }
+    | DivideEqualTo {
+        $$ = makeleaf($1);
+    }
+    | ModuloEqualTo  {
+        $$ = makeleaf($1);
+    }
+    | AdditionEqualTo {
+        $$ = makeleaf($1);
+    }
+    | SubstractionEqualTo  {
+        $$ = makeleaf($1);
+    }
+    | LeftShitEqualTo  {
+        $$ = makeleaf($1);
+    }
+    | RightShiftEqualTo  {
+        $$ = makeleaf($1);
+    }
+    | TripleGreaterThanEqualTo  {
+        $$ = makeleaf($1);
+    }
+    | BitWiseAndEqualTo  {
+        $$ = makeleaf($1);
+    }
+    | CircumFlexEqualTo  {
+        $$ = makeleaf($1);
+    }
+    | BitWiseOrEqualTo {
+        $$ = makeleaf($1);
+    }
 
-Expression: AssignmentExpression
+Expression: AssignmentExpression{
+    $$ = $1;
+}
 
 
 %%
-
-
 
 
 int yyerror(char* s)
 {
     printf("%s\n",s);
 }
+
+
+
+
+struct node* makeleaf(char* nodeStr){
+    //printf("%s\n",nodeStr);
+    struct node* leaf = (struct node*)malloc(sizeof(struct node));
+    leaf->data = nodeStr;
+    for(int i = 0; i<N_NodeChild; i++){
+        leaf->arr[i] = NULL;
+    }
+    return leaf;
+}
+
+struct node* makeInternalNode(char* rule, struct node* memArr[], int mem){
+
+    struct node* internalNode = (struct node*)malloc(sizeof(struct node));
+    internalNode->data = rule;
+    for(int i = 0; i<mem; i++){
+        internalNode->arr[i] = memArr[i];
+    }
+    for(int i = mem; i<N_NodeChild; i++){
+        internalNode->arr[i] = NULL;
+    }
+    return internalNode;
+
+}
+
+void ast_print(struct node* root, int d){
+
+    if(root == NULL){
+        return;
+    }
+
+    printf("%s",root->data);
+    printf("\n");
+    int i =0;
+
+    while(root->arr[i]!= NULL){
+        for(int i = 0 ; i<=d+1; i++)
+            printf("\t");
+        ast_print(root->arr[i],d+1);
+        i++;
+
+    }
+}
+
+
+void neighbour_append(struct node* root,FILE* graph, int depth,int child_num){
+    if(root->arr[0]!= NULL){
+        fprintf(graph, "\t%s_%d_%d ->{ %s_%d_0",root->data,depth,child_num,(root->arr[0])->data, depth+1);
+    }
+    else{
+        fprintf(graph, "\t%s_%d_%d ->{}\n",root->data,depth,child_num);
+        return;
+    }
+    for (int i=1 ; i< N_NodeChild; i++){
+        if(root->arr[i] != NULL){
+            fprintf(graph," ,%s_%d_%d",(root->arr[i])->data,depth+1,i);
+        }
+        else{
+            fprintf(graph,"}\n");
+            return;
+        }
+    }
+    fprintf(graph,"}\n");
+    return;
+}
+
+void graph_maker(struct node* root,FILE* graph,int depth,int child_num){
+    
+    if(root!=NULL){
+        neighbour_append(root,graph,depth,child_num);
+        for(int i = 0; i<N_NodeChild && root->arr[i]!=NULL; i++){
+            graph_maker(root->arr[i], graph,depth+1,i);
+        }
+
+    }
+    return;
+    
+
+}
+
+
+
+
 
 int main(int argc , char** argv)
 {   

@@ -193,11 +193,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 18 "src/parser.y"
+#line 29 "src/parser.y"
 
     char data[1000];
+    struct node *exp;
 
-#line 201 "bin/parser.tab.h"
+#line 202 "bin/parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
