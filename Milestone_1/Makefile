@@ -1,5 +1,4 @@
 parse:
-	make clean
 	clear
 	mkdir bin
 	flex -o bin/lex.yy.c src/tokenizer.l
