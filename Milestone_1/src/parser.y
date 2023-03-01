@@ -564,27 +564,61 @@ DimExprs:
     DimExpr {
         $$ = $1;
     }
-    | DimExprs DimExpr
+    | DimExprs DimExpr {
+        
+        $$ = makeleaf();
+    }
 
 DimExpr: 
-    LeftSquareBracket Expression RightSquareBracket
+    LeftSquareBracket Expression RightSquareBracket {
+        $$ = makeleaf();
+    }
 
 Dims: 
-    LeftSquareBracket RightSquareBracket 
-    | Dims LeftSquareBracket RightSquareBracket
+    LeftSquareBracket RightSquareBracket {
+        $$ = makeleaf("[]");
+    } 
+    | Dims LeftSquareBracket RightSquareBracket {
+        $$ = makeleaf();
+    }
 
 FieldAccess: 
-    Primary Dot Identifier 
-    | Super Dot Identifier
+    Primary Dot Identifier {
+        $$ = makeleaf();
+    } 
+    | Super Dot Identifier {
+        $$ = makeleaf();
+    }
 
 MethodInvocation: 
-    Name LeftParanthesis ArgumentList_opt RightParanthesis 
-    | Primary Dot Identifier LeftParanthesis ArgumentList_opt RightParanthesis 
-    | Super Dot Identifier LeftParanthesis ArgumentList_opt RightParanthesis
+    Name LeftParanthesis ArgumentList_opt RightParanthesis {
+        struct node * memArr[1];
+        memArr[0] = $3;
+
+        $$ = makeInternalNode($1->data, memArr, 1);
+    } 
+    | Primary Dot Identifier LeftParanthesis ArgumentList_opt RightParanthesis {
+        struct node * memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $5;
+
+        $$ = makeInternalNode($3->data, memArr, 2);
+    }
+    | Super Dot Identifier LeftParanthesis ArgumentList_opt RightParanthesis {
+        struct node * memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $5;
+
+        $$ = makeInternalNode($3->data, memArr, 2);
+    }
 
 ArrayAccess: 
-    Name LeftSquareBracket Expression RightSquareBracket
-    | PrimaryNoNewArray LeftSquareBracket Expression RightSquareBracket
+    Name LeftSquareBracket Expression RightSquareBracket{
+        $$ = makeleaf();
+    }
+    | PrimaryNoNewArray LeftSquareBracket Expression RightSquareBracket {
+        $$ = makeleaf();
+    }
 
 PostfixExpression: 
     Primary {
@@ -601,10 +635,18 @@ PostfixExpression:
     }
 
 PostIncrementExpression: 
-    PostfixExpression PlusPlus
+    PostfixExpression PlusPlus {
+        struct node * memArr[1];
+        memArr[0] = $1;
+        makeInternalNode("++",memArr,1);
+    } 
 
 PostDecrementExpression: 
-    PostfixExpression MinusMinus
+    PostfixExpression MinusMinus {
+        struct node * memArr[1];
+        memArr[0] = $1;
+        makeInternalNode("--",memArr,1);
+    } 
 
 UnaryExpression:
     PreIncrementExpression {
@@ -624,101 +666,229 @@ UnaryExpression:
     }
 
 PreIncrementExpression: 
-    PlusPlus UnaryExpression
+    PlusPlus UnaryExpression {
+        struct node * memArr[1];
+        memArr[0] = $2;
+        makeInternalNode("++",memArr,1);
+    } 
 
 PreDecrementExpression: 
-    MinusMinus UnaryExpression
+    MinusMinus UnaryExpression {
+        struct node * memArr[1];
+        memArr[0] = $2;
+        makeInternalNode("--",memArr,1);
+    } 
 
 UnaryExpressionNotPlusMinus: 
     PostfixExpression {
         $$ = $1;
     }
-    | Tilde UnaryExpression 
-    | NotOperator UnaryExpression 
+    | Tilde UnaryExpression {
+        struct node * memArr[1];
+        memArr[0] = $2;
+        makeInternalNode("~",memArr,1);
+    } 
+    | NotOperator UnaryExpression {
+        struct node * memArr[1];
+        memArr[0] = $2;
+        makeInternalNode("!",memArr,1);
+    } 
     | CastExpression {
         $$ = $1;
     }
 
 CastExpression: 
-    LeftParanthesis PrimitiveType Dims_opt RightParanthesis UnaryExpression 
-    | LeftParanthesis Expression RightParanthesis UnaryExpressionNotPlusMinus 
-    | LeftParanthesis Name Dims RightParanthesis UnaryExpressionNotPlusMinus
+    LeftParanthesis PrimitiveType Dims_opt RightParanthesis UnaryExpression {
+        
+    }
+    | LeftParanthesis Expression RightParanthesis UnaryExpressionNotPlusMinus {
+        
+    }
+    | LeftParanthesis Name Dims RightParanthesis UnaryExpressionNotPlusMinus {
+        
+    }
 
 MultiplicativeExpression: 
     UnaryExpression {
         $$ = $1;
     }
-    | MultiplicativeExpression Product UnaryExpression 
-    | MultiplicativeExpression Divide UnaryExpression 
-    | MultiplicativeExpression Modulo UnaryExpression
+    | MultiplicativeExpression Product UnaryExpression {
+        struct node* memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$  = makeInternalNode($2->data, memArr, 2); 
+    } 
+    | MultiplicativeExpression Divide UnaryExpression {
+        struct node* memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$  = makeInternalNode($2->data, memArr, 2); 
+    } 
+    | MultiplicativeExpression Modulo UnaryExpression {
+        struct node* memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$  = makeInternalNode($2->data, memArr, 2); 
+    }
 
 AdditiveExpression: 
     MultiplicativeExpression {
         $$ = $1;
     }
-    | AdditiveExpression Addition MultiplicativeExpression 
-    | AdditiveExpression Substraction MultiplicativeExpression
+    | AdditiveExpression Addition MultiplicativeExpression {
+        struct node* memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$  = makeInternalNode($2->data, memArr, 2); 
+    }
+    | AdditiveExpression Substraction MultiplicativeExpression {
+        struct node* memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$  = makeInternalNode($2->data, memArr, 2); 
+    }
 
 ShiftExpression: 
     AdditiveExpression {
         $$ = $1;
     }
-    | ShiftExpression LeftShit AdditiveExpression 
-    | ShiftExpression RightShift AdditiveExpression 
-    | ShiftExpression TripleGreaterThan AdditiveExpression
+    | ShiftExpression LeftShit AdditiveExpression {
+        struct node* memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$  = makeInternalNode($2->data, memArr, 2); 
+    }
+    | ShiftExpression RightShift AdditiveExpression {
+        struct node* memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$  = makeInternalNode($2->data, memArr, 2); 
+    }
+    | ShiftExpression TripleGreaterThan AdditiveExpression {
+        struct node* memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$  = makeInternalNode($2->data, memArr, 2); 
+    }
 
 RelationalExpression: 
     ShiftExpression {
         $$ = $1;
     }
-    | RelationalExpression LessThan ShiftExpression 
-    | RelationalExpression GreaterThan ShiftExpression 
-    | RelationalExpression LessThanEqualTo ShiftExpression 
-    | RelationalExpression GreaterThanEqualTo ShiftExpression 
-    | RelationalExpression Instanceof ReferenceType
+    | RelationalExpression LessThan ShiftExpression {
+        struct node* memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$  = makeInternalNode($2->data, memArr, 2); 
+    } 
+    | RelationalExpression GreaterThan ShiftExpression {
+        struct node* memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$  = makeInternalNode($2->data, memArr, 2); 
+    }
+    | RelationalExpression LessThanEqualTo ShiftExpression {
+        struct node* memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$  = makeInternalNode($2->data, memArr, 2); 
+    }
+    | RelationalExpression GreaterThanEqualTo ShiftExpression {
+        struct node* memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$  = makeInternalNode($2->data, memArr, 2); 
+    } 
+    | RelationalExpression Instanceof ReferenceType {
+        struct node* memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$  = makeInternalNode($2->data, memArr, 2); 
+    }
 
 EqualityExpression: 
     RelationalExpression {
         $$ = $1;
     }
-    | EqualityExpression EqualToEqualTo RelationalExpression 
-    | EqualityExpression NotEqualTo RelationalExpression
+    | EqualityExpression EqualToEqualTo RelationalExpression {
+        struct node* memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$  = makeInternalNode($2->data, memArr, 2); 
+    } 
+    | EqualityExpression NotEqualTo RelationalExpression {
+        struct node* memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$  = makeInternalNode($2->data, memArr, 2); 
+    }
 
 AndExpression: 
     EqualityExpression {
         $$ = $1;
     }
-    | AndExpression BitwiseAnd EqualityExpression
+    | AndExpression BitwiseAnd EqualityExpression {
+        struct node* memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$  = makeInternalNode($2->data, memArr, 2); 
+    }
 
 ExclusiveOrExpression:
     AndExpression {
         $$ = $1;
     }
-    | ExclusiveOrExpression CircumFlex AndExpression
+    | ExclusiveOrExpression CircumFlex AndExpression {
+        struct node* memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$  = makeInternalNode($2->data, memArr, 2); 
+    }
 
 InclusiveOrExpression:
     ExclusiveOrExpression {
         $$ = $1;
     }
-    | InclusiveOrExpression BitwiseOr ExclusiveOrExpression
+    | InclusiveOrExpression BitwiseOr ExclusiveOrExpression {
+        struct node* memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$  = makeInternalNode($2->data, memArr, 2); 
+    }
 
 ConditionalAndExpression:
     InclusiveOrExpression {
         $$ = $1;
     }
-    | ConditionalAndExpression AndOperator InclusiveOrExpression
+    | ConditionalAndExpression AndOperator InclusiveOrExpression {
+        struct node* memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$  = makeInternalNode($2->data, memArr, 2); 
+    }
 
 ConditionalOrExpression: 
     ConditionalAndExpression {
         $$ = $1;
     }
-    | ConditionalOrExpression OrOperator ConditionalAndExpression
+    | ConditionalOrExpression OrOperator ConditionalAndExpression {
+        struct node* memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$  = makeInternalNode($2->data, memArr, 2); 
+    }
 
 ConditionalExpression: 
     ConditionalOrExpression {
         $$ = $1;
     }
-    | ConditionalOrExpression QuestionMark Expression Colon ConditionalExpression
+    | ConditionalOrExpression QuestionMark Expression Colon ConditionalExpression {
+        struct node* memArr[3];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        memArr[2] = $5;
+        $$  = makeInternalNode("?:TernaryOperator", memArr, 3); 
+    }
 
 AssignmentExpression: 
     ConditionalExpression {
@@ -730,11 +900,10 @@ AssignmentExpression:
 
 Assignment: 
     LeftHandSide AssignmentOperator AssignmentExpression {
-    struct node * temp = $2;
     struct node* memArr[2];
     memArr[0] = $1;
     memArr[1] = $3;
-    $$ = makeInternalNode(temp->data, memArr, 2);
+    $$ = makeInternalNode($2->data, memArr, 2);
 }
 
 LeftHandSide: 
@@ -786,7 +955,7 @@ AssignmentOperator:
         $$ = makeleaf($1);
     }
 
-Expression: AssignmentExpression{
+Expression: AssignmentExpression {
     $$ = $1;
 }
 
@@ -798,8 +967,6 @@ int yyerror(char* s)
 {
     printf("%s\n",s);
 }
-
-
 
 
 struct node* makeleaf(char* nodeStr){
