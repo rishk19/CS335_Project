@@ -1,3 +1,5 @@
+
+
 Welcome to Help Mode !!
 
 The flags availiable :
@@ -9,7 +11,7 @@ To compile the parser for the first time, on the Milestone_1 directory run the c
     make parse
     
 To compile the parser again first run :
-    make clean   // This removes the bin folder
+    make clean  
     make parse
 
 The executable for the parser is in the bin folder. To parse a java file run :
@@ -19,3 +21,7 @@ The executable for the parser is in the bin folder. To parse a java file run :
 If you want to run our test suite then from the folder Milestone_1 run :
     make test
 And then give the test_suite number and the output file would be in the output folder.
+
+To create a pdf file of the graph use the following command :   
+    dot −Tpdf "PATH TO INPUT FILE" −o "PATH TO OUTPUT FILE"
+
