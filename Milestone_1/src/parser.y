@@ -120,9 +120,6 @@ Goal: CompilationUnit {
 
 Literal: 
     IntegerLiteral {
-        printf("Internal Node at line : 123 %s\n", $1->data);
-        printf("ctr: %d\n",ctr);
-        ctr++;
         $$ = $1;
     }
     | FloatingPointLiteral {
@@ -844,7 +841,7 @@ BlockStatements_opt : {
     | BlockStatements {
         struct node* memArr[1];
         memArr[0] = $1;
-        $$ = makeInternalNode("Blocks", memArr, 1, 1);
+        $$ = makeInternalNode("statements", memArr, 1, 1);
     }
 
 BlockStatements: 
@@ -1360,7 +1357,6 @@ ArrayAccess:
 
 PostfixExpression: 
     Primary {
-        printf("Internal node line 1359 : %s\n", $1->data);
         $$ = $1;
     }
     | Name {
@@ -1375,18 +1371,16 @@ PostfixExpression:
 
 PostIncrementExpression: 
     PostfixExpression PlusPlus {
-        struct node * memArr[2];
+        struct node * memArr[1];
         memArr[0] = $1;
-        memArr[1] = makeleaf($2);
-        $$ = makeInternalNode("Post", memArr, 2, 1);
+        $$ = makeInternalNode("PostIncrement", memArr, 1, 1);
     } 
 
 PostDecrementExpression: 
     PostfixExpression MinusMinus {
-        struct node * memArr[2];
+        struct node * memArr[1];
         memArr[0] = $1;
-        memArr[1] = makeleaf($2);
-        $$ = makeInternalNode("Post", memArr, 2, 1);
+        $$ = makeInternalNode("PostIncrement", memArr, 1, 1);
     } 
 
 UnaryExpression:
@@ -1407,7 +1401,6 @@ UnaryExpression:
         $$ = makeInternalNode("UnarySubstraction", memArr, 1, 1);
     }
     | UnaryExpressionNotPlusMinus {
-        printf("Internal node line 1405 : %s\n", $1->data);
         $$ = $1;
     }
 
@@ -1416,7 +1409,7 @@ PreIncrementExpression:
         struct node * memArr[2];
         memArr[0] = makeleaf($1);
         memArr[1] = $2;
-        $$ = makeInternalNode("Pre", memArr, 2, 1);
+        $$ = makeInternalNode("PreIncrement", memArr, 2, 1);
     } 
 
 PreDecrementExpression: 
@@ -1424,7 +1417,7 @@ PreDecrementExpression:
         struct node * memArr[2];
         memArr[0] = makeleaf($1);
         memArr[1] = $2;
-        $$ = makeInternalNode("Pre", memArr, 2, 1);
+        $$ = makeInternalNode("PreDecrement", memArr, 2, 1);
     } 
 
 UnaryExpressionNotPlusMinus: 
@@ -1494,8 +1487,6 @@ AdditiveExpression:
     }
     | AdditiveExpression Addition MultiplicativeExpression {
         struct node* memArr[2];
-        printf("Internal node line 1491 : %s\n", $1->data);
-        printf("Internal node line 1491 : %s\n", $3->data);
         memArr[0] = $1;
         memArr[1] = $3;
         $$  = makeInternalNode("Addition", memArr, 2, 1); 
@@ -1662,7 +1653,7 @@ Assignment:
     struct node* memArr[2];
     memArr[0] = $1;
     memArr[1] = $3;
-    $$ = makeInternalNode("Assignment", memArr, 2, 1);
+    $$ = makeInternalNode("assignment", memArr, 2, 1);
 }
 
 LeftHandSide: 
@@ -1816,14 +1807,18 @@ void ast_print(struct node* root, int d){
     }
 }
 
-
+// digraph D {
+//   nodeA [label="Node A"];
+//   nodeB [label="Node B"];
+//   nodeA -> nodeB;
+// }
 void neighbour_append(struct node *root, FILE *graph, int depth, int child_num)
 {
     int i, leaf_flag = 0;
     for (i = 0; i < N_NodeChild; i++)
     {
         if (root->arr[i] != NULL)
-        {
+        {   fprintf(graph,"\ti%s_%d_%d [label= \"%s\"]",root->data, depth, child_num, root->data);
             fprintf(graph, "\ti%s_%d_%d ->{ i%s_%d_0", root->data, depth, child_num, (root->arr[i])->data, depth + 1);
             leaf_flag = 1;
             break;
@@ -1831,6 +1826,7 @@ void neighbour_append(struct node *root, FILE *graph, int depth, int child_num)
     }
     if (!leaf_flag)
     {
+        fprintf(graph,"\ti%s_%d_%d [label= \"%s\"]",root->data, depth, child_num, root->data);
         fprintf(graph, "\ti%s_%d_%d ->{}\n", root->data, depth, child_num);
         return;
     }
@@ -1882,8 +1878,8 @@ int main(int argc , char** argv)
     yyparse();
 
     printf("I am out of parse call \n");
-    ast_print(root,0);
     FILE* graph = fopen("AST.dot","w");
+    ast_print(root,0);
     fprintf(graph, "digraph AST{ \n");
     graph_maker(root, graph,0,0);
     fprintf(graph, "} \n");
