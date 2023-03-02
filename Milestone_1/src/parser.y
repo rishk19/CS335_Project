@@ -12,7 +12,7 @@ struct node *root = NULL;
 #define N_DataSize 1000
 int ctr = 0;
 struct node{
-    char* data;
+    char data[100];
     int parentFlag;
     struct node* arr[N_NodeChild];
 
@@ -143,15 +143,7 @@ Literal:
 
 IntegerLiteral: 
     DecimalIntegerLiteral {
-        printf("Internal Node at line : 144 %s\n", $1);
-        printf("ctr: %d\n",ctr);
-        ctr++;
-        struct node * ele = (struct node*)malloc(sizeof(struct node));
-        struct node * ele1 = makeleaf($1);
-        ele->data = "1";
-        for(int i = 0; i<100; i++)ele->arr[i] = NULL;
-        $$ = ele;
-        printf("Internal Node at line : 146 %s\n", $$->data);
+        $$ = makeleaf($1);
     }
     | HexIntegerLiteral {
         $$ = makeleaf($1);
@@ -1761,11 +1753,11 @@ char* concatenate_string(char* s, char* s1)
 }
 
 
-struct node* makeleaf(char* nodeStr){
+struct node* makeleaf(char nodeStr[100]){
     //printf("%s\n",nodeStr);
     struct node* leaf = (struct node*)malloc(sizeof(struct node));
     printf("leaf: %s\n",nodeStr);
-    leaf->data = nodeStr;
+    strcpy(leaf->data, nodeStr);
     leaf->parentFlag = 1;
     for(int i = 0; i<N_NodeChild; i++){
         leaf->arr[i] = NULL;
@@ -1773,10 +1765,10 @@ struct node* makeleaf(char* nodeStr){
     return leaf;
 }
 
-struct node* makeInternalNode(char* rule, struct node* memArr[], int n, int isParent){
+struct node* makeInternalNode(char rule[100], struct node* memArr[], int n, int isParent){
 
     struct node* internalNode = (struct node*)malloc(sizeof(struct node));
-    internalNode->data = rule;
+    strcpy(internalNode->data,rule);
 
     for(int i = 0; i<N_NodeChild; i++){
         internalNode->arr[i] = NULL;
@@ -1825,33 +1817,39 @@ void ast_print(struct node* root, int d){
 }
 
 
-void neighbour_append(struct node* root,FILE* graph, int depth,int child_num){
-int i , leaf_flag =0;
-for(i =0 ; i<N_NodeChild; i++){
-if(root->arr[i]!= NULL){
-fprintf(graph, "\t%s_%d_%d ->{ %s_%d_0",root->data,depth,child_num,(root->arr[i])->data, depth+1);
-leaf_flag =1;
-break;
-}
-}
-if(!leaf_flag){
-fprintf(graph, "\t%s_%d_%d ->{}\n",root->data,depth,child_num);
-return;
-}
+void neighbour_append(struct node *root, FILE *graph, int depth, int child_num)
+{
+    int i, leaf_flag = 0;
+    for (i = 0; i < N_NodeChild; i++)
+    {
+        if (root->arr[i] != NULL)
+        {
+            fprintf(graph, "\ti%s_%d_%d ->{ i%s_%d_0", root->data, depth, child_num, (root->arr[i])->data, depth + 1);
+            leaf_flag = 1;
+            break;
+        }
+    }
+    if (!leaf_flag)
+    {
+        fprintf(graph, "\ti%s_%d_%d ->{}\n", root->data, depth, child_num);
+        return;
+    }
 
-for (int i=1 ; i< N_NodeChild; i++){
-if(root->arr[i] != NULL){
-fprintf(graph," ,%s_%d_%d",(root->arr[i])->data,depth+1,i);
-}
-}
-fprintf(graph,"}\n");
-return;
+    for (int j = i+1; j < N_NodeChild; j++)
+    {
+        if (root->arr[j] != NULL)
+        {
+            fprintf(graph, " ,i%s_%d_%d", (root->arr[j])->data, depth + 1, j);
+        }
+    }
+    fprintf(graph, "}\n");
+    return;
 }
 
 void graph_maker(struct node* root,FILE* graph,int depth,int child_num){
     
     if(root!=NULL){
-        neighbour_append(root,graph,depth,child_num);
+        neighbour_append(root, graph, depth, child_num);
         for(int i = 0; i<N_NodeChild; i++){
             if(root->arr[i]!=NULL){
                 graph_maker(root->arr[i], graph,depth+1,i);

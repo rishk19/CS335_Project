@@ -82,7 +82,7 @@ struct node *root = NULL;
 #define N_DataSize 1000
 int ctr = 0;
 struct node{
-    char* data;
+    char data[100];
     int parentFlag;
     struct node* arr[N_NodeChild];
 
@@ -804,37 +804,37 @@ static const yytype_uint8 yytranslate[] =
 static const yytype_int16 yyrline[] =
 {
        0,   114,   114,   122,   128,   131,   134,   137,   140,   145,
-     156,   159,   164,   167,   172,   175,   180,   183,   188,   191,
-     194,   197,   200,   205,   208,   213,   216,   221,   226,   231,
-     236,   239,   243,   249,   252,   257,   262,   267,   277,   280,
-     287,   292,   300,   303,   310,   315,   323,   326,   331,   336,
-     339,   344,   349,   354,   357,   360,   365,   370,   378,   381,
-     384,   387,   390,   393,   396,   399,   402,   405,   410,   421,
-     424,   430,   433,   437,   440,   445,   450,   459,   464,   472,
-     476,   479,   486,   491,   499,   502,   505,   510,   513,   518,
-     527,   532,   540,   543,   551,   554,   559,   562,   567,   575,
-     583,   593,   596,   603,   608,   614,   617,   624,   629,   637,
-     642,   649,   654,   662,   667,   672,   679,   689,   696,   703,
-     706,   713,   718,   724,   727,   734,   743,   746,   753,   758,
-     766,   770,   773,   780,   785,   793,   796,   801,   806,   811,
-     815,   818,   824,   827,   832,   837,   845,   849,   852,   859,
-     864,   872,   875,   880,   885,   893,   896,   899,   902,   905,
-     908,   913,   916,   919,   922,   925,   930,   933,   936,   939,
-     942,   945,   948,   951,   954,   959,   964,   972,   980,   985,
-     988,   991,   994,   997,  1000,  1003,  1008,  1016,  1025,  1034,
-    1042,  1050,  1060,  1069,  1072,  1078,  1081,  1087,  1090,  1097,
-    1102,  1109,  1116,  1121,  1129,  1136,  1138,  1143,  1150,  1157,
-    1164,  1172,  1178,  1186,  1189,  1196,  1201,  1209,  1217,  1224,
-    1227,  1232,  1236,  1239,  1242,  1245,  1248,  1251,  1256,  1265,
-    1270,  1278,  1286,  1295,  1298,  1303,  1308,  1316,  1323,  1326,
-    1331,  1334,  1339,  1344,  1349,  1356,  1362,  1370,  1374,  1377,
-    1380,  1385,  1393,  1401,  1404,  1407,  1412,  1417,  1423,  1431,
-    1439,  1442,  1447,  1452,  1457,  1463,  1469,  1477,  1480,  1486,
-    1492,  1500,  1503,  1511,  1519,  1522,  1528,  1534,  1542,  1545,
-    1551,  1557,  1563,  1569,  1577,  1580,  1586,  1594,  1597,  1605,
-    1608,  1616,  1619,  1627,  1630,  1638,  1641,  1649,  1652,  1661,
-    1664,  1669,  1677,  1680,  1683,  1688,  1691,  1694,  1697,  1700,
-    1703,  1706,  1709,  1712,  1715,  1718,  1721,  1725
+     148,   151,   156,   159,   164,   167,   172,   175,   180,   183,
+     186,   189,   192,   197,   200,   205,   208,   213,   218,   223,
+     228,   231,   235,   241,   244,   249,   254,   259,   269,   272,
+     279,   284,   292,   295,   302,   307,   315,   318,   323,   328,
+     331,   336,   341,   346,   349,   352,   357,   362,   370,   373,
+     376,   379,   382,   385,   388,   391,   394,   397,   402,   413,
+     416,   422,   425,   429,   432,   437,   442,   451,   456,   464,
+     468,   471,   478,   483,   491,   494,   497,   502,   505,   510,
+     519,   524,   532,   535,   543,   546,   551,   554,   559,   567,
+     575,   585,   588,   595,   600,   606,   609,   616,   621,   629,
+     634,   641,   646,   654,   659,   664,   671,   681,   688,   695,
+     698,   705,   710,   716,   719,   726,   735,   738,   745,   750,
+     758,   762,   765,   772,   777,   785,   788,   793,   798,   803,
+     807,   810,   816,   819,   824,   829,   837,   841,   844,   851,
+     856,   864,   867,   872,   877,   885,   888,   891,   894,   897,
+     900,   905,   908,   911,   914,   917,   922,   925,   928,   931,
+     934,   937,   940,   943,   946,   951,   956,   964,   972,   977,
+     980,   983,   986,   989,   992,   995,  1000,  1008,  1017,  1026,
+    1034,  1042,  1052,  1061,  1064,  1070,  1073,  1079,  1082,  1089,
+    1094,  1101,  1108,  1113,  1121,  1128,  1130,  1135,  1142,  1149,
+    1156,  1164,  1170,  1178,  1181,  1188,  1193,  1201,  1209,  1216,
+    1219,  1224,  1228,  1231,  1234,  1237,  1240,  1243,  1248,  1257,
+    1262,  1270,  1278,  1287,  1290,  1295,  1300,  1308,  1315,  1318,
+    1323,  1326,  1331,  1336,  1341,  1348,  1354,  1362,  1366,  1369,
+    1372,  1377,  1385,  1393,  1396,  1399,  1404,  1409,  1415,  1423,
+    1431,  1434,  1439,  1444,  1449,  1455,  1461,  1469,  1472,  1478,
+    1484,  1492,  1495,  1503,  1511,  1514,  1520,  1526,  1534,  1537,
+    1543,  1549,  1555,  1561,  1569,  1572,  1578,  1586,  1589,  1597,
+    1600,  1608,  1611,  1619,  1622,  1630,  1633,  1641,  1644,  1653,
+    1656,  1661,  1669,  1672,  1675,  1680,  1683,  1686,  1689,  1692,
+    1695,  1698,  1701,  1704,  1707,  1710,  1713,  1717
 };
 #endif
 
@@ -2052,239 +2052,231 @@ yyreduce:
   case 9: /* IntegerLiteral: DecimalIntegerLiteral  */
 #line 145 "src/parser.y"
                           {
-        printf("Internal Node at line : 144 %s\n", (yyvsp[0].data));
-        printf("ctr: %d\n",ctr);
-        ctr++;
-        struct node * ele = (struct node*)malloc(sizeof(struct node));
-        struct node * ele1 = makeleaf((yyvsp[0].data));
-        ele->data = "1";
-        for(int i = 0; i<100; i++)ele->arr[i] = NULL;
-        (yyval.exp) = ele;
-        printf("Internal Node at line : 146 %s\n", (yyval.exp)->data);
+        (yyval.exp) = makeleaf((yyvsp[0].data));
+    }
+#line 2058 "bin/parser.tab.c"
+    break;
+
+  case 10: /* IntegerLiteral: HexIntegerLiteral  */
+#line 148 "src/parser.y"
+                        {
+        (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 2066 "bin/parser.tab.c"
     break;
 
-  case 10: /* IntegerLiteral: HexIntegerLiteral  */
-#line 156 "src/parser.y"
-                        {
+  case 11: /* IntegerLiteral: OctalIntegerLiteral  */
+#line 151 "src/parser.y"
+                          {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 2074 "bin/parser.tab.c"
     break;
 
-  case 11: /* IntegerLiteral: OctalIntegerLiteral  */
-#line 159 "src/parser.y"
-                          {
-        (yyval.exp) = makeleaf((yyvsp[0].data));
+  case 12: /* Type: PrimitiveType  */
+#line 156 "src/parser.y"
+                  {
+        (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2082 "bin/parser.tab.c"
     break;
 
-  case 12: /* Type: PrimitiveType  */
-#line 164 "src/parser.y"
-                  {
+  case 13: /* Type: ReferenceType  */
+#line 159 "src/parser.y"
+                    {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2090 "bin/parser.tab.c"
     break;
 
-  case 13: /* Type: ReferenceType  */
-#line 167 "src/parser.y"
-                    {
+  case 14: /* PrimitiveType: NumericType  */
+#line 164 "src/parser.y"
+                {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2098 "bin/parser.tab.c"
     break;
 
-  case 14: /* PrimitiveType: NumericType  */
-#line 172 "src/parser.y"
-                {
-        (yyval.exp) = (yyvsp[0].exp);
+  case 15: /* PrimitiveType: Boolean  */
+#line 167 "src/parser.y"
+              {
+        (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 2106 "bin/parser.tab.c"
     break;
 
-  case 15: /* PrimitiveType: Boolean  */
-#line 175 "src/parser.y"
-              {
-        (yyval.exp) = makeleaf((yyvsp[0].data));
+  case 16: /* NumericType: IntegralType  */
+#line 172 "src/parser.y"
+                 {
+        (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2114 "bin/parser.tab.c"
     break;
 
-  case 16: /* NumericType: IntegralType  */
-#line 180 "src/parser.y"
-                 {
+  case 17: /* NumericType: FloatingPointType  */
+#line 175 "src/parser.y"
+                        {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2122 "bin/parser.tab.c"
     break;
 
-  case 17: /* NumericType: FloatingPointType  */
-#line 183 "src/parser.y"
-                        {
-        (yyval.exp) = (yyvsp[0].exp);
+  case 18: /* IntegralType: Byte  */
+#line 180 "src/parser.y"
+         {
+        (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 2130 "bin/parser.tab.c"
     break;
 
-  case 18: /* IntegralType: Byte  */
-#line 188 "src/parser.y"
-         {
+  case 19: /* IntegralType: Short  */
+#line 183 "src/parser.y"
+            {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 2138 "bin/parser.tab.c"
     break;
 
-  case 19: /* IntegralType: Short  */
-#line 191 "src/parser.y"
-            {
+  case 20: /* IntegralType: Int  */
+#line 186 "src/parser.y"
+          {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 2146 "bin/parser.tab.c"
     break;
 
-  case 20: /* IntegralType: Int  */
-#line 194 "src/parser.y"
-          {
+  case 21: /* IntegralType: Long  */
+#line 189 "src/parser.y"
+           {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 2154 "bin/parser.tab.c"
     break;
 
-  case 21: /* IntegralType: Long  */
-#line 197 "src/parser.y"
+  case 22: /* IntegralType: Char  */
+#line 192 "src/parser.y"
            {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 2162 "bin/parser.tab.c"
     break;
 
-  case 22: /* IntegralType: Char  */
-#line 200 "src/parser.y"
-           {
+  case 23: /* FloatingPointType: Float  */
+#line 197 "src/parser.y"
+          {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 2170 "bin/parser.tab.c"
     break;
 
-  case 23: /* FloatingPointType: Float  */
-#line 205 "src/parser.y"
-          {
+  case 24: /* FloatingPointType: Double  */
+#line 200 "src/parser.y"
+             {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 2178 "bin/parser.tab.c"
     break;
 
-  case 24: /* FloatingPointType: Double  */
-#line 208 "src/parser.y"
-             {
-        (yyval.exp) = makeleaf((yyvsp[0].data));
+  case 25: /* ReferenceType: ClassOrInterfaceType  */
+#line 205 "src/parser.y"
+                          {
+        (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2186 "bin/parser.tab.c"
     break;
 
-  case 25: /* ReferenceType: ClassOrInterfaceType  */
-#line 213 "src/parser.y"
-                          {
+  case 26: /* ReferenceType: ArrayType  */
+#line 208 "src/parser.y"
+                {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2194 "bin/parser.tab.c"
     break;
 
-  case 26: /* ReferenceType: ArrayType  */
-#line 216 "src/parser.y"
-                {
+  case 27: /* ClassOrInterfaceType: Name  */
+#line 213 "src/parser.y"
+         {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2202 "bin/parser.tab.c"
     break;
 
-  case 27: /* ClassOrInterfaceType: Name  */
-#line 221 "src/parser.y"
-         {
+  case 28: /* ClassType: ClassOrInterfaceType  */
+#line 218 "src/parser.y"
+                         {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2210 "bin/parser.tab.c"
     break;
 
-  case 28: /* ClassType: ClassOrInterfaceType  */
-#line 226 "src/parser.y"
+  case 29: /* InterfaceType: ClassOrInterfaceType  */
+#line 223 "src/parser.y"
                          {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2218 "bin/parser.tab.c"
     break;
 
-  case 29: /* InterfaceType: ClassOrInterfaceType  */
-#line 231 "src/parser.y"
-                         {
-        (yyval.exp) = (yyvsp[0].exp);
+  case 30: /* ArrayType: PrimitiveType LeftSquareBracket RightSquareBracket  */
+#line 228 "src/parser.y"
+                                                       {
+        (yyval.exp) = makeleaf(concatenate_string((yyvsp[-2].exp)->data,"[]"));
     }
 #line 2226 "bin/parser.tab.c"
     break;
 
-  case 30: /* ArrayType: PrimitiveType LeftSquareBracket RightSquareBracket  */
-#line 236 "src/parser.y"
-                                                       {
-        (yyval.exp) = makeleaf(concatenate_string((yyvsp[-2].exp)->data,"[]"));
-    }
-#line 2234 "bin/parser.tab.c"
-    break;
-
   case 31: /* ArrayType: Name LeftSquareBracket RightSquareBracket  */
-#line 239 "src/parser.y"
+#line 231 "src/parser.y"
                                                 {
         (yyval.exp) = makeleaf(concatenate_string((yyvsp[-2].exp)->data,"[]"));
 
     }
-#line 2243 "bin/parser.tab.c"
+#line 2235 "bin/parser.tab.c"
     break;
 
   case 32: /* ArrayType: ArrayType LeftSquareBracket RightSquareBracket  */
-#line 243 "src/parser.y"
+#line 235 "src/parser.y"
                                                      {
         (yyval.exp) = makeleaf(concatenate_string((yyvsp[-2].exp)->data,"[]"));
 
     }
-#line 2252 "bin/parser.tab.c"
+#line 2244 "bin/parser.tab.c"
     break;
 
   case 33: /* Name: SimpleName  */
-#line 249 "src/parser.y"
+#line 241 "src/parser.y"
                {
+        (yyval.exp) = (yyvsp[0].exp);
+    }
+#line 2252 "bin/parser.tab.c"
+    break;
+
+  case 34: /* Name: QualifiedName  */
+#line 244 "src/parser.y"
+                    {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2260 "bin/parser.tab.c"
     break;
 
-  case 34: /* Name: QualifiedName  */
-#line 252 "src/parser.y"
-                    {
-        (yyval.exp) = (yyvsp[0].exp);
+  case 35: /* SimpleName: Identifier  */
+#line 249 "src/parser.y"
+               {
+        (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 2268 "bin/parser.tab.c"
     break;
 
-  case 35: /* SimpleName: Identifier  */
-#line 257 "src/parser.y"
-               {
-        (yyval.exp) = makeleaf((yyvsp[0].data));
+  case 36: /* QualifiedName: Name Dot Identifier  */
+#line 254 "src/parser.y"
+                        {
+        (yyval.exp) = makeleaf(concatenate_string((yyvsp[-2].exp)->data,concatenate_string((yyvsp[-1].data),(yyvsp[0].data))));
     }
 #line 2276 "bin/parser.tab.c"
     break;
 
-  case 36: /* QualifiedName: Name Dot Identifier  */
-#line 262 "src/parser.y"
-                        {
-        (yyval.exp) = makeleaf(concatenate_string((yyvsp[-2].exp)->data,concatenate_string((yyvsp[-1].data),(yyvsp[0].data))));
-    }
-#line 2284 "bin/parser.tab.c"
-    break;
-
   case 37: /* CompilationUnit: PackageDeclaration_opt ImportDeclarations_opt TypeDeclarations_opt  */
-#line 267 "src/parser.y"
+#line 259 "src/parser.y"
                                                                        {
 
         struct node * memArr[3];
@@ -2293,270 +2285,270 @@ yyreduce:
         memArr[2] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("CompilationUnit", memArr, 3, 1);
     }
-#line 2297 "bin/parser.tab.c"
+#line 2289 "bin/parser.tab.c"
     break;
 
   case 38: /* ImportDeclarations_opt: %empty  */
-#line 277 "src/parser.y"
+#line 269 "src/parser.y"
     { 
         (yyval.exp) = NULL; 
     }
-#line 2305 "bin/parser.tab.c"
+#line 2297 "bin/parser.tab.c"
     break;
 
   case 39: /* ImportDeclarations_opt: ImportDeclarations  */
-#line 280 "src/parser.y"
+#line 272 "src/parser.y"
                          {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Imports", memArr, 1, 1);
     }
-#line 2315 "bin/parser.tab.c"
+#line 2307 "bin/parser.tab.c"
     break;
 
   case 40: /* ImportDeclarations: ImportDeclaration  */
-#line 287 "src/parser.y"
+#line 279 "src/parser.y"
                       {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode((yyvsp[0].exp)->data, memArr, 1, 0);
     }
-#line 2325 "bin/parser.tab.c"
+#line 2317 "bin/parser.tab.c"
     break;
 
   case 41: /* ImportDeclarations: ImportDeclarations ImportDeclaration  */
-#line 292 "src/parser.y"
+#line 284 "src/parser.y"
                                            {
         struct node * memArr[2];
         memArr[0] = (yyvsp[-1].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("IntermediateImports", memArr, 2, 0);
     }
-#line 2336 "bin/parser.tab.c"
+#line 2328 "bin/parser.tab.c"
     break;
 
   case 42: /* TypeDeclarations_opt: %empty  */
-#line 300 "src/parser.y"
+#line 292 "src/parser.y"
     { 
         (yyval.exp) = NULL;
      }
-#line 2344 "bin/parser.tab.c"
+#line 2336 "bin/parser.tab.c"
     break;
 
   case 43: /* TypeDeclarations_opt: TypeDeclarations  */
-#line 303 "src/parser.y"
+#line 295 "src/parser.y"
                        {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Declarations", memArr, 1, 1);
     }
-#line 2354 "bin/parser.tab.c"
+#line 2346 "bin/parser.tab.c"
     break;
 
   case 44: /* TypeDeclarations: TypeDeclaration  */
-#line 310 "src/parser.y"
+#line 302 "src/parser.y"
                     {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode((yyvsp[0].exp)->data, memArr, 1, 0);
     }
-#line 2364 "bin/parser.tab.c"
+#line 2356 "bin/parser.tab.c"
     break;
 
   case 45: /* TypeDeclarations: TypeDeclarations TypeDeclaration  */
-#line 315 "src/parser.y"
+#line 307 "src/parser.y"
                                        {
         struct node * memArr[2];
         memArr[0] = (yyvsp[-1].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("IntermediateDeclaration", memArr, 2, 0);
     }
-#line 2375 "bin/parser.tab.c"
+#line 2367 "bin/parser.tab.c"
     break;
 
   case 46: /* PackageDeclaration_opt: %empty  */
-#line 323 "src/parser.y"
+#line 315 "src/parser.y"
     { 
         (yyval.exp) = NULL;
      }
-#line 2383 "bin/parser.tab.c"
+#line 2375 "bin/parser.tab.c"
     break;
 
   case 47: /* PackageDeclaration_opt: PackageDeclaration  */
-#line 326 "src/parser.y"
+#line 318 "src/parser.y"
                          {
         (yyval.exp) = (yyvsp[0].exp);
+    }
+#line 2383 "bin/parser.tab.c"
+    break;
+
+  case 48: /* PackageDeclaration: Package Name Semicolon  */
+#line 323 "src/parser.y"
+                           {
+        (yyval.exp) = makeleaf(concatenate_string((yyvsp[-2].data),concatenate_string("_",(yyvsp[-1].exp)->data)));
     }
 #line 2391 "bin/parser.tab.c"
     break;
 
-  case 48: /* PackageDeclaration: Package Name Semicolon  */
-#line 331 "src/parser.y"
-                           {
-        (yyval.exp) = makeleaf(concatenate_string((yyvsp[-2].data),concatenate_string("_",(yyvsp[-1].exp)->data)));
+  case 49: /* ImportDeclaration: SingleTypeImportDeclaration  */
+#line 328 "src/parser.y"
+                                {
+        (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2399 "bin/parser.tab.c"
     break;
 
-  case 49: /* ImportDeclaration: SingleTypeImportDeclaration  */
-#line 336 "src/parser.y"
-                                {
+  case 50: /* ImportDeclaration: TypeImportOnDemandDeclaration  */
+#line 331 "src/parser.y"
+                                    {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2407 "bin/parser.tab.c"
     break;
 
-  case 50: /* ImportDeclaration: TypeImportOnDemandDeclaration  */
-#line 339 "src/parser.y"
-                                    {
-        (yyval.exp) = (yyvsp[0].exp);
+  case 51: /* SingleTypeImportDeclaration: Import Name Semicolon  */
+#line 336 "src/parser.y"
+                          {
+        (yyval.exp) = makeleaf(concatenate_string((yyvsp[-2].data), concatenate_string("_",(yyvsp[-1].exp)->data)));
     }
 #line 2415 "bin/parser.tab.c"
     break;
 
-  case 51: /* SingleTypeImportDeclaration: Import Name Semicolon  */
-#line 344 "src/parser.y"
-                          {
-        (yyval.exp) = makeleaf(concatenate_string((yyvsp[-2].data), concatenate_string("_",(yyvsp[-1].exp)->data)));
+  case 52: /* TypeImportOnDemandDeclaration: Import Name Dot Product Semicolon  */
+#line 341 "src/parser.y"
+                                      {
+        (yyval.exp) = makeleaf(concatenate_string((yyvsp[-4].data), concatenate_string("_",concatenate_string((yyvsp[-3].exp)->data,".*"))));
     }
 #line 2423 "bin/parser.tab.c"
     break;
 
-  case 52: /* TypeImportOnDemandDeclaration: Import Name Dot Product Semicolon  */
-#line 349 "src/parser.y"
-                                      {
-        (yyval.exp) = makeleaf(concatenate_string((yyvsp[-4].data), concatenate_string("_",concatenate_string((yyvsp[-3].exp)->data,".*"))));
+  case 53: /* TypeDeclaration: ClassDeclaration  */
+#line 346 "src/parser.y"
+                     {
+        (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2431 "bin/parser.tab.c"
     break;
 
-  case 53: /* TypeDeclaration: ClassDeclaration  */
-#line 354 "src/parser.y"
-                     {
+  case 54: /* TypeDeclaration: InterfaceDeclaration  */
+#line 349 "src/parser.y"
+                           {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2439 "bin/parser.tab.c"
     break;
 
-  case 54: /* TypeDeclaration: InterfaceDeclaration  */
-#line 357 "src/parser.y"
-                           {
-        (yyval.exp) = (yyvsp[0].exp);
+  case 55: /* TypeDeclaration: Semicolon  */
+#line 352 "src/parser.y"
+                {
+        (yyval.exp) = NULL;
     }
 #line 2447 "bin/parser.tab.c"
     break;
 
-  case 55: /* TypeDeclaration: Semicolon  */
-#line 360 "src/parser.y"
-                {
-        (yyval.exp) = NULL;
-    }
-#line 2455 "bin/parser.tab.c"
-    break;
-
   case 56: /* Modifiers: Modifier  */
-#line 365 "src/parser.y"
+#line 357 "src/parser.y"
              {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode((yyvsp[0].exp)->data, memArr, 1, 0);
     }
-#line 2465 "bin/parser.tab.c"
+#line 2457 "bin/parser.tab.c"
     break;
 
   case 57: /* Modifiers: Modifiers Modifier  */
-#line 370 "src/parser.y"
+#line 362 "src/parser.y"
                          {
         struct node * memArr[2];
         memArr[0] = (yyvsp[-1].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Modifier", memArr, 2, 0);
     }
-#line 2476 "bin/parser.tab.c"
+#line 2468 "bin/parser.tab.c"
     break;
 
   case 58: /* Modifier: Public  */
-#line 378 "src/parser.y"
+#line 370 "src/parser.y"
            {
+        (yyval.exp) = makeleaf((yyvsp[0].data));
+    }
+#line 2476 "bin/parser.tab.c"
+    break;
+
+  case 59: /* Modifier: Protected  */
+#line 373 "src/parser.y"
+                {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 2484 "bin/parser.tab.c"
     break;
 
-  case 59: /* Modifier: Protected  */
-#line 381 "src/parser.y"
-                {
+  case 60: /* Modifier: Private  */
+#line 376 "src/parser.y"
+              {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 2492 "bin/parser.tab.c"
     break;
 
-  case 60: /* Modifier: Private  */
-#line 384 "src/parser.y"
-              {
+  case 61: /* Modifier: Static  */
+#line 379 "src/parser.y"
+             {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 2500 "bin/parser.tab.c"
     break;
 
-  case 61: /* Modifier: Static  */
-#line 387 "src/parser.y"
-             {
+  case 62: /* Modifier: Abstract  */
+#line 382 "src/parser.y"
+               {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 2508 "bin/parser.tab.c"
     break;
 
-  case 62: /* Modifier: Abstract  */
-#line 390 "src/parser.y"
-               {
+  case 63: /* Modifier: Final  */
+#line 385 "src/parser.y"
+            {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 2516 "bin/parser.tab.c"
     break;
 
-  case 63: /* Modifier: Final  */
-#line 393 "src/parser.y"
-            {
+  case 64: /* Modifier: Native  */
+#line 388 "src/parser.y"
+             {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 2524 "bin/parser.tab.c"
     break;
 
-  case 64: /* Modifier: Native  */
-#line 396 "src/parser.y"
-             {
+  case 65: /* Modifier: Synchronized  */
+#line 391 "src/parser.y"
+                   {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 2532 "bin/parser.tab.c"
     break;
 
-  case 65: /* Modifier: Synchronized  */
-#line 399 "src/parser.y"
-                   {
+  case 66: /* Modifier: Transient  */
+#line 394 "src/parser.y"
+                {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 2540 "bin/parser.tab.c"
     break;
 
-  case 66: /* Modifier: Transient  */
-#line 402 "src/parser.y"
-                {
+  case 67: /* Modifier: Volatile  */
+#line 397 "src/parser.y"
+               {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 2548 "bin/parser.tab.c"
     break;
 
-  case 67: /* Modifier: Volatile  */
-#line 405 "src/parser.y"
-               {
-        (yyval.exp) = makeleaf((yyvsp[0].data));
-    }
-#line 2556 "bin/parser.tab.c"
-    break;
-
   case 68: /* ClassDeclaration: Modifiers_opt Class Identifier ClassExtend_opt Interfaces_opt ClassBody  */
-#line 410 "src/parser.y"
+#line 402 "src/parser.y"
                                                                             {
         struct node * memArr[6];
         memArr[0] = (yyvsp[-5].exp);
@@ -2567,69 +2559,69 @@ yyreduce:
         memArr[5] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("ClassDeclaration", memArr, 6, 1);
     }
-#line 2571 "bin/parser.tab.c"
+#line 2563 "bin/parser.tab.c"
     break;
 
   case 69: /* Modifiers_opt: %empty  */
-#line 421 "src/parser.y"
+#line 413 "src/parser.y"
                 { 
     (yyval.exp) = NULL; 
     }
-#line 2579 "bin/parser.tab.c"
+#line 2571 "bin/parser.tab.c"
     break;
 
   case 70: /* Modifiers_opt: Modifiers  */
-#line 424 "src/parser.y"
+#line 416 "src/parser.y"
                 {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Modifiers", memArr, 1, 1);
     }
-#line 2589 "bin/parser.tab.c"
+#line 2581 "bin/parser.tab.c"
     break;
 
   case 71: /* ClassExtend_opt: %empty  */
-#line 430 "src/parser.y"
+#line 422 "src/parser.y"
                  { 
     (yyval.exp) = NULL; 
+    }
+#line 2589 "bin/parser.tab.c"
+    break;
+
+  case 72: /* ClassExtend_opt: ClassExtend  */
+#line 425 "src/parser.y"
+                  {
+        (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2597 "bin/parser.tab.c"
     break;
 
-  case 72: /* ClassExtend_opt: ClassExtend  */
-#line 433 "src/parser.y"
-                  {
-        (yyval.exp) = (yyvsp[0].exp);
+  case 73: /* Interfaces_opt: %empty  */
+#line 429 "src/parser.y"
+                 { 
+    (yyval.exp) = NULL; 
     }
 #line 2605 "bin/parser.tab.c"
     break;
 
-  case 73: /* Interfaces_opt: %empty  */
-#line 437 "src/parser.y"
-                 { 
-    (yyval.exp) = NULL; 
+  case 74: /* Interfaces_opt: Interfaces  */
+#line 432 "src/parser.y"
+                 {
+        (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2613 "bin/parser.tab.c"
     break;
 
-  case 74: /* Interfaces_opt: Interfaces  */
-#line 440 "src/parser.y"
-                 {
-        (yyval.exp) = (yyvsp[0].exp);
+  case 75: /* ClassExtend: Extends ClassType  */
+#line 437 "src/parser.y"
+                      {
+        (yyval.exp) = makeleaf(concatenate_string((yyvsp[-1].data), concatenate_string("_",(yyvsp[0].exp)->data)));
     }
 #line 2621 "bin/parser.tab.c"
     break;
 
-  case 75: /* ClassExtend: Extends ClassType  */
-#line 445 "src/parser.y"
-                      {
-        (yyval.exp) = makeleaf(concatenate_string((yyvsp[-1].data), concatenate_string("_",(yyvsp[0].exp)->data)));
-    }
-#line 2629 "bin/parser.tab.c"
-    break;
-
   case 76: /* Interfaces: Implements InterfaceTypeList  */
-#line 450 "src/parser.y"
+#line 442 "src/parser.y"
                                  {
         struct node * memArr[2];
         memArr[0] = makeleaf((yyvsp[-1].data));
@@ -2637,119 +2629,119 @@ yyreduce:
         (yyval.exp) = makeInternalNode("Interface", memArr, 2, 1);
 
     }
-#line 2641 "bin/parser.tab.c"
+#line 2633 "bin/parser.tab.c"
     break;
 
   case 77: /* InterfaceTypeList: InterfaceType  */
-#line 459 "src/parser.y"
+#line 451 "src/parser.y"
                   {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode((yyvsp[0].exp)->data, memArr, 1, 0);
     }
-#line 2651 "bin/parser.tab.c"
+#line 2643 "bin/parser.tab.c"
     break;
 
   case 78: /* InterfaceTypeList: InterfaceTypeList Comma InterfaceType  */
-#line 464 "src/parser.y"
+#line 456 "src/parser.y"
                                             {
         struct node * memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("InterfaceList", memArr, 2, 0);
     }
-#line 2662 "bin/parser.tab.c"
+#line 2654 "bin/parser.tab.c"
     break;
 
   case 79: /* ClassBody: LeftCurlyBrace ClassBodyDeclarations_opt RightCurlyBrace  */
-#line 472 "src/parser.y"
+#line 464 "src/parser.y"
                                                              {
         (yyval.exp) = (yyvsp[-1].exp);
+    }
+#line 2662 "bin/parser.tab.c"
+    break;
+
+  case 80: /* ClassBodyDeclarations_opt: %empty  */
+#line 468 "src/parser.y"
+                            { 
+        (yyval.exp) = NULL ;
     }
 #line 2670 "bin/parser.tab.c"
     break;
 
-  case 80: /* ClassBodyDeclarations_opt: %empty  */
-#line 476 "src/parser.y"
-                            { 
-        (yyval.exp) = NULL ;
-    }
-#line 2678 "bin/parser.tab.c"
-    break;
-
   case 81: /* ClassBodyDeclarations_opt: ClassBodyDeclarations  */
-#line 479 "src/parser.y"
+#line 471 "src/parser.y"
                             {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("ClassBody", memArr, 1, 1);
     }
-#line 2688 "bin/parser.tab.c"
+#line 2680 "bin/parser.tab.c"
     break;
 
   case 82: /* ClassBodyDeclarations: ClassBodyDeclaration  */
-#line 486 "src/parser.y"
+#line 478 "src/parser.y"
                          {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("ClassBody", memArr, 1, 0);
     }
-#line 2698 "bin/parser.tab.c"
+#line 2690 "bin/parser.tab.c"
     break;
 
   case 83: /* ClassBodyDeclarations: ClassBodyDeclarations ClassBodyDeclaration  */
-#line 491 "src/parser.y"
+#line 483 "src/parser.y"
                                                  {
         struct node * memArr[2];
         memArr[0] = (yyvsp[-1].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("IntermediateDeclaration", memArr, 2, 0);
     }
-#line 2709 "bin/parser.tab.c"
+#line 2701 "bin/parser.tab.c"
     break;
 
   case 84: /* ClassBodyDeclaration: ClassMemberDeclaration  */
-#line 499 "src/parser.y"
+#line 491 "src/parser.y"
                            {
+        (yyval.exp) = (yyvsp[0].exp);
+    }
+#line 2709 "bin/parser.tab.c"
+    break;
+
+  case 85: /* ClassBodyDeclaration: StaticInitializer  */
+#line 494 "src/parser.y"
+                        {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2717 "bin/parser.tab.c"
     break;
 
-  case 85: /* ClassBodyDeclaration: StaticInitializer  */
-#line 502 "src/parser.y"
-                        {
+  case 86: /* ClassBodyDeclaration: ConstructorDeclaration  */
+#line 497 "src/parser.y"
+                             {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2725 "bin/parser.tab.c"
     break;
 
-  case 86: /* ClassBodyDeclaration: ConstructorDeclaration  */
-#line 505 "src/parser.y"
-                             {
+  case 87: /* ClassMemberDeclaration: FieldDeclaration  */
+#line 502 "src/parser.y"
+                     {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2733 "bin/parser.tab.c"
     break;
 
-  case 87: /* ClassMemberDeclaration: FieldDeclaration  */
-#line 510 "src/parser.y"
-                     {
+  case 88: /* ClassMemberDeclaration: MethodDeclaration  */
+#line 505 "src/parser.y"
+                        {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2741 "bin/parser.tab.c"
     break;
 
-  case 88: /* ClassMemberDeclaration: MethodDeclaration  */
-#line 513 "src/parser.y"
-                        {
-        (yyval.exp) = (yyvsp[0].exp);
-    }
-#line 2749 "bin/parser.tab.c"
-    break;
-
   case 89: /* FieldDeclaration: Modifiers_opt Type VariableDeclarators Semicolon  */
-#line 518 "src/parser.y"
+#line 510 "src/parser.y"
                                                      {
         struct node * memArr[3];
         memArr[0] = (yyvsp[-3].exp);
@@ -2757,94 +2749,94 @@ yyreduce:
         memArr[2] = (yyvsp[-1].exp);
         (yyval.exp) = makeInternalNode("FieldDeclaration", memArr, 3, 0);
     }
-#line 2761 "bin/parser.tab.c"
+#line 2753 "bin/parser.tab.c"
     break;
 
   case 90: /* VariableDeclarators: VariableDeclarator  */
-#line 527 "src/parser.y"
+#line 519 "src/parser.y"
                        {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("VariableDeclaration", memArr, 1, 0);
     }
-#line 2771 "bin/parser.tab.c"
+#line 2763 "bin/parser.tab.c"
     break;
 
   case 91: /* VariableDeclarators: VariableDeclarators Comma VariableDeclarator  */
-#line 532 "src/parser.y"
+#line 524 "src/parser.y"
                                                    {
         struct node * memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("VariableDeclarator", memArr, 2, 0);
     }
-#line 2782 "bin/parser.tab.c"
+#line 2774 "bin/parser.tab.c"
     break;
 
   case 92: /* VariableDeclarator: VariableDeclaratorId  */
-#line 540 "src/parser.y"
+#line 532 "src/parser.y"
                          {
         (yyval.exp) = (yyvsp[0].exp);
     }
-#line 2790 "bin/parser.tab.c"
+#line 2782 "bin/parser.tab.c"
     break;
 
   case 93: /* VariableDeclarator: VariableDeclaratorId EqualTo VariableInitializer  */
-#line 543 "src/parser.y"
+#line 535 "src/parser.y"
                                                        {
         struct node * memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Initilization", memArr, 2, 0);
     }
-#line 2801 "bin/parser.tab.c"
+#line 2793 "bin/parser.tab.c"
     break;
 
   case 94: /* VariableDeclaratorId: Identifier  */
-#line 551 "src/parser.y"
+#line 543 "src/parser.y"
                {
         (yyval.exp) = makeleaf((yyvsp[0].data));
+    }
+#line 2801 "bin/parser.tab.c"
+    break;
+
+  case 95: /* VariableDeclaratorId: VariableDeclaratorId LeftSquareBracket RightSquareBracket  */
+#line 546 "src/parser.y"
+                                                                {
+        (yyval.exp) = makeleaf(concatenate_string((yyvsp[-2].exp)->data,"[]"));
     }
 #line 2809 "bin/parser.tab.c"
     break;
 
-  case 95: /* VariableDeclaratorId: VariableDeclaratorId LeftSquareBracket RightSquareBracket  */
-#line 554 "src/parser.y"
-                                                                {
-        (yyval.exp) = makeleaf(concatenate_string((yyvsp[-2].exp)->data,"[]"));
+  case 96: /* VariableInitializer: Expression  */
+#line 551 "src/parser.y"
+               {
+        (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2817 "bin/parser.tab.c"
     break;
 
-  case 96: /* VariableInitializer: Expression  */
-#line 559 "src/parser.y"
-               {
+  case 97: /* VariableInitializer: ArrayInitializer  */
+#line 554 "src/parser.y"
+                       {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 2825 "bin/parser.tab.c"
     break;
 
-  case 97: /* VariableInitializer: ArrayInitializer  */
-#line 562 "src/parser.y"
-                       {
-        (yyval.exp) = (yyvsp[0].exp);
-    }
-#line 2833 "bin/parser.tab.c"
-    break;
-
   case 98: /* MethodDeclaration: MethodHeader MethodBody  */
-#line 567 "src/parser.y"
+#line 559 "src/parser.y"
                             {
         struct node * memArr[2];
         memArr[0] = (yyvsp[-1].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode((yyvsp[-1].exp)->data, memArr,2, 1);
     }
-#line 2844 "bin/parser.tab.c"
+#line 2836 "bin/parser.tab.c"
     break;
 
   case 99: /* MethodHeader: Modifiers_opt Type MethodDeclarator Throws_opt  */
-#line 575 "src/parser.y"
+#line 567 "src/parser.y"
                                                    {
         struct node * memArr[4];
         memArr[0] = (yyvsp[-3].exp);
@@ -2853,11 +2845,11 @@ yyreduce:
         memArr[3] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode((yyvsp[-1].exp)->data, memArr, 4, 0);
     }
-#line 2857 "bin/parser.tab.c"
+#line 2849 "bin/parser.tab.c"
     break;
 
   case 100: /* MethodHeader: Modifiers_opt Void MethodDeclarator Throws_opt  */
-#line 583 "src/parser.y"
+#line 575 "src/parser.y"
                                                      {
         struct node * memArr[4];
         memArr[0] = (yyvsp[-3].exp);
@@ -2866,155 +2858,155 @@ yyreduce:
         memArr[3] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode((yyvsp[-1].exp)->data, memArr, 4, 0);
     }
-#line 2870 "bin/parser.tab.c"
+#line 2862 "bin/parser.tab.c"
     break;
 
   case 101: /* Throws_opt: %empty  */
-#line 593 "src/parser.y"
+#line 585 "src/parser.y"
     { 
         (yyval.exp) = NULL;
     }
-#line 2878 "bin/parser.tab.c"
+#line 2870 "bin/parser.tab.c"
     break;
 
   case 102: /* Throws_opt: Throws  */
-#line 596 "src/parser.y"
+#line 588 "src/parser.y"
              {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Throws", memArr, 1, 1);
     }
-#line 2888 "bin/parser.tab.c"
+#line 2880 "bin/parser.tab.c"
     break;
 
   case 103: /* MethodDeclarator: Identifier LeftParanthesis FormalParameterList_opt RightParanthesis  */
-#line 603 "src/parser.y"
+#line 595 "src/parser.y"
                                                                         {
         struct node * memArr[1];
         memArr[0]  = (yyvsp[-1].exp);
         (yyval.exp) = makeInternalNode((yyvsp[-3].data), memArr,1, 0);
     }
-#line 2898 "bin/parser.tab.c"
+#line 2890 "bin/parser.tab.c"
     break;
 
   case 104: /* MethodDeclarator: MethodDeclarator LeftSquareBracket RightSquareBracket  */
-#line 608 "src/parser.y"
+#line 600 "src/parser.y"
                                                             {
         struct node * memArr[1];
         memArr[0] = (yyvsp[-2].exp);
         (yyval.exp) = makeInternalNode(concatenate_string((yyvsp[-2].exp)->data,"[]"), memArr, 1, 0);
     }
-#line 2908 "bin/parser.tab.c"
+#line 2900 "bin/parser.tab.c"
     break;
 
   case 105: /* FormalParameterList_opt: %empty  */
-#line 614 "src/parser.y"
+#line 606 "src/parser.y"
                           {
         (yyval.exp) = NULL;
     }
-#line 2916 "bin/parser.tab.c"
+#line 2908 "bin/parser.tab.c"
     break;
 
   case 106: /* FormalParameterList_opt: FormalParameterList  */
-#line 617 "src/parser.y"
+#line 609 "src/parser.y"
                           {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Parameters", memArr, 1, 1);
     }
-#line 2926 "bin/parser.tab.c"
+#line 2918 "bin/parser.tab.c"
     break;
 
   case 107: /* FormalParameterList: FormalParameter  */
-#line 624 "src/parser.y"
+#line 616 "src/parser.y"
                     {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Parameter", memArr, 1, 0);
     }
-#line 2936 "bin/parser.tab.c"
+#line 2928 "bin/parser.tab.c"
     break;
 
   case 108: /* FormalParameterList: FormalParameterList Comma FormalParameter  */
-#line 629 "src/parser.y"
+#line 621 "src/parser.y"
                                                {
          struct node * memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Parameter", memArr, 1, 0);
     }
-#line 2947 "bin/parser.tab.c"
+#line 2939 "bin/parser.tab.c"
     break;
 
   case 109: /* FormalParameter: Type VariableDeclaratorId  */
-#line 637 "src/parser.y"
+#line 629 "src/parser.y"
                               {
         (yyval.exp) = makeleaf(concatenate_string((yyvsp[-1].exp)->data, concatenate_string("_", (yyvsp[0].exp)->data)));
     }
-#line 2955 "bin/parser.tab.c"
+#line 2947 "bin/parser.tab.c"
     break;
 
   case 110: /* Throws: THROWS ClassTypeList  */
-#line 642 "src/parser.y"
+#line 634 "src/parser.y"
                          {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("throws", memArr, 1, 1);
     }
-#line 2965 "bin/parser.tab.c"
+#line 2957 "bin/parser.tab.c"
     break;
 
   case 111: /* ClassTypeList: ClassType  */
-#line 649 "src/parser.y"
+#line 641 "src/parser.y"
               {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("class", memArr, 1, 0);
     }
-#line 2975 "bin/parser.tab.c"
+#line 2967 "bin/parser.tab.c"
     break;
 
   case 112: /* ClassTypeList: ClassTypeList Comma ClassType  */
-#line 654 "src/parser.y"
+#line 646 "src/parser.y"
                                     {
         struct node * memArr[2];
         memArr[0] = (yyvsp[-2].exp); 
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("class", memArr, 2, 0);
     }
-#line 2986 "bin/parser.tab.c"
+#line 2978 "bin/parser.tab.c"
     break;
 
   case 113: /* MethodBody: Block  */
-#line 662 "src/parser.y"
+#line 654 "src/parser.y"
           {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("MethodBody", memArr, 1, 1);
     }
-#line 2996 "bin/parser.tab.c"
+#line 2988 "bin/parser.tab.c"
     break;
 
   case 114: /* MethodBody: Semicolon  */
-#line 667 "src/parser.y"
+#line 659 "src/parser.y"
                 {
         (yyval.exp) = NULL;
     }
-#line 3004 "bin/parser.tab.c"
+#line 2996 "bin/parser.tab.c"
     break;
 
   case 115: /* StaticInitializer: Static Block  */
-#line 672 "src/parser.y"
+#line 664 "src/parser.y"
                  {
         struct node* memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("static", memArr, 1, 1);
     }
-#line 3014 "bin/parser.tab.c"
+#line 3006 "bin/parser.tab.c"
     break;
 
   case 116: /* ConstructorDeclaration: Modifiers_opt ConstructorDeclarator Throws_opt ConstructorBody  */
-#line 679 "src/parser.y"
+#line 671 "src/parser.y"
                                                                    {
         struct node* memArr[4];
         memArr[0] = (yyvsp[-3].exp);
@@ -3023,88 +3015,88 @@ yyreduce:
         memArr[3] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode((yyvsp[-2].exp)->data, memArr, 4, 1);
     }
-#line 3027 "bin/parser.tab.c"
+#line 3019 "bin/parser.tab.c"
     break;
 
   case 117: /* ConstructorDeclarator: SimpleName LeftParanthesis FormalParameterList_opt RightParanthesis  */
-#line 689 "src/parser.y"
+#line 681 "src/parser.y"
                                                                         {
         struct node* memArr[1];
         memArr[0] = (yyvsp[-1].exp);
         (yyval.exp) = makeInternalNode((yyvsp[-3].exp)->data, memArr, 1, 0);
     }
-#line 3037 "bin/parser.tab.c"
+#line 3029 "bin/parser.tab.c"
     break;
 
   case 118: /* ConstructorBody: LeftCurlyBrace ExplicitConstructorInvocation_opt BlockStatements_opt RightCurlyBrace  */
-#line 696 "src/parser.y"
+#line 688 "src/parser.y"
                                                                                          {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[-1].exp);
         (yyval.exp) = makeInternalNode("ConstructorInvocation", memArr, 2, 1);
     }
-#line 3048 "bin/parser.tab.c"
+#line 3040 "bin/parser.tab.c"
     break;
 
   case 119: /* ExplicitConstructorInvocation_opt: %empty  */
-#line 703 "src/parser.y"
+#line 695 "src/parser.y"
                                     { 
     (yyval.exp) = NULL; 
     }
-#line 3056 "bin/parser.tab.c"
+#line 3048 "bin/parser.tab.c"
     break;
 
   case 120: /* ExplicitConstructorInvocation_opt: ExplicitConstructorInvocation  */
-#line 706 "src/parser.y"
+#line 698 "src/parser.y"
                                     {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("ExplicitConstructorInvocation", memArr, 1, 1);
     }
-#line 3066 "bin/parser.tab.c"
+#line 3058 "bin/parser.tab.c"
     break;
 
   case 121: /* ExplicitConstructorInvocation: This LeftParanthesis ArgumentList_opt RightParanthesis Semicolon  */
-#line 713 "src/parser.y"
+#line 705 "src/parser.y"
                                                                      {
         struct node* memArr[1];
         memArr[0] = (yyvsp[-2].exp);
         (yyval.exp) = makeInternalNode("this", memArr, 1, 0);
     }
-#line 3076 "bin/parser.tab.c"
+#line 3068 "bin/parser.tab.c"
     break;
 
   case 122: /* ExplicitConstructorInvocation: Super LeftParanthesis ArgumentList_opt RightParanthesis Semicolon  */
-#line 718 "src/parser.y"
+#line 710 "src/parser.y"
                                                                         {
         struct node* memArr[1];
         memArr[0] = (yyvsp[-2].exp);
         (yyval.exp) = makeInternalNode("super", memArr, 1, 0);
     }
-#line 3086 "bin/parser.tab.c"
+#line 3078 "bin/parser.tab.c"
     break;
 
   case 123: /* ArgumentList_opt: %empty  */
-#line 724 "src/parser.y"
+#line 716 "src/parser.y"
                   {
     (yyval.exp) = NULL; 
     }
-#line 3094 "bin/parser.tab.c"
+#line 3086 "bin/parser.tab.c"
     break;
 
   case 124: /* ArgumentList_opt: ArgumentList  */
-#line 727 "src/parser.y"
+#line 719 "src/parser.y"
                    {
         struct node * memArr[1];
         memArr[0] =(yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Arguments", memArr, 1, 1);
     }
-#line 3104 "bin/parser.tab.c"
+#line 3096 "bin/parser.tab.c"
     break;
 
   case 125: /* InterfaceDeclaration: Modifiers_opt Interface Identifier ExtendsInterfaces_opt InterfaceBody  */
-#line 734 "src/parser.y"
+#line 726 "src/parser.y"
                                                                            {
         struct node* memArr[4];
         memArr[0] = (yyvsp[-4].exp);
@@ -3113,539 +3105,539 @@ yyreduce:
         memArr[3] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode((yyvsp[-2].data), memArr, 4, 1);
     }
-#line 3117 "bin/parser.tab.c"
+#line 3109 "bin/parser.tab.c"
     break;
 
   case 126: /* ExtendsInterfaces_opt: %empty  */
-#line 743 "src/parser.y"
+#line 735 "src/parser.y"
                         {
     (yyval.exp) = NULL;
     }
-#line 3125 "bin/parser.tab.c"
+#line 3117 "bin/parser.tab.c"
     break;
 
   case 127: /* ExtendsInterfaces_opt: ExtendsInterfaces  */
-#line 746 "src/parser.y"
+#line 738 "src/parser.y"
                         {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("extends", memArr, 1, 1);
     }
-#line 3135 "bin/parser.tab.c"
+#line 3127 "bin/parser.tab.c"
     break;
 
   case 128: /* ExtendsInterfaces: Extends InterfaceType  */
-#line 753 "src/parser.y"
+#line 745 "src/parser.y"
                           {
         struct node* memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("extends", memArr, 1, 0);
     }
-#line 3145 "bin/parser.tab.c"
+#line 3137 "bin/parser.tab.c"
     break;
 
   case 129: /* ExtendsInterfaces: ExtendsInterfaces Comma InterfaceType  */
-#line 758 "src/parser.y"
+#line 750 "src/parser.y"
                                             {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("extends", memArr, 2, 0);
     }
-#line 3156 "bin/parser.tab.c"
+#line 3148 "bin/parser.tab.c"
     break;
 
   case 130: /* InterfaceBody: LeftCurlyBrace InterfaceMemberDeclarations_opt RightCurlyBrace  */
-#line 766 "src/parser.y"
+#line 758 "src/parser.y"
                                                                    {
         (yyval.exp) = (yyvsp[-1].exp);
+    }
+#line 3156 "bin/parser.tab.c"
+    break;
+
+  case 131: /* InterfaceMemberDeclarations_opt: %empty  */
+#line 762 "src/parser.y"
+                                 {
+        (yyval.exp) = NULL;
     }
 #line 3164 "bin/parser.tab.c"
     break;
 
-  case 131: /* InterfaceMemberDeclarations_opt: %empty  */
-#line 770 "src/parser.y"
-                                 {
-        (yyval.exp) = NULL;
-    }
-#line 3172 "bin/parser.tab.c"
-    break;
-
   case 132: /* InterfaceMemberDeclarations_opt: InterfaceMemberDeclarations  */
-#line 773 "src/parser.y"
+#line 765 "src/parser.y"
                                   {
         struct node* memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Interfaces", memArr, 1, 1);
     }
-#line 3182 "bin/parser.tab.c"
+#line 3174 "bin/parser.tab.c"
     break;
 
   case 133: /* InterfaceMemberDeclarations: InterfaceMemberDeclaration  */
-#line 780 "src/parser.y"
+#line 772 "src/parser.y"
                                {
         struct node* memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Interface", memArr, 1, 0);
     }
-#line 3192 "bin/parser.tab.c"
+#line 3184 "bin/parser.tab.c"
     break;
 
   case 134: /* InterfaceMemberDeclarations: InterfaceMemberDeclarations InterfaceMemberDeclaration  */
-#line 785 "src/parser.y"
+#line 777 "src/parser.y"
                                                              {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-1].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Interface", memArr, 2, 0);
     }
-#line 3203 "bin/parser.tab.c"
+#line 3195 "bin/parser.tab.c"
     break;
 
   case 135: /* InterfaceMemberDeclaration: ConstantDeclaration  */
-#line 793 "src/parser.y"
+#line 785 "src/parser.y"
                         {
+        (yyval.exp) = (yyvsp[0].exp);
+    }
+#line 3203 "bin/parser.tab.c"
+    break;
+
+  case 136: /* InterfaceMemberDeclaration: AbstractMethodDeclaration  */
+#line 788 "src/parser.y"
+                                {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3211 "bin/parser.tab.c"
     break;
 
-  case 136: /* InterfaceMemberDeclaration: AbstractMethodDeclaration  */
-#line 796 "src/parser.y"
-                                {
+  case 137: /* ConstantDeclaration: FieldDeclaration  */
+#line 793 "src/parser.y"
+                     {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3219 "bin/parser.tab.c"
     break;
 
-  case 137: /* ConstantDeclaration: FieldDeclaration  */
-#line 801 "src/parser.y"
-                     {
-        (yyval.exp) = (yyvsp[0].exp);
+  case 138: /* AbstractMethodDeclaration: MethodHeader Semicolon  */
+#line 798 "src/parser.y"
+                           {
+        (yyval.exp) = (yyvsp[-1].exp);
     }
 #line 3227 "bin/parser.tab.c"
     break;
 
-  case 138: /* AbstractMethodDeclaration: MethodHeader Semicolon  */
-#line 806 "src/parser.y"
-                           {
-        (yyval.exp) = (yyvsp[-1].exp);
+  case 139: /* ArrayInitializer: LeftCurlyBrace VariableInitializers_opt Comma_opt RightCurlyBrace  */
+#line 803 "src/parser.y"
+                                                                      {
+        (yyval.exp) = (yyvsp[-2].exp);
     }
 #line 3235 "bin/parser.tab.c"
     break;
 
-  case 139: /* ArrayInitializer: LeftCurlyBrace VariableInitializers_opt Comma_opt RightCurlyBrace  */
-#line 811 "src/parser.y"
-                                                                      {
-        (yyval.exp) = (yyvsp[-2].exp);
+  case 140: /* VariableInitializers_opt: %empty  */
+#line 807 "src/parser.y"
+                          {
+        (yyval.exp) = NULL; 
     }
 #line 3243 "bin/parser.tab.c"
     break;
 
-  case 140: /* VariableInitializers_opt: %empty  */
-#line 815 "src/parser.y"
-                          {
-        (yyval.exp) = NULL; 
-    }
-#line 3251 "bin/parser.tab.c"
-    break;
-
   case 141: /* VariableInitializers_opt: VariableInitializers  */
-#line 818 "src/parser.y"
+#line 810 "src/parser.y"
                            {
         struct node* memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("VariableInitializers", memArr, 1, 1);
     }
-#line 3261 "bin/parser.tab.c"
+#line 3253 "bin/parser.tab.c"
     break;
 
   case 142: /* Comma_opt: %empty  */
-#line 824 "src/parser.y"
+#line 816 "src/parser.y"
             {
         (yyval.exp) = NULL; 
+    }
+#line 3261 "bin/parser.tab.c"
+    break;
+
+  case 143: /* Comma_opt: Comma  */
+#line 819 "src/parser.y"
+            {
+        (yyval.exp) = NULL;
     }
 #line 3269 "bin/parser.tab.c"
     break;
 
-  case 143: /* Comma_opt: Comma  */
-#line 827 "src/parser.y"
-            {
-        (yyval.exp) = NULL;
-    }
-#line 3277 "bin/parser.tab.c"
-    break;
-
   case 144: /* VariableInitializers: VariableInitializer  */
-#line 832 "src/parser.y"
+#line 824 "src/parser.y"
                         {
        struct node* memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode((yyvsp[0].exp)->data, memArr, 1, 0);
     }
-#line 3287 "bin/parser.tab.c"
+#line 3279 "bin/parser.tab.c"
     break;
 
   case 145: /* VariableInitializers: VariableInitializers Comma VariableInitializer  */
-#line 837 "src/parser.y"
+#line 829 "src/parser.y"
                                                      {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Initializer", memArr, 2, 0);
     }
-#line 3298 "bin/parser.tab.c"
+#line 3290 "bin/parser.tab.c"
     break;
 
   case 146: /* Block: LeftCurlyBrace BlockStatements_opt RightCurlyBrace  */
-#line 845 "src/parser.y"
+#line 837 "src/parser.y"
                                                        {
         (yyval.exp) = (yyvsp[-1].exp);
     }
-#line 3306 "bin/parser.tab.c"
+#line 3298 "bin/parser.tab.c"
     break;
 
   case 147: /* BlockStatements_opt: %empty  */
-#line 849 "src/parser.y"
+#line 841 "src/parser.y"
                       {
      (yyval.exp) = NULL; 
      }
-#line 3314 "bin/parser.tab.c"
+#line 3306 "bin/parser.tab.c"
     break;
 
   case 148: /* BlockStatements_opt: BlockStatements  */
-#line 852 "src/parser.y"
+#line 844 "src/parser.y"
                       {
         struct node* memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Blocks", memArr, 1, 1);
     }
-#line 3324 "bin/parser.tab.c"
+#line 3316 "bin/parser.tab.c"
     break;
 
   case 149: /* BlockStatements: BlockStatement  */
-#line 859 "src/parser.y"
+#line 851 "src/parser.y"
                    {
         struct node* memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Blocks", memArr, 1, 0);
     }
-#line 3334 "bin/parser.tab.c"
+#line 3326 "bin/parser.tab.c"
     break;
 
   case 150: /* BlockStatements: BlockStatements BlockStatement  */
-#line 864 "src/parser.y"
+#line 856 "src/parser.y"
                                      {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-1].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Block", memArr, 2, 0);
     }
-#line 3345 "bin/parser.tab.c"
+#line 3337 "bin/parser.tab.c"
     break;
 
   case 151: /* BlockStatement: LocalVariableDeclarationStatement  */
-#line 872 "src/parser.y"
+#line 864 "src/parser.y"
                                       {
+        (yyval.exp) = (yyvsp[0].exp);
+    }
+#line 3345 "bin/parser.tab.c"
+    break;
+
+  case 152: /* BlockStatement: Statement  */
+#line 867 "src/parser.y"
+                {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3353 "bin/parser.tab.c"
     break;
 
-  case 152: /* BlockStatement: Statement  */
-#line 875 "src/parser.y"
-                {
-        (yyval.exp) = (yyvsp[0].exp);
+  case 153: /* LocalVariableDeclarationStatement: LocalVariableDeclaration Semicolon  */
+#line 872 "src/parser.y"
+                                       {
+        (yyval.exp) =(yyvsp[-1].exp);
     }
 #line 3361 "bin/parser.tab.c"
     break;
 
-  case 153: /* LocalVariableDeclarationStatement: LocalVariableDeclaration Semicolon  */
-#line 880 "src/parser.y"
-                                       {
-        (yyval.exp) =(yyvsp[-1].exp);
-    }
-#line 3369 "bin/parser.tab.c"
-    break;
-
   case 154: /* LocalVariableDeclaration: Type VariableDeclarators  */
-#line 885 "src/parser.y"
+#line 877 "src/parser.y"
                              {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-1].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Declaration", memArr, 2, 0);
     }
-#line 3380 "bin/parser.tab.c"
+#line 3372 "bin/parser.tab.c"
     break;
 
   case 155: /* Statement: StatementWithoutTrailingSubstatement  */
-#line 893 "src/parser.y"
+#line 885 "src/parser.y"
                                          {
+        (yyval.exp) = (yyvsp[0].exp);
+    }
+#line 3380 "bin/parser.tab.c"
+    break;
+
+  case 156: /* Statement: LabeledStatement  */
+#line 888 "src/parser.y"
+                       {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3388 "bin/parser.tab.c"
     break;
 
-  case 156: /* Statement: LabeledStatement  */
-#line 896 "src/parser.y"
-                       {
+  case 157: /* Statement: IfThenStatement  */
+#line 891 "src/parser.y"
+                     {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3396 "bin/parser.tab.c"
     break;
 
-  case 157: /* Statement: IfThenStatement  */
-#line 899 "src/parser.y"
-                     {
+  case 158: /* Statement: IfThenElseStatement  */
+#line 894 "src/parser.y"
+                          {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3404 "bin/parser.tab.c"
     break;
 
-  case 158: /* Statement: IfThenElseStatement  */
-#line 902 "src/parser.y"
-                          {
+  case 159: /* Statement: WhileStatement  */
+#line 897 "src/parser.y"
+                     {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3412 "bin/parser.tab.c"
     break;
 
-  case 159: /* Statement: WhileStatement  */
-#line 905 "src/parser.y"
-                     {
+  case 160: /* Statement: ForStatement  */
+#line 900 "src/parser.y"
+                   {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3420 "bin/parser.tab.c"
     break;
 
-  case 160: /* Statement: ForStatement  */
-#line 908 "src/parser.y"
-                   {
+  case 161: /* StatementNoShortIf: StatementWithoutTrailingSubstatement  */
+#line 905 "src/parser.y"
+                                         {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3428 "bin/parser.tab.c"
     break;
 
-  case 161: /* StatementNoShortIf: StatementWithoutTrailingSubstatement  */
-#line 913 "src/parser.y"
-                                         {
+  case 162: /* StatementNoShortIf: LabeledStatementNoShortIf  */
+#line 908 "src/parser.y"
+                                {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3436 "bin/parser.tab.c"
     break;
 
-  case 162: /* StatementNoShortIf: LabeledStatementNoShortIf  */
-#line 916 "src/parser.y"
-                                {
+  case 163: /* StatementNoShortIf: IfThenElseStatementNoShortIf  */
+#line 911 "src/parser.y"
+                                   {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3444 "bin/parser.tab.c"
     break;
 
-  case 163: /* StatementNoShortIf: IfThenElseStatementNoShortIf  */
-#line 919 "src/parser.y"
-                                   {
+  case 164: /* StatementNoShortIf: WhileStatementNoShortIf  */
+#line 914 "src/parser.y"
+                              {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3452 "bin/parser.tab.c"
     break;
 
-  case 164: /* StatementNoShortIf: WhileStatementNoShortIf  */
-#line 922 "src/parser.y"
-                              {
+  case 165: /* StatementNoShortIf: ForStatementNoShortIf  */
+#line 917 "src/parser.y"
+                            {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3460 "bin/parser.tab.c"
     break;
 
-  case 165: /* StatementNoShortIf: ForStatementNoShortIf  */
-#line 925 "src/parser.y"
-                            {
+  case 166: /* StatementWithoutTrailingSubstatement: Block  */
+#line 922 "src/parser.y"
+          {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3468 "bin/parser.tab.c"
     break;
 
-  case 166: /* StatementWithoutTrailingSubstatement: Block  */
-#line 930 "src/parser.y"
-          {
-        (yyval.exp) = (yyvsp[0].exp);
+  case 167: /* StatementWithoutTrailingSubstatement: EmptyStatement  */
+#line 925 "src/parser.y"
+                     {
+        (yyval.exp) = NULL;
     }
 #line 3476 "bin/parser.tab.c"
     break;
 
-  case 167: /* StatementWithoutTrailingSubstatement: EmptyStatement  */
-#line 933 "src/parser.y"
-                     {
-        (yyval.exp) = NULL;
+  case 168: /* StatementWithoutTrailingSubstatement: ExpressionStatement  */
+#line 928 "src/parser.y"
+                          {
+        (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3484 "bin/parser.tab.c"
     break;
 
-  case 168: /* StatementWithoutTrailingSubstatement: ExpressionStatement  */
-#line 936 "src/parser.y"
-                          {
+  case 169: /* StatementWithoutTrailingSubstatement: BreakStatement  */
+#line 931 "src/parser.y"
+                     {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3492 "bin/parser.tab.c"
     break;
 
-  case 169: /* StatementWithoutTrailingSubstatement: BreakStatement  */
-#line 939 "src/parser.y"
-                     {
+  case 170: /* StatementWithoutTrailingSubstatement: ContinueStatement  */
+#line 934 "src/parser.y"
+                        {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3500 "bin/parser.tab.c"
     break;
 
-  case 170: /* StatementWithoutTrailingSubstatement: ContinueStatement  */
-#line 942 "src/parser.y"
-                        {
+  case 171: /* StatementWithoutTrailingSubstatement: ReturnStatement  */
+#line 937 "src/parser.y"
+                      {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3508 "bin/parser.tab.c"
     break;
 
-  case 171: /* StatementWithoutTrailingSubstatement: ReturnStatement  */
-#line 945 "src/parser.y"
-                      {
+  case 172: /* StatementWithoutTrailingSubstatement: SynchronizedStatement  */
+#line 940 "src/parser.y"
+                            {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3516 "bin/parser.tab.c"
     break;
 
-  case 172: /* StatementWithoutTrailingSubstatement: SynchronizedStatement  */
-#line 948 "src/parser.y"
-                            {
+  case 173: /* StatementWithoutTrailingSubstatement: ThrowStatement  */
+#line 943 "src/parser.y"
+                     {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3524 "bin/parser.tab.c"
     break;
 
-  case 173: /* StatementWithoutTrailingSubstatement: ThrowStatement  */
-#line 951 "src/parser.y"
-                     {
+  case 174: /* StatementWithoutTrailingSubstatement: TryStatement  */
+#line 946 "src/parser.y"
+                   {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3532 "bin/parser.tab.c"
     break;
 
-  case 174: /* StatementWithoutTrailingSubstatement: TryStatement  */
-#line 954 "src/parser.y"
-                   {
-        (yyval.exp) = (yyvsp[0].exp);
+  case 175: /* EmptyStatement: Semicolon  */
+#line 951 "src/parser.y"
+              {
+        (yyval.exp) = NULL;
     }
 #line 3540 "bin/parser.tab.c"
     break;
 
-  case 175: /* EmptyStatement: Semicolon  */
-#line 959 "src/parser.y"
-              {
-        (yyval.exp) = NULL;
-    }
-#line 3548 "bin/parser.tab.c"
-    break;
-
   case 176: /* LabeledStatement: Identifier Semicolon Statement  */
-#line 964 "src/parser.y"
+#line 956 "src/parser.y"
                                    {
         struct node* memArr[2];
         memArr[0] = makeleaf((yyvsp[-2].data));
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("LabeledStatements", memArr, 2, 0);
     }
-#line 3559 "bin/parser.tab.c"
+#line 3551 "bin/parser.tab.c"
     break;
 
   case 177: /* LabeledStatementNoShortIf: Identifier Semicolon StatementNoShortIf  */
-#line 972 "src/parser.y"
+#line 964 "src/parser.y"
                                             {
         struct node* memArr[2];
         memArr[0] = makeleaf((yyvsp[-2].data));
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("IfThen", memArr, 2, 0);
     }
-#line 3570 "bin/parser.tab.c"
+#line 3562 "bin/parser.tab.c"
     break;
 
   case 178: /* ExpressionStatement: StatementExpression Semicolon  */
-#line 980 "src/parser.y"
+#line 972 "src/parser.y"
                                   {
         (yyval.exp) = (yyvsp[-1].exp);
+    }
+#line 3570 "bin/parser.tab.c"
+    break;
+
+  case 179: /* StatementExpression: Assignment  */
+#line 977 "src/parser.y"
+               {
+        (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3578 "bin/parser.tab.c"
     break;
 
-  case 179: /* StatementExpression: Assignment  */
-#line 985 "src/parser.y"
-               {
+  case 180: /* StatementExpression: PreIncrementExpression  */
+#line 980 "src/parser.y"
+                             {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3586 "bin/parser.tab.c"
     break;
 
-  case 180: /* StatementExpression: PreIncrementExpression  */
-#line 988 "src/parser.y"
+  case 181: /* StatementExpression: PreDecrementExpression  */
+#line 983 "src/parser.y"
                              {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3594 "bin/parser.tab.c"
     break;
 
-  case 181: /* StatementExpression: PreDecrementExpression  */
-#line 991 "src/parser.y"
-                             {
+  case 182: /* StatementExpression: PostIncrementExpression  */
+#line 986 "src/parser.y"
+                              {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3602 "bin/parser.tab.c"
     break;
 
-  case 182: /* StatementExpression: PostIncrementExpression  */
-#line 994 "src/parser.y"
+  case 183: /* StatementExpression: PostDecrementExpression  */
+#line 989 "src/parser.y"
                               {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3610 "bin/parser.tab.c"
     break;
 
-  case 183: /* StatementExpression: PostDecrementExpression  */
-#line 997 "src/parser.y"
-                              {
+  case 184: /* StatementExpression: MethodInvocation  */
+#line 992 "src/parser.y"
+                       {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3618 "bin/parser.tab.c"
     break;
 
-  case 184: /* StatementExpression: MethodInvocation  */
-#line 1000 "src/parser.y"
-                       {
+  case 185: /* StatementExpression: ClassInstanceCreationExpression  */
+#line 995 "src/parser.y"
+                                     {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3626 "bin/parser.tab.c"
     break;
 
-  case 185: /* StatementExpression: ClassInstanceCreationExpression  */
-#line 1003 "src/parser.y"
-                                     {
-        (yyval.exp) = (yyvsp[0].exp);
-    }
-#line 3634 "bin/parser.tab.c"
-    break;
-
   case 186: /* IfThenStatement: If LeftParanthesis Expression RightParanthesis Statement  */
-#line 1008 "src/parser.y"
+#line 1000 "src/parser.y"
                                                              {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("IfThen", memArr, 2, 1);
     }
-#line 3645 "bin/parser.tab.c"
+#line 3637 "bin/parser.tab.c"
     break;
 
   case 187: /* IfThenElseStatement: If LeftParanthesis Expression RightParanthesis StatementNoShortIf Else Statement  */
-#line 1016 "src/parser.y"
+#line 1008 "src/parser.y"
                                                                                      {
         struct node* memArr[3];
         memArr[0] = (yyvsp[-4].exp);
@@ -3653,11 +3645,11 @@ yyreduce:
         memArr[2] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("IfElse", memArr, 3, 1);
     }
-#line 3657 "bin/parser.tab.c"
+#line 3649 "bin/parser.tab.c"
     break;
 
   case 188: /* IfThenElseStatementNoShortIf: If LeftParanthesis Expression RightParanthesis StatementNoShortIf Else StatementNoShortIf  */
-#line 1025 "src/parser.y"
+#line 1017 "src/parser.y"
                                                                                               {
         struct node* memArr[3];
         memArr[0] = (yyvsp[-4].exp);
@@ -3665,33 +3657,33 @@ yyreduce:
         memArr[2] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("IfElse_If", memArr, 3, 1);
     }
-#line 3669 "bin/parser.tab.c"
+#line 3661 "bin/parser.tab.c"
     break;
 
   case 189: /* WhileStatement: While LeftParanthesis Expression RightParanthesis Statement  */
-#line 1034 "src/parser.y"
+#line 1026 "src/parser.y"
                                                                 {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("While", memArr, 2, 1);
     }
-#line 3680 "bin/parser.tab.c"
+#line 3672 "bin/parser.tab.c"
     break;
 
   case 190: /* WhileStatementNoShortIf: While LeftParanthesis Expression RightParanthesis StatementNoShortIf  */
-#line 1042 "src/parser.y"
+#line 1034 "src/parser.y"
                                                                          {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("While", memArr, 2, 1);
     }
-#line 3691 "bin/parser.tab.c"
+#line 3683 "bin/parser.tab.c"
     break;
 
   case 191: /* ForStatement: For LeftParanthesis ForInit_opt Semicolon Expression_opt Semicolon ForUpdate_opt RightParanthesis Statement  */
-#line 1050 "src/parser.y"
+#line 1042 "src/parser.y"
                                                                                                                 {
         struct node* memArr[4];
         memArr[0] = (yyvsp[-6].exp);
@@ -3700,11 +3692,11 @@ yyreduce:
         memArr[3] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("For", memArr, 4, 1);
     }
-#line 3704 "bin/parser.tab.c"
+#line 3696 "bin/parser.tab.c"
     break;
 
   case 192: /* ForStatementNoShortIf: For LeftParanthesis ForInit_opt Semicolon Expression_opt Semicolon ForUpdate_opt RightParanthesis StatementNoShortIf  */
-#line 1060 "src/parser.y"
+#line 1052 "src/parser.y"
                                                                                                                          {
         struct node* memArr[4];
         memArr[0] = (yyvsp[-6].exp);
@@ -3713,194 +3705,194 @@ yyreduce:
         memArr[3] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("For", memArr, 4, 1);
     }
-#line 3717 "bin/parser.tab.c"
+#line 3709 "bin/parser.tab.c"
     break;
 
   case 193: /* ForInit_opt: %empty  */
-#line 1069 "src/parser.y"
+#line 1061 "src/parser.y"
              { 
     (yyval.exp) = NULL; 
     }
-#line 3725 "bin/parser.tab.c"
+#line 3717 "bin/parser.tab.c"
     break;
 
   case 194: /* ForInit_opt: ForInit  */
-#line 1072 "src/parser.y"
+#line 1064 "src/parser.y"
               {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("ForInit", memArr, 1, 1);
     }
-#line 3735 "bin/parser.tab.c"
+#line 3727 "bin/parser.tab.c"
     break;
 
   case 195: /* Expression_opt: %empty  */
-#line 1078 "src/parser.y"
+#line 1070 "src/parser.y"
                 { 
     (yyval.exp) = NULL; 
     }
-#line 3743 "bin/parser.tab.c"
+#line 3735 "bin/parser.tab.c"
     break;
 
   case 196: /* Expression_opt: Expression  */
-#line 1081 "src/parser.y"
+#line 1073 "src/parser.y"
                  {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Expression", memArr, 1, 1);
     }
-#line 3753 "bin/parser.tab.c"
+#line 3745 "bin/parser.tab.c"
     break;
 
   case 197: /* ForUpdate_opt: %empty  */
-#line 1087 "src/parser.y"
+#line 1079 "src/parser.y"
                { 
     (yyval.exp) = NULL ;
     }
-#line 3761 "bin/parser.tab.c"
+#line 3753 "bin/parser.tab.c"
     break;
 
   case 198: /* ForUpdate_opt: ForUpdate  */
-#line 1090 "src/parser.y"
+#line 1082 "src/parser.y"
                 {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("ForUpdate", memArr, 1, 1);
     }
-#line 3771 "bin/parser.tab.c"
+#line 3763 "bin/parser.tab.c"
     break;
 
   case 199: /* ForInit: StatementExpressionList  */
-#line 1097 "src/parser.y"
+#line 1089 "src/parser.y"
                              {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("ForInit", memArr, 1, 1);
     }
-#line 3781 "bin/parser.tab.c"
+#line 3773 "bin/parser.tab.c"
     break;
 
   case 200: /* ForInit: LocalVariableDeclaration  */
-#line 1102 "src/parser.y"
+#line 1094 "src/parser.y"
                                {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("ForInit", memArr, 1, 1);
     }
-#line 3791 "bin/parser.tab.c"
+#line 3783 "bin/parser.tab.c"
     break;
 
   case 201: /* ForUpdate: StatementExpressionList  */
-#line 1109 "src/parser.y"
+#line 1101 "src/parser.y"
                             {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("ForUpdate", memArr, 1, 1);
     }
-#line 3801 "bin/parser.tab.c"
+#line 3793 "bin/parser.tab.c"
     break;
 
   case 202: /* StatementExpressionList: StatementExpression  */
-#line 1116 "src/parser.y"
+#line 1108 "src/parser.y"
                         {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("StatementExpression", memArr, 1, 0);
     }
-#line 3811 "bin/parser.tab.c"
+#line 3803 "bin/parser.tab.c"
     break;
 
   case 203: /* StatementExpressionList: StatementExpressionList Comma StatementExpression  */
-#line 1121 "src/parser.y"
+#line 1113 "src/parser.y"
                                                         {
         struct node * memArr[2];
         memArr[0] =(yyvsp[-2].exp);
         memArr[1] =(yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("StatementExpression", memArr, 2, 0);
     }
-#line 3822 "bin/parser.tab.c"
+#line 3814 "bin/parser.tab.c"
     break;
 
   case 204: /* BreakStatement: Break Identifier_opt Semicolon  */
-#line 1129 "src/parser.y"
+#line 1121 "src/parser.y"
                                    {
         struct node * memArr[1];
         memArr[0] =(yyvsp[-1].exp);
         (yyval.exp) = makeInternalNode("break", memArr, 1, 1);
     }
-#line 3832 "bin/parser.tab.c"
+#line 3824 "bin/parser.tab.c"
     break;
 
   case 205: /* Identifier_opt: %empty  */
-#line 1136 "src/parser.y"
+#line 1128 "src/parser.y"
     {
         (yyval.exp) = NULL;
+    }
+#line 3832 "bin/parser.tab.c"
+    break;
+
+  case 206: /* Identifier_opt: Identifier  */
+#line 1130 "src/parser.y"
+                  {
+        (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 3840 "bin/parser.tab.c"
     break;
 
-  case 206: /* Identifier_opt: Identifier  */
-#line 1138 "src/parser.y"
-                  {
-        (yyval.exp) = makeleaf((yyvsp[0].data));
-    }
-#line 3848 "bin/parser.tab.c"
-    break;
-
   case 207: /* ContinueStatement: Continue Identifier_opt Semicolon  */
-#line 1143 "src/parser.y"
+#line 1135 "src/parser.y"
                                       {
         struct node * memArr[1];
         memArr[0] =(yyvsp[-1].exp);
         (yyval.exp) = makeInternalNode("continue", memArr, 1, 1);
     }
-#line 3858 "bin/parser.tab.c"
+#line 3850 "bin/parser.tab.c"
     break;
 
   case 208: /* ReturnStatement: Return Expression_opt Semicolon  */
-#line 1150 "src/parser.y"
+#line 1142 "src/parser.y"
                                     {
         struct node * memArr[1];
         memArr[0] =(yyvsp[-1].exp);
         (yyval.exp) = makeInternalNode("return", memArr, 1, 1);
     }
-#line 3868 "bin/parser.tab.c"
+#line 3860 "bin/parser.tab.c"
     break;
 
   case 209: /* ThrowStatement: THROW Expression Semicolon  */
-#line 1157 "src/parser.y"
+#line 1149 "src/parser.y"
                                {
         struct node * memArr[1];
         memArr[0] = (yyvsp[-1].exp);
         (yyval.exp) = makeInternalNode("throw", memArr, 1, 1);
     }
-#line 3878 "bin/parser.tab.c"
+#line 3870 "bin/parser.tab.c"
     break;
 
   case 210: /* SynchronizedStatement: Synchronized LeftParanthesis Expression RightParanthesis Block  */
-#line 1164 "src/parser.y"
+#line 1156 "src/parser.y"
                                                                    {
         struct node * memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("synchronized", memArr, 2, 1);
     }
-#line 3889 "bin/parser.tab.c"
+#line 3881 "bin/parser.tab.c"
     break;
 
   case 211: /* TryStatement: Try Block Catches  */
-#line 1172 "src/parser.y"
+#line 1164 "src/parser.y"
                       {
         struct node * memArr[2];
         memArr[0] = (yyvsp[-1].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("tryCatches", memArr, 2, 1);
     }
-#line 3900 "bin/parser.tab.c"
+#line 3892 "bin/parser.tab.c"
     break;
 
   case 212: /* TryStatement: Try Block Catches_opt Finally  */
-#line 1178 "src/parser.y"
+#line 1170 "src/parser.y"
                                     {
         struct node * memArr[3];
         memArr[0] = (yyvsp[-2].exp);
@@ -3908,144 +3900,144 @@ yyreduce:
         memArr[2] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("tryCtachesFinally", memArr, 3, 1);
     }
-#line 3912 "bin/parser.tab.c"
+#line 3904 "bin/parser.tab.c"
     break;
 
   case 213: /* Catches_opt: %empty  */
-#line 1186 "src/parser.y"
+#line 1178 "src/parser.y"
              {
         (yyval.exp) = NULL; 
     }
-#line 3920 "bin/parser.tab.c"
+#line 3912 "bin/parser.tab.c"
     break;
 
   case 214: /* Catches_opt: Catches  */
-#line 1189 "src/parser.y"
+#line 1181 "src/parser.y"
               {
         struct node * memArr[1];
         memArr[0] =(yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Catches", memArr, 1, 1);
     }
-#line 3930 "bin/parser.tab.c"
+#line 3922 "bin/parser.tab.c"
     break;
 
   case 215: /* Catches: CatchClause  */
-#line 1196 "src/parser.y"
+#line 1188 "src/parser.y"
                 {
         struct node * memArr[1];
         memArr[0] =(yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("catch", memArr, 1, 0);
     }
-#line 3940 "bin/parser.tab.c"
+#line 3932 "bin/parser.tab.c"
     break;
 
   case 216: /* Catches: Catches CatchClause  */
-#line 1201 "src/parser.y"
+#line 1193 "src/parser.y"
                           {
         struct node * memArr[2];
         memArr[0] =(yyvsp[-1].exp);
         memArr[1] =(yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Catch", memArr, 2, 0);
     }
-#line 3951 "bin/parser.tab.c"
+#line 3943 "bin/parser.tab.c"
     break;
 
   case 217: /* CatchClause: Catch LeftParanthesis FormalParameter RightParanthesis Block  */
-#line 1209 "src/parser.y"
+#line 1201 "src/parser.y"
                                                                  {
         struct node * memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("CatchClause", memArr, 2, 0);
     }
-#line 3962 "bin/parser.tab.c"
+#line 3954 "bin/parser.tab.c"
     break;
 
   case 218: /* Finally: FINALLY Block  */
-#line 1217 "src/parser.y"
+#line 1209 "src/parser.y"
                   {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("finally", memArr, 1, 1);
     }
-#line 3972 "bin/parser.tab.c"
+#line 3964 "bin/parser.tab.c"
     break;
 
   case 219: /* Primary: PrimaryNoNewArray  */
-#line 1224 "src/parser.y"
+#line 1216 "src/parser.y"
                       {
+        (yyval.exp) = (yyvsp[0].exp);
+    }
+#line 3972 "bin/parser.tab.c"
+    break;
+
+  case 220: /* Primary: ArrayCreationExpression  */
+#line 1219 "src/parser.y"
+                              {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 3980 "bin/parser.tab.c"
     break;
 
-  case 220: /* Primary: ArrayCreationExpression  */
-#line 1227 "src/parser.y"
-                              {
-        (yyval.exp) = (yyvsp[0].exp);
-    }
-#line 3988 "bin/parser.tab.c"
-    break;
-
   case 221: /* PrimaryNoNewArray: Literal  */
-#line 1232 "src/parser.y"
+#line 1224 "src/parser.y"
             {
         printf("InternalNode at line 1222 : %s\n", (yyvsp[0].exp)->data);
         (yyval.exp) = (yyvsp[0].exp);
     }
-#line 3997 "bin/parser.tab.c"
+#line 3989 "bin/parser.tab.c"
     break;
 
   case 222: /* PrimaryNoNewArray: This  */
-#line 1236 "src/parser.y"
+#line 1228 "src/parser.y"
            {
         (yyval.exp) = makeleaf((yyvsp[0].data));
+    }
+#line 3997 "bin/parser.tab.c"
+    break;
+
+  case 223: /* PrimaryNoNewArray: LeftParanthesis Expression RightParanthesis  */
+#line 1231 "src/parser.y"
+                                                   {
+        (yyval.exp) = (yyvsp[-1].exp);
     }
 #line 4005 "bin/parser.tab.c"
     break;
 
-  case 223: /* PrimaryNoNewArray: LeftParanthesis Expression RightParanthesis  */
-#line 1239 "src/parser.y"
-                                                   {
-        (yyval.exp) = (yyvsp[-1].exp);
+  case 224: /* PrimaryNoNewArray: ClassInstanceCreationExpression  */
+#line 1234 "src/parser.y"
+                                      {
+        (yyval.exp) = (yyvsp[0].exp);
     }
 #line 4013 "bin/parser.tab.c"
     break;
 
-  case 224: /* PrimaryNoNewArray: ClassInstanceCreationExpression  */
-#line 1242 "src/parser.y"
-                                      {
+  case 225: /* PrimaryNoNewArray: FieldAccess  */
+#line 1237 "src/parser.y"
+                  {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 4021 "bin/parser.tab.c"
     break;
 
-  case 225: /* PrimaryNoNewArray: FieldAccess  */
-#line 1245 "src/parser.y"
-                  {
+  case 226: /* PrimaryNoNewArray: MethodInvocation  */
+#line 1240 "src/parser.y"
+                       {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 4029 "bin/parser.tab.c"
     break;
 
-  case 226: /* PrimaryNoNewArray: MethodInvocation  */
-#line 1248 "src/parser.y"
-                       {
+  case 227: /* PrimaryNoNewArray: ArrayAccess  */
+#line 1243 "src/parser.y"
+                  {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 4037 "bin/parser.tab.c"
     break;
 
-  case 227: /* PrimaryNoNewArray: ArrayAccess  */
-#line 1251 "src/parser.y"
-                  {
-        (yyval.exp) = (yyvsp[0].exp);
-    }
-#line 4045 "bin/parser.tab.c"
-    break;
-
   case 228: /* ClassInstanceCreationExpression: New ClassType LeftParanthesis ArgumentList_opt RightParanthesis  */
-#line 1256 "src/parser.y"
+#line 1248 "src/parser.y"
                                                                     {
         struct node * memArr[3];
         memArr[0] = makeleaf((yyvsp[-4].data));
@@ -4053,32 +4045,32 @@ yyreduce:
         memArr[2] =(yyvsp[-1].exp);
         (yyval.exp) = makeInternalNode("ClassInstance", memArr, 3, 1);
     }
-#line 4057 "bin/parser.tab.c"
+#line 4049 "bin/parser.tab.c"
     break;
 
   case 229: /* ArgumentList: Expression  */
-#line 1265 "src/parser.y"
+#line 1257 "src/parser.y"
                {
         struct node * memArr[1];
         memArr[0] =(yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("ArgumentList", memArr, 1, 0);
     }
-#line 4067 "bin/parser.tab.c"
+#line 4059 "bin/parser.tab.c"
     break;
 
   case 230: /* ArgumentList: ArgumentList Comma Expression  */
-#line 1270 "src/parser.y"
+#line 1262 "src/parser.y"
                                     {
         struct node * memArr[2];
         memArr[0] =(yyvsp[-2].exp);
         memArr[1] =(yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("ArgumentList", memArr, 2, 0);
     }
-#line 4078 "bin/parser.tab.c"
+#line 4070 "bin/parser.tab.c"
     break;
 
   case 231: /* ArrayCreationExpression: New PrimitiveType DimExprs Dims_opt  */
-#line 1278 "src/parser.y"
+#line 1270 "src/parser.y"
                                         {
         struct node * memArr[4];
         memArr[0] = makeleaf((yyvsp[-3].data));
@@ -4087,11 +4079,11 @@ yyreduce:
         memArr[3] =(yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("ArrayCreation", memArr, 4, 0);
     }
-#line 4091 "bin/parser.tab.c"
+#line 4083 "bin/parser.tab.c"
     break;
 
   case 232: /* ArrayCreationExpression: New ClassOrInterfaceType DimExprs Dims_opt  */
-#line 1286 "src/parser.y"
+#line 1278 "src/parser.y"
                                                  {
         struct node * memArr[4];
         memArr[0] = makeleaf((yyvsp[-3].data));
@@ -4100,382 +4092,382 @@ yyreduce:
         memArr[3] =(yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("ArrayCreation", memArr, 4, 0);
     }
-#line 4104 "bin/parser.tab.c"
+#line 4096 "bin/parser.tab.c"
     break;
 
   case 233: /* Dims_opt: %empty  */
-#line 1295 "src/parser.y"
+#line 1287 "src/parser.y"
           { 
     (yyval.exp) = NULL; 
+    }
+#line 4104 "bin/parser.tab.c"
+    break;
+
+  case 234: /* Dims_opt: Dims  */
+#line 1290 "src/parser.y"
+          {
+        (yyval.exp) = (yyvsp[0].exp);
     }
 #line 4112 "bin/parser.tab.c"
     break;
 
-  case 234: /* Dims_opt: Dims  */
-#line 1298 "src/parser.y"
-          {
-        (yyval.exp) = (yyvsp[0].exp);
-    }
-#line 4120 "bin/parser.tab.c"
-    break;
-
   case 235: /* DimExprs: DimExpr  */
-#line 1303 "src/parser.y"
+#line 1295 "src/parser.y"
             {
         struct node * memArr[1];
         memArr[0] =(yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("[]", memArr, 1, 0);
     }
-#line 4130 "bin/parser.tab.c"
+#line 4122 "bin/parser.tab.c"
     break;
 
   case 236: /* DimExprs: DimExprs DimExpr  */
-#line 1308 "src/parser.y"
+#line 1300 "src/parser.y"
                        {
         struct node * memArr[2];
         memArr[0] =(yyvsp[-1].exp);
         memArr[1] =(yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("[]",memArr,2, 0);
     }
-#line 4141 "bin/parser.tab.c"
+#line 4133 "bin/parser.tab.c"
     break;
 
   case 237: /* DimExpr: LeftSquareBracket Expression RightSquareBracket  */
-#line 1316 "src/parser.y"
+#line 1308 "src/parser.y"
                                                     {
         struct node * memArr[1];
         memArr[0] =(yyvsp[-1].exp);
         (yyval.exp) = makeInternalNode("[]", memArr, 1, 0);
     }
-#line 4151 "bin/parser.tab.c"
+#line 4143 "bin/parser.tab.c"
     break;
 
   case 238: /* Dims: LeftSquareBracket RightSquareBracket  */
-#line 1323 "src/parser.y"
+#line 1315 "src/parser.y"
                                          {
         (yyval.exp) = makeleaf("[]");
+    }
+#line 4151 "bin/parser.tab.c"
+    break;
+
+  case 239: /* Dims: Dims LeftSquareBracket RightSquareBracket  */
+#line 1318 "src/parser.y"
+                                                {
+        (yyval.exp) = makeleaf(concatenate_string((yyvsp[-2].exp)->data,"[]"));
     }
 #line 4159 "bin/parser.tab.c"
     break;
 
-  case 239: /* Dims: Dims LeftSquareBracket RightSquareBracket  */
-#line 1326 "src/parser.y"
-                                                {
-        (yyval.exp) = makeleaf(concatenate_string((yyvsp[-2].exp)->data,"[]"));
+  case 240: /* FieldAccess: Primary Dot Identifier  */
+#line 1323 "src/parser.y"
+                           {
+        (yyval.exp) = makeleaf(concatenate_string((yyvsp[-2].exp)->data,(yyvsp[0].data)));
     }
 #line 4167 "bin/parser.tab.c"
     break;
 
-  case 240: /* FieldAccess: Primary Dot Identifier  */
-#line 1331 "src/parser.y"
+  case 241: /* FieldAccess: Super Dot Identifier  */
+#line 1326 "src/parser.y"
                            {
-        (yyval.exp) = makeleaf(concatenate_string((yyvsp[-2].exp)->data,(yyvsp[0].data)));
+        (yyval.exp) = makeleaf(concatenate_string((yyvsp[-2].data),(yyvsp[0].data)));
     }
 #line 4175 "bin/parser.tab.c"
     break;
 
-  case 241: /* FieldAccess: Super Dot Identifier  */
-#line 1334 "src/parser.y"
-                           {
-        (yyval.exp) = makeleaf(concatenate_string((yyvsp[-2].data),(yyvsp[0].data)));
-    }
-#line 4183 "bin/parser.tab.c"
-    break;
-
   case 242: /* MethodInvocation: Name LeftParanthesis ArgumentList_opt RightParanthesis  */
-#line 1339 "src/parser.y"
+#line 1331 "src/parser.y"
                                                            {
         struct node * memArr[1];
         memArr[0] = (yyvsp[-1].exp);
         (yyval.exp) = makeInternalNode((yyvsp[-3].exp)->data, memArr, 1, 1);
     }
-#line 4193 "bin/parser.tab.c"
+#line 4185 "bin/parser.tab.c"
     break;
 
   case 243: /* MethodInvocation: Primary Dot Identifier LeftParanthesis ArgumentList_opt RightParanthesis  */
-#line 1344 "src/parser.y"
+#line 1336 "src/parser.y"
                                                                                {
         struct node * memArr[1];
         memArr[0] = (yyvsp[-1].exp);
         (yyval.exp) = makeInternalNode(concatenate_string((yyvsp[-5].exp)->data,concatenate_string("_",(yyvsp[-3].data))), memArr, 1, 1);
     }
-#line 4203 "bin/parser.tab.c"
+#line 4195 "bin/parser.tab.c"
     break;
 
   case 244: /* MethodInvocation: Super Dot Identifier LeftParanthesis ArgumentList_opt RightParanthesis  */
-#line 1349 "src/parser.y"
+#line 1341 "src/parser.y"
                                                                              {
         struct node * memArr[1];
         memArr[0] = (yyvsp[-1].exp);
         (yyval.exp) = makeInternalNode(concatenate_string((yyvsp[-5].data),concatenate_string("_",(yyvsp[-3].data))), memArr, 1, 1);
     }
-#line 4213 "bin/parser.tab.c"
+#line 4205 "bin/parser.tab.c"
     break;
 
   case 245: /* ArrayAccess: Name LeftSquareBracket Expression RightSquareBracket  */
-#line 1356 "src/parser.y"
+#line 1348 "src/parser.y"
                                                         {
         struct node * memArr[2];
         memArr[0] = (yyvsp[-3].exp);
         memArr[1] = (yyvsp[-1].exp);
         (yyval.exp) = makeInternalNode("ArrayAccess", memArr, 2, 0);
     }
-#line 4224 "bin/parser.tab.c"
+#line 4216 "bin/parser.tab.c"
     break;
 
   case 246: /* ArrayAccess: PrimaryNoNewArray LeftSquareBracket Expression RightSquareBracket  */
-#line 1362 "src/parser.y"
+#line 1354 "src/parser.y"
                                                                         {
         struct node * memArr[2];
         memArr[0] = (yyvsp[-3].exp);
         memArr[1] = (yyvsp[-1].exp);
         (yyval.exp) = makeInternalNode("ArrayAccess", memArr, 2, 0);
     }
-#line 4235 "bin/parser.tab.c"
+#line 4227 "bin/parser.tab.c"
     break;
 
   case 247: /* PostfixExpression: Primary  */
-#line 1370 "src/parser.y"
+#line 1362 "src/parser.y"
             {
         printf("Internal node line 1359 : %s\n", (yyvsp[0].exp)->data);
+        (yyval.exp) = (yyvsp[0].exp);
+    }
+#line 4236 "bin/parser.tab.c"
+    break;
+
+  case 248: /* PostfixExpression: Name  */
+#line 1366 "src/parser.y"
+           {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 4244 "bin/parser.tab.c"
     break;
 
-  case 248: /* PostfixExpression: Name  */
-#line 1374 "src/parser.y"
-           {
+  case 249: /* PostfixExpression: PostIncrementExpression  */
+#line 1369 "src/parser.y"
+                              {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 4252 "bin/parser.tab.c"
     break;
 
-  case 249: /* PostfixExpression: PostIncrementExpression  */
-#line 1377 "src/parser.y"
+  case 250: /* PostfixExpression: PostDecrementExpression  */
+#line 1372 "src/parser.y"
                               {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 4260 "bin/parser.tab.c"
     break;
 
-  case 250: /* PostfixExpression: PostDecrementExpression  */
-#line 1380 "src/parser.y"
-                              {
-        (yyval.exp) = (yyvsp[0].exp);
-    }
-#line 4268 "bin/parser.tab.c"
-    break;
-
   case 251: /* PostIncrementExpression: PostfixExpression PlusPlus  */
-#line 1385 "src/parser.y"
+#line 1377 "src/parser.y"
                                {
         struct node * memArr[2];
         memArr[0] = (yyvsp[-1].exp);
         memArr[1] = makeleaf((yyvsp[0].data));
         (yyval.exp) = makeInternalNode("Post", memArr, 2, 1);
     }
-#line 4279 "bin/parser.tab.c"
+#line 4271 "bin/parser.tab.c"
     break;
 
   case 252: /* PostDecrementExpression: PostfixExpression MinusMinus  */
-#line 1393 "src/parser.y"
+#line 1385 "src/parser.y"
                                  {
         struct node * memArr[2];
         memArr[0] = (yyvsp[-1].exp);
         memArr[1] = makeleaf((yyvsp[0].data));
         (yyval.exp) = makeInternalNode("Post", memArr, 2, 1);
     }
-#line 4290 "bin/parser.tab.c"
+#line 4282 "bin/parser.tab.c"
     break;
 
   case 253: /* UnaryExpression: PreIncrementExpression  */
-#line 1401 "src/parser.y"
+#line 1393 "src/parser.y"
                            {
+        (yyval.exp) = (yyvsp[0].exp);
+    }
+#line 4290 "bin/parser.tab.c"
+    break;
+
+  case 254: /* UnaryExpression: PreDecrementExpression  */
+#line 1396 "src/parser.y"
+                             {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 4298 "bin/parser.tab.c"
     break;
 
-  case 254: /* UnaryExpression: PreDecrementExpression  */
-#line 1404 "src/parser.y"
-                             {
-        (yyval.exp) = (yyvsp[0].exp);
-    }
-#line 4306 "bin/parser.tab.c"
-    break;
-
   case 255: /* UnaryExpression: Addition UnaryExpression  */
-#line 1407 "src/parser.y"
+#line 1399 "src/parser.y"
                                {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("UnaryAddition", memArr, 1, 1);
     }
-#line 4316 "bin/parser.tab.c"
+#line 4308 "bin/parser.tab.c"
     break;
 
   case 256: /* UnaryExpression: Substraction UnaryExpression  */
-#line 1412 "src/parser.y"
+#line 1404 "src/parser.y"
                                    {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("UnarySubstraction", memArr, 1, 1);
     }
-#line 4326 "bin/parser.tab.c"
+#line 4318 "bin/parser.tab.c"
     break;
 
   case 257: /* UnaryExpression: UnaryExpressionNotPlusMinus  */
-#line 1417 "src/parser.y"
+#line 1409 "src/parser.y"
                                   {
         printf("Internal node line 1405 : %s\n", (yyvsp[0].exp)->data);
         (yyval.exp) = (yyvsp[0].exp);
     }
-#line 4335 "bin/parser.tab.c"
+#line 4327 "bin/parser.tab.c"
     break;
 
   case 258: /* PreIncrementExpression: PlusPlus UnaryExpression  */
-#line 1423 "src/parser.y"
+#line 1415 "src/parser.y"
                              {
         struct node * memArr[2];
         memArr[0] = makeleaf((yyvsp[-1].data));
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Pre", memArr, 2, 1);
     }
-#line 4346 "bin/parser.tab.c"
+#line 4338 "bin/parser.tab.c"
     break;
 
   case 259: /* PreDecrementExpression: MinusMinus UnaryExpression  */
-#line 1431 "src/parser.y"
+#line 1423 "src/parser.y"
                                {
         struct node * memArr[2];
         memArr[0] = makeleaf((yyvsp[-1].data));
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Pre", memArr, 2, 1);
     }
-#line 4357 "bin/parser.tab.c"
+#line 4349 "bin/parser.tab.c"
     break;
 
   case 260: /* UnaryExpressionNotPlusMinus: PostfixExpression  */
-#line 1439 "src/parser.y"
+#line 1431 "src/parser.y"
                       {
         (yyval.exp) = (yyvsp[0].exp);
     }
-#line 4365 "bin/parser.tab.c"
+#line 4357 "bin/parser.tab.c"
     break;
 
   case 261: /* UnaryExpressionNotPlusMinus: Tilde UnaryExpression  */
-#line 1442 "src/parser.y"
+#line 1434 "src/parser.y"
                             {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Tilde", memArr, 1, 1);
     }
-#line 4375 "bin/parser.tab.c"
+#line 4367 "bin/parser.tab.c"
     break;
 
   case 262: /* UnaryExpressionNotPlusMinus: NotOperator UnaryExpression  */
-#line 1447 "src/parser.y"
+#line 1439 "src/parser.y"
                                   {
          struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("Not", memArr, 1, 1);
     }
-#line 4385 "bin/parser.tab.c"
+#line 4377 "bin/parser.tab.c"
     break;
 
   case 263: /* UnaryExpressionNotPlusMinus: CastExpression  */
-#line 1452 "src/parser.y"
+#line 1444 "src/parser.y"
                      {
         (yyval.exp) = (yyvsp[0].exp);
     }
-#line 4393 "bin/parser.tab.c"
+#line 4385 "bin/parser.tab.c"
     break;
 
   case 264: /* CastExpression: LeftParanthesis PrimitiveType Dims_opt RightParanthesis UnaryExpression  */
-#line 1457 "src/parser.y"
+#line 1449 "src/parser.y"
                                                                             {
         struct  node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         char * str = concatenate_string((yyvsp[-3].exp)->data, (yyvsp[-2].exp)->data);
         (yyval.exp) = makeInternalNode(str, memArr, 1, 1);
     }
-#line 4404 "bin/parser.tab.c"
+#line 4396 "bin/parser.tab.c"
     break;
 
   case 265: /* CastExpression: LeftParanthesis Expression RightParanthesis UnaryExpressionNotPlusMinus  */
-#line 1463 "src/parser.y"
+#line 1455 "src/parser.y"
                                                                               {
         struct  node * memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp) = makeInternalNode("CastExpression", memArr, 2, 1);
     }
-#line 4415 "bin/parser.tab.c"
+#line 4407 "bin/parser.tab.c"
     break;
 
   case 266: /* CastExpression: LeftParanthesis Name Dims RightParanthesis UnaryExpressionNotPlusMinus  */
-#line 1469 "src/parser.y"
+#line 1461 "src/parser.y"
                                                                              {
         struct node * memArr[1];
         memArr[0] = (yyvsp[0].exp);
         char * str = concatenate_string((yyvsp[-3].exp)->data, (yyvsp[-2].exp)->data);
         (yyval.exp) = makeInternalNode(str, memArr, 1, 1);
     }
-#line 4426 "bin/parser.tab.c"
+#line 4418 "bin/parser.tab.c"
     break;
 
   case 267: /* MultiplicativeExpression: UnaryExpression  */
-#line 1477 "src/parser.y"
+#line 1469 "src/parser.y"
                     {
         (yyval.exp) = (yyvsp[0].exp);
     }
-#line 4434 "bin/parser.tab.c"
+#line 4426 "bin/parser.tab.c"
     break;
 
   case 268: /* MultiplicativeExpression: MultiplicativeExpression Product UnaryExpression  */
-#line 1480 "src/parser.y"
+#line 1472 "src/parser.y"
                                                        {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp)  = makeInternalNode("Multiply", memArr, 2, 1); 
     }
-#line 4445 "bin/parser.tab.c"
+#line 4437 "bin/parser.tab.c"
     break;
 
   case 269: /* MultiplicativeExpression: MultiplicativeExpression Divide UnaryExpression  */
-#line 1486 "src/parser.y"
+#line 1478 "src/parser.y"
                                                       {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp)  = makeInternalNode("Divide", memArr, 2, 1); 
     }
-#line 4456 "bin/parser.tab.c"
+#line 4448 "bin/parser.tab.c"
     break;
 
   case 270: /* MultiplicativeExpression: MultiplicativeExpression Modulo UnaryExpression  */
-#line 1492 "src/parser.y"
+#line 1484 "src/parser.y"
                                                       {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp)  = makeInternalNode("Modulo", memArr, 2, 1); 
     }
-#line 4467 "bin/parser.tab.c"
+#line 4459 "bin/parser.tab.c"
     break;
 
   case 271: /* AdditiveExpression: MultiplicativeExpression  */
-#line 1500 "src/parser.y"
+#line 1492 "src/parser.y"
                              {
         (yyval.exp) = (yyvsp[0].exp);
     }
-#line 4475 "bin/parser.tab.c"
+#line 4467 "bin/parser.tab.c"
     break;
 
   case 272: /* AdditiveExpression: AdditiveExpression Addition MultiplicativeExpression  */
-#line 1503 "src/parser.y"
+#line 1495 "src/parser.y"
                                                            {
         struct node* memArr[2];
         printf("Internal node line 1491 : %s\n", (yyvsp[-2].exp)->data);
@@ -4484,259 +4476,259 @@ yyreduce:
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp)  = makeInternalNode("Addition", memArr, 2, 1); 
     }
-#line 4488 "bin/parser.tab.c"
+#line 4480 "bin/parser.tab.c"
     break;
 
   case 273: /* AdditiveExpression: AdditiveExpression Substraction MultiplicativeExpression  */
-#line 1511 "src/parser.y"
+#line 1503 "src/parser.y"
                                                                {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp)  = makeInternalNode("Substraction", memArr, 2, 1); 
     }
-#line 4499 "bin/parser.tab.c"
+#line 4491 "bin/parser.tab.c"
     break;
 
   case 274: /* ShiftExpression: AdditiveExpression  */
-#line 1519 "src/parser.y"
+#line 1511 "src/parser.y"
                        {
         (yyval.exp) = (yyvsp[0].exp);
     }
-#line 4507 "bin/parser.tab.c"
+#line 4499 "bin/parser.tab.c"
     break;
 
   case 275: /* ShiftExpression: ShiftExpression LeftShit AdditiveExpression  */
-#line 1522 "src/parser.y"
+#line 1514 "src/parser.y"
                                                   {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp)  = makeInternalNode("LeftShift", memArr, 2, 1); 
     }
-#line 4518 "bin/parser.tab.c"
+#line 4510 "bin/parser.tab.c"
     break;
 
   case 276: /* ShiftExpression: ShiftExpression RightShift AdditiveExpression  */
-#line 1528 "src/parser.y"
+#line 1520 "src/parser.y"
                                                     {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp)  = makeInternalNode("RightShift", memArr, 2, 1); 
     }
-#line 4529 "bin/parser.tab.c"
+#line 4521 "bin/parser.tab.c"
     break;
 
   case 277: /* ShiftExpression: ShiftExpression TripleGreaterThan AdditiveExpression  */
-#line 1534 "src/parser.y"
+#line 1526 "src/parser.y"
                                                            {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp)  = makeInternalNode("UnsignedRightShift", memArr, 2, 1); 
     }
-#line 4540 "bin/parser.tab.c"
+#line 4532 "bin/parser.tab.c"
     break;
 
   case 278: /* RelationalExpression: ShiftExpression  */
-#line 1542 "src/parser.y"
+#line 1534 "src/parser.y"
                     {
         (yyval.exp) = (yyvsp[0].exp);
     }
-#line 4548 "bin/parser.tab.c"
+#line 4540 "bin/parser.tab.c"
     break;
 
   case 279: /* RelationalExpression: RelationalExpression LessThan ShiftExpression  */
-#line 1545 "src/parser.y"
+#line 1537 "src/parser.y"
                                                     {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp)  = makeInternalNode("LessThan", memArr, 2, 1); 
     }
-#line 4559 "bin/parser.tab.c"
+#line 4551 "bin/parser.tab.c"
     break;
 
   case 280: /* RelationalExpression: RelationalExpression GreaterThan ShiftExpression  */
-#line 1551 "src/parser.y"
+#line 1543 "src/parser.y"
                                                        {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp)  = makeInternalNode("GreaterThan", memArr, 2, 1); 
     }
-#line 4570 "bin/parser.tab.c"
+#line 4562 "bin/parser.tab.c"
     break;
 
   case 281: /* RelationalExpression: RelationalExpression LessThanEqualTo ShiftExpression  */
-#line 1557 "src/parser.y"
+#line 1549 "src/parser.y"
                                                            {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp)  = makeInternalNode("LessThanEqualTo", memArr, 2, 1); 
     }
-#line 4581 "bin/parser.tab.c"
+#line 4573 "bin/parser.tab.c"
     break;
 
   case 282: /* RelationalExpression: RelationalExpression GreaterThanEqualTo ShiftExpression  */
-#line 1563 "src/parser.y"
+#line 1555 "src/parser.y"
                                                               {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp)  = makeInternalNode("GreaterThanEqualTo", memArr, 2, 1); 
     }
-#line 4592 "bin/parser.tab.c"
+#line 4584 "bin/parser.tab.c"
     break;
 
   case 283: /* RelationalExpression: RelationalExpression Instanceof ReferenceType  */
-#line 1569 "src/parser.y"
+#line 1561 "src/parser.y"
                                                     {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp)  = makeInternalNode("Instanceof", memArr, 2, 1); 
     }
-#line 4603 "bin/parser.tab.c"
+#line 4595 "bin/parser.tab.c"
     break;
 
   case 284: /* EqualityExpression: RelationalExpression  */
-#line 1577 "src/parser.y"
+#line 1569 "src/parser.y"
                          {
         (yyval.exp) = (yyvsp[0].exp);
     }
-#line 4611 "bin/parser.tab.c"
+#line 4603 "bin/parser.tab.c"
     break;
 
   case 285: /* EqualityExpression: EqualityExpression EqualToEqualTo RelationalExpression  */
-#line 1580 "src/parser.y"
+#line 1572 "src/parser.y"
                                                              {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp)  = makeInternalNode("Equalto_Equalto", memArr, 2, 1); 
     }
-#line 4622 "bin/parser.tab.c"
+#line 4614 "bin/parser.tab.c"
     break;
 
   case 286: /* EqualityExpression: EqualityExpression NotEqualTo RelationalExpression  */
-#line 1586 "src/parser.y"
+#line 1578 "src/parser.y"
                                                          {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp)  = makeInternalNode("Not_Equalto", memArr, 2, 1); 
     }
-#line 4633 "bin/parser.tab.c"
+#line 4625 "bin/parser.tab.c"
     break;
 
   case 287: /* AndExpression: EqualityExpression  */
-#line 1594 "src/parser.y"
+#line 1586 "src/parser.y"
                        {
         (yyval.exp) = (yyvsp[0].exp);
     }
-#line 4641 "bin/parser.tab.c"
+#line 4633 "bin/parser.tab.c"
     break;
 
   case 288: /* AndExpression: AndExpression BitwiseAnd EqualityExpression  */
-#line 1597 "src/parser.y"
+#line 1589 "src/parser.y"
                                                   {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp)  = makeInternalNode("BitwiseAnd", memArr, 2 ,1); 
     }
-#line 4652 "bin/parser.tab.c"
+#line 4644 "bin/parser.tab.c"
     break;
 
   case 289: /* ExclusiveOrExpression: AndExpression  */
-#line 1605 "src/parser.y"
+#line 1597 "src/parser.y"
                   {
         (yyval.exp) = (yyvsp[0].exp);
     }
-#line 4660 "bin/parser.tab.c"
+#line 4652 "bin/parser.tab.c"
     break;
 
   case 290: /* ExclusiveOrExpression: ExclusiveOrExpression CircumFlex AndExpression  */
-#line 1608 "src/parser.y"
+#line 1600 "src/parser.y"
                                                      {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp)  = makeInternalNode("xor", memArr, 2 ,1); 
     }
-#line 4671 "bin/parser.tab.c"
+#line 4663 "bin/parser.tab.c"
     break;
 
   case 291: /* InclusiveOrExpression: ExclusiveOrExpression  */
-#line 1616 "src/parser.y"
+#line 1608 "src/parser.y"
                           {
         (yyval.exp) = (yyvsp[0].exp);
     }
-#line 4679 "bin/parser.tab.c"
+#line 4671 "bin/parser.tab.c"
     break;
 
   case 292: /* InclusiveOrExpression: InclusiveOrExpression BitwiseOr ExclusiveOrExpression  */
-#line 1619 "src/parser.y"
+#line 1611 "src/parser.y"
                                                             {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp)  = makeInternalNode("BitwiseOR", memArr, 2, 1); 
     }
-#line 4690 "bin/parser.tab.c"
+#line 4682 "bin/parser.tab.c"
     break;
 
   case 293: /* ConditionalAndExpression: InclusiveOrExpression  */
-#line 1627 "src/parser.y"
+#line 1619 "src/parser.y"
                           {
         (yyval.exp) = (yyvsp[0].exp);
     }
-#line 4698 "bin/parser.tab.c"
+#line 4690 "bin/parser.tab.c"
     break;
 
   case 294: /* ConditionalAndExpression: ConditionalAndExpression AndOperator InclusiveOrExpression  */
-#line 1630 "src/parser.y"
+#line 1622 "src/parser.y"
                                                                  {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp)  = makeInternalNode("BitwiseAND", memArr, 2, 1); 
     }
-#line 4709 "bin/parser.tab.c"
+#line 4701 "bin/parser.tab.c"
     break;
 
   case 295: /* ConditionalOrExpression: ConditionalAndExpression  */
-#line 1638 "src/parser.y"
+#line 1630 "src/parser.y"
                              {
         (yyval.exp) = (yyvsp[0].exp);
     }
-#line 4717 "bin/parser.tab.c"
+#line 4709 "bin/parser.tab.c"
     break;
 
   case 296: /* ConditionalOrExpression: ConditionalOrExpression OrOperator ConditionalAndExpression  */
-#line 1641 "src/parser.y"
+#line 1633 "src/parser.y"
                                                                   {
         struct node* memArr[2];
         memArr[0] = (yyvsp[-2].exp);
         memArr[1] = (yyvsp[0].exp);
         (yyval.exp)  = makeInternalNode("OR", memArr, 2, 1); 
     }
-#line 4728 "bin/parser.tab.c"
+#line 4720 "bin/parser.tab.c"
     break;
 
   case 297: /* ConditionalExpression: ConditionalOrExpression  */
-#line 1649 "src/parser.y"
+#line 1641 "src/parser.y"
                             {
         (yyval.exp) = (yyvsp[0].exp);
     }
-#line 4736 "bin/parser.tab.c"
+#line 4728 "bin/parser.tab.c"
     break;
 
   case 298: /* ConditionalExpression: ConditionalOrExpression QuestionMark Expression Colon ConditionalExpression  */
-#line 1652 "src/parser.y"
+#line 1644 "src/parser.y"
                                                                                   {
         struct node* memArr[3];
         memArr[0] = (yyvsp[-4].exp);
@@ -4744,166 +4736,166 @@ yyreduce:
         memArr[2] = (yyvsp[0].exp);
         (yyval.exp)  = makeInternalNode("?:TernaryOperator", memArr, 3, 1); 
     }
-#line 4748 "bin/parser.tab.c"
+#line 4740 "bin/parser.tab.c"
     break;
 
   case 299: /* AssignmentExpression: ConditionalExpression  */
-#line 1661 "src/parser.y"
+#line 1653 "src/parser.y"
                           {
+        (yyval.exp) = (yyvsp[0].exp);
+    }
+#line 4748 "bin/parser.tab.c"
+    break;
+
+  case 300: /* AssignmentExpression: Assignment  */
+#line 1656 "src/parser.y"
+                {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 4756 "bin/parser.tab.c"
     break;
 
-  case 300: /* AssignmentExpression: Assignment  */
-#line 1664 "src/parser.y"
-                {
-        (yyval.exp) = (yyvsp[0].exp);
-    }
-#line 4764 "bin/parser.tab.c"
-    break;
-
   case 301: /* Assignment: LeftHandSide AssignmentOperator AssignmentExpression  */
-#line 1669 "src/parser.y"
+#line 1661 "src/parser.y"
                                                          {
     struct node* memArr[2];
     memArr[0] = (yyvsp[-2].exp);
     memArr[1] = (yyvsp[0].exp);
     (yyval.exp) = makeInternalNode("Assignment", memArr, 2, 1);
 }
-#line 4775 "bin/parser.tab.c"
+#line 4767 "bin/parser.tab.c"
     break;
 
   case 302: /* LeftHandSide: Name  */
-#line 1677 "src/parser.y"
+#line 1669 "src/parser.y"
          {
+        (yyval.exp) = (yyvsp[0].exp);
+    }
+#line 4775 "bin/parser.tab.c"
+    break;
+
+  case 303: /* LeftHandSide: FieldAccess  */
+#line 1672 "src/parser.y"
+                  {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 4783 "bin/parser.tab.c"
     break;
 
-  case 303: /* LeftHandSide: FieldAccess  */
-#line 1680 "src/parser.y"
+  case 304: /* LeftHandSide: ArrayAccess  */
+#line 1675 "src/parser.y"
                   {
         (yyval.exp) = (yyvsp[0].exp);
     }
 #line 4791 "bin/parser.tab.c"
     break;
 
-  case 304: /* LeftHandSide: ArrayAccess  */
-#line 1683 "src/parser.y"
-                  {
-        (yyval.exp) = (yyvsp[0].exp);
+  case 305: /* AssignmentOperator: EqualTo  */
+#line 1680 "src/parser.y"
+            {
+        (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 4799 "bin/parser.tab.c"
     break;
 
-  case 305: /* AssignmentOperator: EqualTo  */
-#line 1688 "src/parser.y"
-            {
+  case 306: /* AssignmentOperator: ProductEqualTo  */
+#line 1683 "src/parser.y"
+                     {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 4807 "bin/parser.tab.c"
     break;
 
-  case 306: /* AssignmentOperator: ProductEqualTo  */
-#line 1691 "src/parser.y"
-                     {
+  case 307: /* AssignmentOperator: DivideEqualTo  */
+#line 1686 "src/parser.y"
+                    {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 4815 "bin/parser.tab.c"
     break;
 
-  case 307: /* AssignmentOperator: DivideEqualTo  */
-#line 1694 "src/parser.y"
-                    {
+  case 308: /* AssignmentOperator: ModuloEqualTo  */
+#line 1689 "src/parser.y"
+                     {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 4823 "bin/parser.tab.c"
     break;
 
-  case 308: /* AssignmentOperator: ModuloEqualTo  */
-#line 1697 "src/parser.y"
-                     {
+  case 309: /* AssignmentOperator: AdditionEqualTo  */
+#line 1692 "src/parser.y"
+                      {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 4831 "bin/parser.tab.c"
     break;
 
-  case 309: /* AssignmentOperator: AdditionEqualTo  */
-#line 1700 "src/parser.y"
-                      {
+  case 310: /* AssignmentOperator: SubstractionEqualTo  */
+#line 1695 "src/parser.y"
+                           {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 4839 "bin/parser.tab.c"
     break;
 
-  case 310: /* AssignmentOperator: SubstractionEqualTo  */
-#line 1703 "src/parser.y"
-                           {
+  case 311: /* AssignmentOperator: LeftShitEqualTo  */
+#line 1698 "src/parser.y"
+                       {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 4847 "bin/parser.tab.c"
     break;
 
-  case 311: /* AssignmentOperator: LeftShitEqualTo  */
-#line 1706 "src/parser.y"
-                       {
+  case 312: /* AssignmentOperator: RightShiftEqualTo  */
+#line 1701 "src/parser.y"
+                         {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 4855 "bin/parser.tab.c"
     break;
 
-  case 312: /* AssignmentOperator: RightShiftEqualTo  */
-#line 1709 "src/parser.y"
-                         {
+  case 313: /* AssignmentOperator: TripleGreaterThanEqualTo  */
+#line 1704 "src/parser.y"
+                                {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 4863 "bin/parser.tab.c"
     break;
 
-  case 313: /* AssignmentOperator: TripleGreaterThanEqualTo  */
-#line 1712 "src/parser.y"
-                                {
+  case 314: /* AssignmentOperator: BitWiseAndEqualTo  */
+#line 1707 "src/parser.y"
+                         {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 4871 "bin/parser.tab.c"
     break;
 
-  case 314: /* AssignmentOperator: BitWiseAndEqualTo  */
-#line 1715 "src/parser.y"
+  case 315: /* AssignmentOperator: CircumFlexEqualTo  */
+#line 1710 "src/parser.y"
                          {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 4879 "bin/parser.tab.c"
     break;
 
-  case 315: /* AssignmentOperator: CircumFlexEqualTo  */
-#line 1718 "src/parser.y"
-                         {
+  case 316: /* AssignmentOperator: BitWiseOrEqualTo  */
+#line 1713 "src/parser.y"
+                       {
         (yyval.exp) = makeleaf((yyvsp[0].data));
     }
 #line 4887 "bin/parser.tab.c"
     break;
 
-  case 316: /* AssignmentOperator: BitWiseOrEqualTo  */
-#line 1721 "src/parser.y"
-                       {
-        (yyval.exp) = makeleaf((yyvsp[0].data));
-    }
-#line 4895 "bin/parser.tab.c"
-    break;
-
   case 317: /* Expression: AssignmentExpression  */
-#line 1725 "src/parser.y"
+#line 1717 "src/parser.y"
                                  {
     (yyval.exp) = (yyvsp[0].exp);
 }
-#line 4903 "bin/parser.tab.c"
+#line 4895 "bin/parser.tab.c"
     break;
 
 
-#line 4907 "bin/parser.tab.c"
+#line 4899 "bin/parser.tab.c"
 
       default: break;
     }
@@ -5096,7 +5088,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 1730 "src/parser.y"
+#line 1722 "src/parser.y"
 
 
 
@@ -5131,11 +5123,11 @@ char* concatenate_string(char* s, char* s1)
 }
 
 
-struct node* makeleaf(char* nodeStr){
+struct node* makeleaf(char nodeStr[100]){
     //printf("%s\n",nodeStr);
     struct node* leaf = (struct node*)malloc(sizeof(struct node));
     printf("leaf: %s\n",nodeStr);
-    leaf->data = nodeStr;
+    strcpy(leaf->data, nodeStr);
     leaf->parentFlag = 1;
     for(int i = 0; i<N_NodeChild; i++){
         leaf->arr[i] = NULL;
@@ -5143,10 +5135,10 @@ struct node* makeleaf(char* nodeStr){
     return leaf;
 }
 
-struct node* makeInternalNode(char* rule, struct node* memArr[], int n, int isParent){
+struct node* makeInternalNode(char rule[100], struct node* memArr[], int n, int isParent){
 
     struct node* internalNode = (struct node*)malloc(sizeof(struct node));
-    internalNode->data = rule;
+    strcpy(internalNode->data,rule);
 
     for(int i = 0; i<N_NodeChild; i++){
         internalNode->arr[i] = NULL;
@@ -5195,33 +5187,39 @@ void ast_print(struct node* root, int d){
 }
 
 
-void neighbour_append(struct node* root,FILE* graph, int depth,int child_num){
-int i , leaf_flag =0;
-for(i =0 ; i<N_NodeChild; i++){
-if(root->arr[i]!= NULL){
-fprintf(graph, "\t%s_%d_%d ->{ %s_%d_0",root->data,depth,child_num,(root->arr[i])->data, depth+1);
-leaf_flag =1;
-break;
-}
-}
-if(!leaf_flag){
-fprintf(graph, "\t%s_%d_%d ->{}\n",root->data,depth,child_num);
-return;
-}
+void neighbour_append(struct node *root, FILE *graph, int depth, int child_num)
+{
+    int i, leaf_flag = 0;
+    for (i = 0; i < N_NodeChild; i++)
+    {
+        if (root->arr[i] != NULL)
+        {
+            fprintf(graph, "\ti%s_%d_%d ->{ i%s_%d_0", root->data, depth, child_num, (root->arr[i])->data, depth + 1);
+            leaf_flag = 1;
+            break;
+        }
+    }
+    if (!leaf_flag)
+    {
+        fprintf(graph, "\ti%s_%d_%d ->{}\n", root->data, depth, child_num);
+        return;
+    }
 
-for (int i=1 ; i< N_NodeChild; i++){
-if(root->arr[i] != NULL){
-fprintf(graph," ,%s_%d_%d",(root->arr[i])->data,depth+1,i);
-}
-}
-fprintf(graph,"}\n");
-return;
+    for (int j = i+1; j < N_NodeChild; j++)
+    {
+        if (root->arr[j] != NULL)
+        {
+            fprintf(graph, " ,i%s_%d_%d", (root->arr[j])->data, depth + 1, j);
+        }
+    }
+    fprintf(graph, "}\n");
+    return;
 }
 
 void graph_maker(struct node* root,FILE* graph,int depth,int child_num){
     
     if(root!=NULL){
-        neighbour_append(root,graph,depth,child_num);
+        neighbour_append(root, graph, depth, child_num);
         for(int i = 0; i<N_NodeChild; i++){
             if(root->arr[i]!=NULL){
                 graph_maker(root->arr[i], graph,depth+1,i);
