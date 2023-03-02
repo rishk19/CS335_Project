@@ -1,3 +1,18 @@
 digraph AST{ 
-
+	CompilationUnit_0_0 ->{ Declarations_1_0}
+	Declarations_1_0 ->{ ClassDeclaration_2_0}
+	ClassDeclaration_2_0 ->{ class_3_0 ,ackermann_3_1 ,ClassBody_3_2}
+	class_3_0 ->{}
+	ackermann_3_1 ->{}
+	ClassBody_3_2 ->{ à–Ð_4_0}
+	à–Ð_4_0 ->{ Modifiers_5_0 ,}_5_1 ,MethodBody_5_2}
+	Modifiers_5_0 ->{ à£Ð_6_0 ,}_6_1}
+	à£Ð_6_0 ->{}
+	}_6_1 ->{}
+	}_5_1 ->{}
+	MethodBody_5_2 ->{ Blocks_6_0}
+	Blocks_6_0 ->{ à–Ð_7_0 ,}_7_1 ,Addition_7_2}
+	à–Ð_7_0 ->{}
+	}_7_1 ->{}
+	Addition_7_2 ->{}
 } 

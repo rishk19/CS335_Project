@@ -15,72 +15,204 @@ null {
     return (NullLiteral);
 }
 
-exports {return(Exports);}
-opens {return(Opens);}
-requires {return(Requires);} 
-uses {return(Uses);}
-module {return(Module);}
-permits {return(Permits);}
-sealed {return(Sealed);}
-var {return(Var);}
-non-sealed {return(Non_sealed);}
-provides {return(Provides);}
-to {return(To);}
-with {return(With);}
-open {return(Open);}
-record {return(Record);}
-transitive {return(Transitive);}
-yield {return(Yield);}
-abstract {return(Abstract);}
-continue {return(Continue);}
-for {return(For);}
-new {return(New);}
-switch {return(Switch);}
-assert {return(Assert);}
-default {return(Default);}
-if {return(If);}
-package {return(Package);}
-synchronized {return(Synchronized);}
-boolean {return(Boolean);}
-do {return(Do);}
-goto {return(Goto);}
-private {return(Private);}
-this {return(This);}
-break {return(Break);}
-double {return(Double);}
-implements {return(Implements);}
-protected {return(Protected);}
-throw {return(THROW);}
-byte {return(Byte);}
-else {return(Else);}
-import {return(Import);}
-public {return(Public);}
-throws {return(THROWS);}
-case {return(Case);}
-enum {return(Enum);}
-instanceof {return(Instanceof);}
-return {return(Return);}
-transient {return(Transient);}
-catch {return(Catch);}
-extends {return(Extends);}
-int {return(Int);}
-short {return(Short);}
-try {return(Try);}
-char {return(Char);}
-final {return(Final);}
-interface {return(Interface);}
-static {return(Static);}
-void {return(Void);}
-class {return(Class);}
-finally {return(FINALLY);}
-long {return(Long);}
-strictfp {return(Strictfp);}
-volatile {return(Volatile);}
-const {return(Const);}
-float {return(Float);}
-native {return(Native);}
-super {return(Super);}
-while {return(While);}
+exports { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Exports);}
+opens { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Opens);}
+requires { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Requires);} 
+uses { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Uses);}
+module { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Module);}
+permits { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Permits);}
+sealed { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Sealed);}
+var { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Var);}
+non-sealed { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Non_sealed);}
+provides { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Provides);}
+to { 
+    sscanf(yytext,"%s", yylval.data);
+    return(To);}
+with { 
+    sscanf(yytext,"%s", yylval.data);
+    return(With);}
+open { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Open);}
+record { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Record);}
+transitive { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Transitive);}
+yield { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Yield);}
+abstract { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Abstract);}
+continue { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Continue);}
+for { 
+    sscanf(yytext,"%s", yylval.data);
+    return(For);}
+new { 
+    sscanf(yytext,"%s", yylval.data);
+    return(New);}
+switch { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Switch);}
+assert { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Assert);}
+default { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Default);}
+if { 
+    sscanf(yytext,"%s", yylval.data);
+    return(If);}
+package { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Package);}
+synchronized { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Synchronized);}
+boolean { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Boolean);}
+do { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Do);}
+goto { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Goto);}
+private { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Private);}
+this { 
+    sscanf(yytext,"%s", yylval.data);
+    return(This);}
+break { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Break);}
+double { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Double);}
+implements { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Implements);}
+protected { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Protected);}
+throw { 
+    sscanf(yytext,"%s", yylval.data);
+    return(THROW);}
+byte { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Byte);}
+else { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Else);}
+import { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Import);}
+public { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Public);}
+throws { 
+    sscanf(yytext,"%s", yylval.data);
+    return(THROWS);}
+case { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Case);}
+enum { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Enum);}
+instanceof { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Instanceof);}
+return { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Return);}
+transient { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Transient);}
+catch { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Catch);}
+extends { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Extends);}
+int { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Int);}
+short { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Short);}
+try { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Try);}
+char { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Char);}
+final { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Final);}
+interface { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Interface);}
+static { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Static);}
+void { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Void);}
+class { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Class);}
+finally { 
+    sscanf(yytext,"%s", yylval.data);
+    return(FINALLY);}
+long { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Long);}
+strictfp { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Strictfp);}
+volatile { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Volatile);}
+const { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Const);}
+float { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Float);}
+native { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Native);}
+super { 
+    sscanf(yytext,"%s", yylval.data);
+    return(Super);}
+while { 
+    sscanf(yytext,"%s", yylval.data);
+    return(While);}
 
 
 [a-zA-Z_][a-zA-Z0-9_]* {

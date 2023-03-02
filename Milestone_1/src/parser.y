@@ -10,13 +10,14 @@ struct node *root = NULL;
 
 #define N_NodeChild 100
 #define N_DataSize 1000
-
+int ctr = 0;
 struct node{
     char* data;
+    int parentFlag;
     struct node* arr[N_NodeChild];
 
 };
-struct node* makeInternalNode(char* rule, struct node* memArr[], int mem);
+struct node* makeInternalNode(char* rule, struct node* memArr[], int n, int isParent);
 struct node* makeleaf(char* node);
 char* concatenate_string(char* s, char* s1);
 
@@ -119,6 +120,9 @@ Goal: CompilationUnit {
 
 Literal: 
     IntegerLiteral {
+        printf("Internal Node at line : 123 %s\n", $1->data);
+        printf("ctr: %d\n",ctr);
+        ctr++;
         $$ = $1;
     }
     | FloatingPointLiteral {
@@ -139,7 +143,15 @@ Literal:
 
 IntegerLiteral: 
     DecimalIntegerLiteral {
-        $$ = makeleaf($1);
+        printf("Internal Node at line : 144 %s\n", $1);
+        printf("ctr: %d\n",ctr);
+        ctr++;
+        struct node * ele = (struct node*)malloc(sizeof(struct node));
+        struct node * ele1 = makeleaf($1);
+        ele->data = "1";
+        for(int i = 0; i<100; i++)ele->arr[i] = NULL;
+        $$ = ele;
+        printf("Internal Node at line : 146 %s\n", $$->data);
     }
     | HexIntegerLiteral {
         $$ = makeleaf($1);
@@ -222,19 +234,15 @@ InterfaceType:
 
 ArrayType: 
     PrimitiveType LeftSquareBracket RightSquareBracket {
-        char * str1 = concatenate_string($2, $3);
-        char * str2 = concatenate_string(str1, $1->data);
-        $$ = makeleaf(str2);
+        $$ = makeleaf(concatenate_string($1->data,"[]"));
     }
     | Name LeftSquareBracket RightSquareBracket {
-        char * str1 = concatenate_string($2, $3);
-        char * str2 = concatenate_string(str1, $1->data);
-        $$ = makeleaf(str2);
+        $$ = makeleaf(concatenate_string($1->data,"[]"));
+
     }
     | ArrayType LeftSquareBracket RightSquareBracket {
-        char * str1 = concatenate_string($2, $3);
-        char * str2 = concatenate_string(str1, $1->data);
-        $$ = makeleaf(str2);
+        $$ = makeleaf(concatenate_string($1->data,"[]"));
+
     }
 
 Name: 
@@ -252,9 +260,7 @@ SimpleName:
 
 QualifiedName: 
     Name Dot Identifier {
-        char * str1 = concatenate_string($2, $3);
-        char * str2 = concatenate_string(str1, $1->data);
-        $$ = makeleaf(str2);
+        $$ = makeleaf(concatenate_string($1->data,concatenate_string($2,$3)));
     }
 
 CompilationUnit: 
@@ -264,46 +270,66 @@ CompilationUnit:
         memArr[0] = $1;
         memArr[1] = $2;
         memArr[2] = $3;
-
-        $$ = makeInternalNode("Compilation_Unit", memArr, 3);
+        $$ = makeInternalNode("CompilationUnit", memArr, 3, 1);
     }
 
-ImportDeclarations_opt : { $$ = NULL; }
+ImportDeclarations_opt : 
+    { 
+        $$ = NULL; 
+    }
     | ImportDeclarations {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("Imports", memArr, 1, 1);
     }
 
 ImportDeclarations: 
     ImportDeclaration {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode($1->data, memArr, 1, 0);
     }
     | ImportDeclarations ImportDeclaration {
         struct node * memArr[2];
         memArr[0] = $1;
         memArr[1] = $2;
-        $$ = makeInternalNode("Import", memArr, 2);
+        $$ = makeInternalNode("IntermediateImports", memArr, 2, 0);
     }
 
-TypeDeclarations_opt : { $$ = NULL; }
+TypeDeclarations_opt : 
+    { 
+        $$ = NULL;
+     }
     | TypeDeclarations {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("Declarations", memArr, 1, 1);
     }
 
 TypeDeclarations: 
     TypeDeclaration {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode($1->data, memArr, 1, 0);
     }
-    | TypeDeclarations TypeDeclaration
+    | TypeDeclarations TypeDeclaration {
+        struct node * memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $2;
+        $$ = makeInternalNode("IntermediateDeclaration", memArr, 2, 0);
+    }
 
-PackageDeclaration_opt : { $$ = NULL; }
+PackageDeclaration_opt : 
+    { 
+        $$ = NULL;
+     }
     | PackageDeclaration {
         $$ = $1;
     }
 
 PackageDeclaration: 
     Package Name Semicolon {
-        char * str1 = concatenate_string($1, $2->data);
-        $$ = makeleaf(str1);
+        $$ = makeleaf(concatenate_string($1,concatenate_string("_",$2->data)));
     }
 
 ImportDeclaration: 
@@ -316,15 +342,12 @@ ImportDeclaration:
 
 SingleTypeImportDeclaration: 
     Import Name Semicolon {
-        char * str1 = concatenate_string($1, $2->data);
-        $$ = makeleaf(str1);
+        $$ = makeleaf(concatenate_string($1, concatenate_string("_",$2->data)));
     }
 
 TypeImportOnDemandDeclaration: 
     Import Name Dot Product Semicolon {
-        char * str1 = concatenate_string($1, $2->data);
-        char * str2 = concatenate_string(str1, $4);
-        $$ = makeleaf(str2);
+        $$ = makeleaf(concatenate_string($1, concatenate_string("_",concatenate_string($2->data,".*"))));
     }
 
 TypeDeclaration: 
@@ -335,17 +358,20 @@ TypeDeclaration:
         $$ = $1;
     }
     | Semicolon {
-        $$ = makeleaf($1);
+        $$ = NULL;
     }
 
 Modifiers: 
     Modifier {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode($1->data, memArr, 1, 0);
     }
     | Modifiers Modifier {
-        char * str1 = concatenate_string($1->data, " ");
-        char * str2 = concatenate_string(str1, $2->data);
-        $$ = makeleaf(str1);
+        struct node * memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $2;
+        $$ = makeInternalNode("Modifier", memArr, 2, 0);
     }
 
 Modifier: 
@@ -389,45 +415,57 @@ ClassDeclaration:
         memArr[3] = $4;
         memArr[4] = $5;
         memArr[5] = $6;
-        $$ = makeInternalNode("ClassDeclaration", memArr, 6);
+        $$ = makeInternalNode("ClassDeclaration", memArr, 6, 1);
     }
 
-Modifiers_opt : { $$ = NULL; }
+Modifiers_opt : { 
+    $$ = NULL; 
+    }
     | Modifiers {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("Modifiers", memArr, 1, 1);
     }
 
-ClassExtend_opt : { $$ = NULL; }
+ClassExtend_opt :{ 
+    $$ = NULL; 
+    }
     | ClassExtend {
         $$ = $1;
     }
 
-Interfaces_opt : { $$ = NULL; }
+Interfaces_opt : { 
+    $$ = NULL; 
+    }
     | Interfaces {
         $$ = $1;
     }
 
 ClassExtend : 
     Extends ClassType {
-        char * str1 = concatenate_string($1, $2->data);
-        $$ = makeleaf(str1);
+        $$ = makeleaf(concatenate_string($1, concatenate_string("_",$2->data)));
     }
 
 Interfaces: 
     Implements InterfaceTypeList {
-        char * str1 = concatenate_string($1, $2->data);
-        $$ = makeleaf(str1);
+        struct node * memArr[2];
+        memArr[0] = makeleaf($1);
+        memArr[1] = $2;
+        $$ = makeInternalNode("Interface", memArr, 2, 1);
+
     }
 
 InterfaceTypeList: 
     InterfaceType {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode($1->data, memArr, 1, 0);
     }
     | InterfaceTypeList Comma InterfaceType {
         struct node * memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$ = makeInternalNode("IngerfaceDeclarator", memArr, 2);
+        $$ = makeInternalNode("InterfaceList", memArr, 2, 0);
     }
 
 ClassBody: 
@@ -439,18 +477,22 @@ ClassBodyDeclarations_opt : {
         $$ = NULL ;
     }
     | ClassBodyDeclarations {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("ClassBody", memArr, 1, 1);
     }
 
 ClassBodyDeclarations: 
     ClassBodyDeclaration {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("ClassBody", memArr, 1, 0);
     }
     | ClassBodyDeclarations ClassBodyDeclaration {
         struct node * memArr[2];
         memArr[0] = $1;
         memArr[1] = $2;
-        $$ = makeInternalNode("Class declaration", memArr, 2);
+        $$ = makeInternalNode("IntermediateDeclaration", memArr, 2, 0);
     }
 
 ClassBodyDeclaration: 
@@ -475,21 +517,23 @@ ClassMemberDeclaration:
 FieldDeclaration: 
     Modifiers_opt Type VariableDeclarators Semicolon {
         struct node * memArr[3];
-        memArr[0]  = $1;
+        memArr[0] = $1;
         memArr[1] = $2;
         memArr[2] = $3;
-         $$ = makeInternalNode("Declaration", memArr, 3);
+        $$ = makeInternalNode("FieldDeclaration", memArr, 3, 0);
     }
 
 VariableDeclarators: 
     VariableDeclarator {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("VariableDeclaration", memArr, 1, 0);
     }
     | VariableDeclarators Comma VariableDeclarator {
         struct node * memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$ = makeInternalNode("VariableDeclarator", memArr, 2);
+        $$ = makeInternalNode("VariableDeclarator", memArr, 2, 0);
     }
 
 VariableDeclarator: 
@@ -500,7 +544,7 @@ VariableDeclarator:
         struct node * memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$ = makeInternalNode("=", memArr, 2);
+        $$ = makeInternalNode("Initilization", memArr, 2, 0);
     }
 
 VariableDeclaratorId: 
@@ -508,7 +552,7 @@ VariableDeclaratorId:
         $$ = makeleaf($1);
     }
     | VariableDeclaratorId LeftSquareBracket RightSquareBracket {
-        char * str = concatenate_string($1->data,"[]");
+        $$ = makeleaf(concatenate_string($1->data,"[]"));
     }
 
 VariableInitializer:
@@ -523,98 +567,112 @@ MethodDeclaration:
     MethodHeader MethodBody {
         struct node * memArr[2];
         memArr[0] = $1;
-        memArr[1]  = $2;
-
-        $$ = makeInternalNode("Method", memArr,2);
+        memArr[1] = $2;
+        $$ = makeInternalNode($1->data, memArr,2, 1);
     }
 
 MethodHeader:
     Modifiers_opt Type MethodDeclarator Throws_opt {
         struct node * memArr[4];
         memArr[0] = $1;
-        memArr[1]  = $2;
+        memArr[1] = $2;
         memArr[2] = $3;
         memArr[3] = $4;
-        $$ = makeInternalNode("Method_header", memArr,4);
+        $$ = makeInternalNode($3->data, memArr, 4, 0);
     }
     | Modifiers_opt Void MethodDeclarator Throws_opt {
         struct node * memArr[4];
         memArr[0] = $1;
-        memArr[1]  = makeleaf($2);
+        memArr[1] = makeleaf($2);
         memArr[2] = $3;
         memArr[3] = $4;
-        $$ = makeInternalNode("Method_header", memArr,4);
+        $$ = makeInternalNode($3->data, memArr, 4, 0);
     }
 
-Throws_opt : { $$ = NULL; }
+Throws_opt : 
+    { 
+        $$ = NULL;
+    }
     | Throws {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("Throws", memArr, 1, 1);
     }
 
 MethodDeclarator: 
     Identifier LeftParanthesis FormalParameterList_opt RightParanthesis {
-        struct node * memArr[2];
-        memArr[0] = makeleaf($1);
-        memArr[1]  = $3;
-
-        $$ = makeInternalNode("Method_Declarator", memArr,2);
+        struct node * memArr[1];
+        memArr[0]  = $3;
+        $$ = makeInternalNode($1, memArr,1, 0);
     }
     | MethodDeclarator LeftSquareBracket RightSquareBracket {
-        $$ =$1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode(concatenate_string($1->data,"[]"), memArr, 1, 0);
     }
 
-FormalParameterList_opt : { $$ = NULL; }
+FormalParameterList_opt : {
+        $$ = NULL;
+    }
     | FormalParameterList {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("Parameters", memArr, 1, 1);
     }
 
 FormalParameterList: 
     FormalParameter {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("Parameter", memArr, 1, 0);
     }
     | FormalParameterList Comma FormalParameter{
-        struct node * memArr[2];
-        memArr[0] = $1; 
+         struct node * memArr[2];
+        memArr[0] = $1;
         memArr[1] = $3;
-        $$ = makeInternalNode("Parameter_list", memArr, 2);
+        $$ = makeInternalNode("Parameter", memArr, 1, 0);
     }
 
 FormalParameter: 
     Type VariableDeclaratorId {
-        char * str = concatenate_string($1->data, $2->data);
-        $$ =  makeleaf(str);
+        $$ = makeleaf(concatenate_string($1->data, concatenate_string("_", $2->data)));
     }
 
 Throws: 
     THROWS ClassTypeList {
-        char * str = concatenate_string("throws", $2->data);
-        $$ =  makeleaf(str);
+        struct node * memArr[1];
+        memArr[0] = $2;
+        $$ = makeInternalNode("throws", memArr, 1, 1);
     }
 
 ClassTypeList: 
     ClassType {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("class", memArr, 1, 0);
     }
     | ClassTypeList Comma ClassType {
         struct node * memArr[2];
         memArr[0] = $1; 
         memArr[1] = $3;
-        $$ = makeInternalNode("ClassType_list", memArr, 2);
+        $$ = makeInternalNode("class", memArr, 2, 0);
     }
 
 MethodBody: 
     Block {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("MethodBody", memArr, 1, 1);
     }
     | Semicolon {
-        $$ = makeleaf($1);
+        $$ = NULL;
     }
 
 StaticInitializer: 
     Static Block {
         struct node* memArr[1];
         memArr[0] = $2;
-        $$ = makeInternalNode("Static", memArr, 1);
+        $$ = makeInternalNode("static", memArr, 1, 1);
     }
 
 ConstructorDeclaration: 
@@ -624,77 +682,84 @@ ConstructorDeclaration:
         memArr[1] = $2;
         memArr[2] = $3;
         memArr[3] = $4;
-        $$ = makeInternalNode("Constructor", memArr, 4);
+        $$ = makeInternalNode($2->data, memArr, 4, 1);
     }
 
 ConstructorDeclarator: 
     SimpleName LeftParanthesis FormalParameterList_opt RightParanthesis {
-        struct node* memArr[2];
-        memArr[0] = $1;
-        memArr[1] = $3;
-        $$ = makeInternalNode("Constructor", memArr, 2);
+        struct node* memArr[1];
+        memArr[0] = $3;
+        $$ = makeInternalNode($1->data, memArr, 1, 0);
     }
 
 ConstructorBody: 
     LeftCurlyBrace ExplicitConstructorInvocation_opt BlockStatements_opt RightCurlyBrace {
         struct node* memArr[2];
-        memArr[0] = makeleaf($1);
+        memArr[0] = $2;
         memArr[1] = $3;
-        $$ = makeInternalNode("Constructor", memArr, 2);
+        $$ = makeInternalNode("ConstructorInvocation", memArr, 2, 1);
     }
 
-ExplicitConstructorInvocation_opt : { $$ = NULL; }
+ExplicitConstructorInvocation_opt : { 
+    $$ = NULL; 
+    }
     | ExplicitConstructorInvocation {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("ExplicitConstructorInvocation", memArr, 1, 1);
     }
 
 ExplicitConstructorInvocation: 
     This LeftParanthesis ArgumentList_opt RightParanthesis Semicolon {
-        struct node* memArr[2];
-        memArr[0] = makeleaf($1);
-        memArr[1] = $3;
-        $$ = makeInternalNode("Constructor", memArr, 2);
+        struct node* memArr[1];
+        memArr[0] = $3;
+        $$ = makeInternalNode("this", memArr, 1, 0);
     }
     | Super LeftParanthesis ArgumentList_opt RightParanthesis Semicolon {
-        struct node* memArr[2];
-        memArr[0] = makeleaf($1);
-        memArr[1] = $3;
-        $$ = makeInternalNode("Constructor", memArr, 2);
+        struct node* memArr[1];
+        memArr[0] = $3;
+        $$ = makeInternalNode("super", memArr, 1, 0);
     }
 
-ArgumentList_opt: { $$ = NULL; }
+ArgumentList_opt: {
+    $$ = NULL; 
+    }
     | ArgumentList {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] =$1;
+        $$ = makeInternalNode("Arguments", memArr, 1, 1);
     }
 
 InterfaceDeclaration: 
     Modifiers_opt Interface Identifier ExtendsInterfaces_opt InterfaceBody {
-        struct node* memArr[5];
+        struct node* memArr[4];
         memArr[0] = $1;
         memArr[1] = makeleaf($2);
-        memArr[2] = makeleaf($3);
-        memArr[3] = $4;
-        memArr[4] = $5;
-        $$ = makeInternalNode("InterfaceDeclaration", memArr, 5);
+        memArr[2] = $4;
+        memArr[3] = $5;
+        $$ = makeInternalNode($3, memArr, 4, 1);
     }
 
-ExtendsInterfaces_opt : { $$ = NULL; }
+ExtendsInterfaces_opt : {
+    $$ = NULL;
+    }
     | ExtendsInterfaces {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("extends", memArr, 1, 1);
     }
 
 ExtendsInterfaces: 
     Extends InterfaceType {
-        struct node* memArr[2];
-        memArr[0] = makeleaf($1);
-        memArr[1] = $2;
-        $$ = makeInternalNode("ExtendInterface", memArr, 2);
+        struct node* memArr[1];
+        memArr[0] = $2;
+        $$ = makeInternalNode("extends", memArr, 1, 0);
     }
     | ExtendsInterfaces Comma InterfaceType {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$ = makeInternalNode("ExtendInterface", memArr, 2);
+        $$ = makeInternalNode("extends", memArr, 2, 0);
     }
 
 InterfaceBody: 
@@ -702,17 +767,26 @@ InterfaceBody:
         $$ = $2;
     }
 
-InterfaceMemberDeclarations_opt: { $$ = NULL; }
+InterfaceMemberDeclarations_opt: {
+        $$ = NULL;
+    }
     | InterfaceMemberDeclarations {
-        $$ = $1;
+        struct node* memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("Interfaces", memArr, 1, 1);
     }
 
 InterfaceMemberDeclarations: 
     InterfaceMemberDeclaration {
-        $$ = $1;
+        struct node* memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("Interface", memArr, 1, 0);
     }
     | InterfaceMemberDeclarations InterfaceMemberDeclaration {
-        $$ = $1;
+        struct node* memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $2;
+        $$ = makeInternalNode("Interface", memArr, 2, 0);
     }
 
 InterfaceMemberDeclaration: 
@@ -735,31 +809,36 @@ AbstractMethodDeclaration:
 
 ArrayInitializer: 
     LeftCurlyBrace VariableInitializers_opt Comma_opt RightCurlyBrace {
-        struct node* memArr[2];
-        memArr[0] = $2;
-        memArr[1] = $3;
-        $$ = makeInternalNode("ArrayInitilizer", memArr, 2);
+        $$ = $2;
     }
 
-VariableInitializers_opt: { $$ = NULL; }
+VariableInitializers_opt: {
+        $$ = NULL; 
+    }
     | VariableInitializers {
-        $$ = $1;
+        struct node* memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("VariableInitializers", memArr, 1, 1);
     }
 
-Comma_opt : { $$ = NULL; }
+Comma_opt : {
+        $$ = NULL; 
+    }
     | Comma {
-        $$ = makeleaf($1);
+        $$ = NULL;
     }
 
 VariableInitializers: 
     VariableInitializer {
-        $$ = $1;
+       struct node* memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode($1->data, memArr, 1, 0);
     }
     | VariableInitializers Comma VariableInitializer {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$ = makeInternalNode("Initializer", memArr, 2);
+        $$ = makeInternalNode("Initializer", memArr, 2, 0);
     }
 
 Block: 
@@ -767,16 +846,27 @@ Block:
         $$ = $2;
     }
 
-BlockStatements_opt : { $$ = NULL; }
+BlockStatements_opt : {
+     $$ = NULL; 
+     }
     | BlockStatements {
-        $$ = $1;
+        struct node* memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("Blocks", memArr, 1, 1);
     }
 
 BlockStatements: 
     BlockStatement {
-        $$ = $1;
+        struct node* memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("Blocks", memArr, 1, 0);
     }
-    | BlockStatements BlockStatement
+    | BlockStatements BlockStatement {
+        struct node* memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $2;
+        $$ = makeInternalNode("Block", memArr, 2, 0);
+    }
 
 BlockStatement: 
     LocalVariableDeclarationStatement {
@@ -796,7 +886,7 @@ LocalVariableDeclaration:
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $2;
-        $$ = makeInternalNode("Declaration", memArr, 2);
+        $$ = makeInternalNode("Declaration", memArr, 2, 0);
     }
 
 Statement: 
@@ -841,7 +931,7 @@ StatementWithoutTrailingSubstatement:
         $$ = $1;
     }
     | EmptyStatement {
-        $$ = $1;
+        $$ = NULL;
     }
     | ExpressionStatement {
         $$ = $1;
@@ -867,7 +957,7 @@ StatementWithoutTrailingSubstatement:
 
 EmptyStatement: 
     Semicolon {
-        $$ = makeleaf($1);
+        $$ = NULL;
     }
 
 LabeledStatement: 
@@ -875,7 +965,7 @@ LabeledStatement:
         struct node* memArr[2];
         memArr[0] = makeleaf($1);
         memArr[1] = $3;
-        $$ = makeInternalNode("Labeled", memArr, 2);
+        $$ = makeInternalNode("LabeledStatements", memArr, 2, 0);
     }
 
 LabeledStatementNoShortIf: 
@@ -883,7 +973,7 @@ LabeledStatementNoShortIf:
         struct node* memArr[2];
         memArr[0] = makeleaf($1);
         memArr[1] = $3;
-        $$ = makeInternalNode("IfThen", memArr, 2);
+        $$ = makeInternalNode("IfThen", memArr, 2, 0);
     }
 
 ExpressionStatement: 
@@ -919,7 +1009,7 @@ IfThenStatement:
         struct node* memArr[2];
         memArr[0] = $3;
         memArr[1] = $5;
-        $$ = makeInternalNode("IfThen", memArr, 2);
+        $$ = makeInternalNode("IfThen", memArr, 2, 1);
     }
 
 IfThenElseStatement: 
@@ -928,7 +1018,7 @@ IfThenElseStatement:
         memArr[0] = $3;
         memArr[1] = $5;
         memArr[2] = $7;
-        $$ = makeInternalNode("IfElse", memArr, 3);
+        $$ = makeInternalNode("IfElse", memArr, 3, 1);
     }
 
 IfThenElseStatementNoShortIf: 
@@ -937,7 +1027,7 @@ IfThenElseStatementNoShortIf:
         memArr[0] = $3;
         memArr[1] = $5;
         memArr[2] = $7;
-        $$ = makeInternalNode("IfElse_If", memArr, 3);
+        $$ = makeInternalNode("IfElse_If", memArr, 3, 1);
     }
 
 WhileStatement: 
@@ -945,8 +1035,7 @@ WhileStatement:
         struct node* memArr[2];
         memArr[0] = $3;
         memArr[1] = $5;
-
-        $$ = makeInternalNode("While", memArr, 2);
+        $$ = makeInternalNode("While", memArr, 2, 1);
     }
 
 WhileStatementNoShortIf: 
@@ -954,8 +1043,7 @@ WhileStatementNoShortIf:
         struct node* memArr[2];
         memArr[0] = $3;
         memArr[1] = $5;
-
-        $$ = makeInternalNode("While", memArr, 2);
+        $$ = makeInternalNode("While", memArr, 2, 1);
     }
 
 ForStatement: 
@@ -965,7 +1053,7 @@ ForStatement:
         memArr[1] = $5;
         memArr[2] = $7;
         memArr[3] = $9;
-        $$ = makeInternalNode("For", memArr, 4);
+        $$ = makeInternalNode("For", memArr, 4, 1);
     }
 
 ForStatementNoShortIf: 
@@ -975,54 +1063,73 @@ ForStatementNoShortIf:
         memArr[1] = $5;
         memArr[2] = $7;
         memArr[3] = $9;
-        $$ = makeInternalNode("For", memArr, 4);
+        $$ = makeInternalNode("For", memArr, 4, 1);
     }
 
-ForInit_opt: { $$ = NULL; }
+ForInit_opt: { 
+    $$ = NULL; 
+    }
     | ForInit {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("ForInit", memArr, 1, 1);
     }
 
-Expression_opt: { $$ = NULL; }
+Expression_opt: { 
+    $$ = NULL; 
+    }
     | Expression {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("Expression", memArr, 1, 1);
     }
 
-ForUpdate_opt: { $$ = NULL ;}
+ForUpdate_opt: { 
+    $$ = NULL ;
+    }
     | ForUpdate {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("ForUpdate", memArr, 1, 1);
     }
 
 ForInit: 
     StatementExpressionList  {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("ForInit", memArr, 1, 1);
     }
     | LocalVariableDeclaration {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("ForInit", memArr, 1, 1);
     }
 
 ForUpdate: 
     StatementExpressionList {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("ForUpdate", memArr, 1, 1);
     }
 
 StatementExpressionList: 
     StatementExpression {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("StatementExpression", memArr, 1, 0);
     }
     | StatementExpressionList Comma StatementExpression {
-         struct node * memArr[2];
+        struct node * memArr[2];
         memArr[0] =$1;
         memArr[1] =$3;
-        $$ = makeInternalNode("return", memArr, 2);
+        $$ = makeInternalNode("StatementExpression", memArr, 2, 0);
     }
 
 BreakStatement:
     Break Identifier_opt Semicolon {
-         struct node * memArr[2];
-        memArr[0] =makeleaf($1);
-        memArr[1] =$2;
-        $$ = makeInternalNode("break", memArr, 2);
+        struct node * memArr[1];
+        memArr[0] =$2;
+        $$ = makeInternalNode("break", memArr, 1, 1);
     }
 
 Identifier_opt: 
@@ -1034,71 +1141,83 @@ Identifier_opt:
 
 ContinueStatement: 
     Continue Identifier_opt Semicolon {
-         struct node * memArr[2];
-        memArr[0] =makeleaf($1);
-        memArr[1] =$2;
-        $$ = makeInternalNode("continue", memArr, 2);
+        struct node * memArr[1];
+        memArr[0] =$2;
+        $$ = makeInternalNode("continue", memArr, 1, 1);
     }
 
 ReturnStatement: 
     Return Expression_opt Semicolon {
-         struct node * memArr[2];
-        memArr[0] =makeleaf($1);
-        memArr[1] =$2;
-        $$ = makeInternalNode("return", memArr, 2);
+        struct node * memArr[1];
+        memArr[0] =$2;
+        $$ = makeInternalNode("return", memArr, 1, 1);
     }
 
 ThrowStatement: 
     THROW Expression Semicolon {
-         struct node * memArr[2];
-        memArr[0] =makeleaf($1);
-        memArr[1] =$2;
-        $$ = makeInternalNode("ThrowSatement", memArr, 2);
+        struct node * memArr[1];
+        memArr[0] = $2;
+        $$ = makeInternalNode("throw", memArr, 1, 1);
     }
 
 SynchronizedStatement: 
     Synchronized LeftParanthesis Expression RightParanthesis Block {
-        struct node * memArr[3];
-        memArr[0] =makeleaf($1);
-        memArr[1] =$3;
-        memArr[2] = $5;
-        $$ = makeInternalNode("SyncSatement", memArr, 3);
+        struct node * memArr[2];
+        memArr[0] = $3;
+        memArr[1] = $5;
+        $$ = makeInternalNode("synchronized", memArr, 2, 1);
     }
 
 TryStatement: 
-    Try Block Catches 
-    | Try Block Catches_opt Finally
+    Try Block Catches {
+        struct node * memArr[2];
+        memArr[0] = $2;
+        memArr[1] = $3;
+        $$ = makeInternalNode("tryCatches", memArr, 2, 1);
+    }
+    | Try Block Catches_opt Finally {
+        struct node * memArr[3];
+        memArr[0] = $2;
+        memArr[1] = $3;
+        memArr[2] = $4;
+        $$ = makeInternalNode("tryCtachesFinally", memArr, 3, 1);
+    }
 
-Catches_opt: { $$ = NULL; }
+Catches_opt: {
+        $$ = NULL; 
+    }
     | Catches {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] =$1;
+        $$ = makeInternalNode("Catches", memArr, 1, 1);
     }
 
 Catches: 
     CatchClause {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] =$1;
+        $$ = makeInternalNode("catch", memArr, 1, 0);
     }
     | Catches CatchClause {
-         struct node * memArr[2];
+        struct node * memArr[2];
         memArr[0] =$1;
         memArr[1] =$2;
-        $$ = makeInternalNode("CatcheClause", memArr, 2);
+        $$ = makeInternalNode("Catch", memArr, 2, 0);
     }
 
 CatchClause:
     Catch LeftParanthesis FormalParameter RightParanthesis Block {
-        struct node * memArr[3];
-        memArr[0] = makeleaf($1);
-        memArr[1] = $3;
-        memArr[2] = $5;
-        $$ = makeInternalNode("CatchClause", memArr, 3);
+        struct node * memArr[2];
+        memArr[0] = $3;
+        memArr[1] = $5;
+        $$ = makeInternalNode("CatchClause", memArr, 2, 0);
     }
 
 Finally: 
     FINALLY Block {
         struct node * memArr[1];
         memArr[0] = $2;
-        $$ = makeInternalNode("finally",memArr,1);
+        $$ = makeInternalNode("finally", memArr, 1, 1);
     }
 
 Primary: 
@@ -1111,13 +1230,18 @@ Primary:
 
 PrimaryNoNewArray: 
     Literal {
+        printf("InternalNode at line 1222 : %s\n", $1->data);
         $$ = $1;
     }
     | This {
         $$ = makeleaf($1);
     }
-    | LeftParanthesis Expression RightParanthesis 
-    | ClassInstanceCreationExpression 
+    | LeftParanthesis Expression RightParanthesis  {
+        $$ = $2;
+    }
+    | ClassInstanceCreationExpression {
+        $$ = $1;
+    } 
     | FieldAccess {
         $$ = $1;
     }
@@ -1134,18 +1258,20 @@ ClassInstanceCreationExpression:
         memArr[0] = makeleaf($1);
         memArr[1] =$2;
         memArr[2] =$4;
-        $$ = makeInternalNode("ClassInstance", memArr, 3);
+        $$ = makeInternalNode("ClassInstance", memArr, 3, 1);
     }
 
 ArgumentList: 
     Expression {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] =$1;
+        $$ = makeInternalNode("ArgumentList", memArr, 1, 0);
     }
     | ArgumentList Comma Expression {
         struct node * memArr[2];
         memArr[0] =$1;
         memArr[1] =$3;
-        $$ = makeInternalNode("Arguement", memArr, 2);
+        $$ = makeInternalNode("ArgumentList", memArr, 2, 0);
     }
 
 ArrayCreationExpression: 
@@ -1155,7 +1281,7 @@ ArrayCreationExpression:
         memArr[1] =$2;
         memArr[2] =$3;
         memArr[3] =$4;
-        $$ = makeInternalNode("Array", memArr, 4);
+        $$ = makeInternalNode("ArrayCreation", memArr, 4, 0);
     }
     | New ClassOrInterfaceType DimExprs Dims_opt {
         struct node * memArr[4];
@@ -1163,29 +1289,34 @@ ArrayCreationExpression:
         memArr[1] =$2;
         memArr[2] =$3;
         memArr[3] =$4;
-        $$ = makeInternalNode("Array", memArr, 4);
+        $$ = makeInternalNode("ArrayCreation", memArr, 4, 0);
     }
 
-Dims_opt: { $$ = NULL; }
+Dims_opt: { 
+    $$ = NULL; 
+    }
     |Dims {
         $$ = $1;
     }
 
 DimExprs:
     DimExpr {
-        $$ = $1;
+        struct node * memArr[1];
+        memArr[0] =$1;
+        $$ = makeInternalNode("[]", memArr, 1, 0);
     }
     | DimExprs DimExpr {
-
         struct node * memArr[2];
         memArr[0] =$1;
         memArr[1] =$2;
-        $$ = makeInternalNode("[]",memArr,2);
+        $$ = makeInternalNode("[]",memArr,2, 0);
     }
 
 DimExpr: 
     LeftSquareBracket Expression RightSquareBracket {
-        $$ = $2;
+        struct node * memArr[1];
+        memArr[0] =$2;
+        $$ = makeInternalNode("[]", memArr, 1, 0);
     }
 
 Dims: 
@@ -1208,34 +1339,36 @@ MethodInvocation:
     Name LeftParanthesis ArgumentList_opt RightParanthesis {
         struct node * memArr[1];
         memArr[0] = $3;
-
-        $$ = makeInternalNode($1->data, memArr, 1);
+        $$ = makeInternalNode($1->data, memArr, 1, 1);
     } 
     | Primary Dot Identifier LeftParanthesis ArgumentList_opt RightParanthesis {
-        struct node * memArr[2];
-        memArr[0] = $1;
-        memArr[1] = $5;
-
-        $$ = makeInternalNode($3, memArr, 2);
+        struct node * memArr[1];
+        memArr[0] = $5;
+        $$ = makeInternalNode(concatenate_string($1->data,concatenate_string("_",$3)), memArr, 1, 1);
     }
     | Super Dot Identifier LeftParanthesis ArgumentList_opt RightParanthesis {
-        struct node * memArr[2];
-        memArr[0] = makeleaf($1);
-        memArr[1] = $5;
-
-        $$ = makeInternalNode($3, memArr, 2);
+        struct node * memArr[1];
+        memArr[0] = $5;
+        $$ = makeInternalNode(concatenate_string($1,concatenate_string("_",$3)), memArr, 1, 1);
     }
 
 ArrayAccess: 
     Name LeftSquareBracket Expression RightSquareBracket{
-        $$ = makeleaf(concatenate_string($1->data,$3->data));
+        struct node * memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$ = makeInternalNode("ArrayAccess", memArr, 2, 0);
     }
     | PrimaryNoNewArray LeftSquareBracket Expression RightSquareBracket {
-        $$ = makeleaf(concatenate_string($1->data,$3->data));
+        struct node * memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$ = makeInternalNode("ArrayAccess", memArr, 2, 0);
     }
 
 PostfixExpression: 
     Primary {
+        printf("Internal node line 1359 : %s\n", $1->data);
         $$ = $1;
     }
     | Name {
@@ -1250,16 +1383,18 @@ PostfixExpression:
 
 PostIncrementExpression: 
     PostfixExpression PlusPlus {
-        struct node * memArr[1];
+        struct node * memArr[2];
         memArr[0] = $1;
-        makeInternalNode("++",memArr,1);
+        memArr[1] = makeleaf($2);
+        $$ = makeInternalNode("Post", memArr, 2, 1);
     } 
 
 PostDecrementExpression: 
     PostfixExpression MinusMinus {
-        struct node * memArr[1];
+        struct node * memArr[2];
         memArr[0] = $1;
-        makeInternalNode("--",memArr,1);
+        memArr[1] = makeleaf($2);
+        $$ = makeInternalNode("Post", memArr, 2, 1);
     } 
 
 UnaryExpression:
@@ -1270,28 +1405,34 @@ UnaryExpression:
         $$ = $1;
     }
     | Addition UnaryExpression {
-        $$ = makeleaf(concatenate_string($1,$2->data));
+        struct node * memArr[1];
+        memArr[0] = $2;
+        $$ = makeInternalNode("UnaryAddition", memArr, 1, 1);
     }
     | Substraction UnaryExpression {
-                $$ = makeleaf(concatenate_string($1,$2->data));
-
+        struct node * memArr[1];
+        memArr[0] = $2;
+        $$ = makeInternalNode("UnarySubstraction", memArr, 1, 1);
     }
     | UnaryExpressionNotPlusMinus {
+        printf("Internal node line 1405 : %s\n", $1->data);
         $$ = $1;
     }
 
 PreIncrementExpression: 
     PlusPlus UnaryExpression {
-        struct node * memArr[1];
-        memArr[0] = $2;
-        makeInternalNode("++",memArr,1);
+        struct node * memArr[2];
+        memArr[0] = makeleaf($1);
+        memArr[1] = $2;
+        $$ = makeInternalNode("Pre", memArr, 2, 1);
     } 
 
 PreDecrementExpression: 
     MinusMinus UnaryExpression {
-        struct node * memArr[1];
-        memArr[0] = $2;
-        makeInternalNode("--",memArr,1);
+        struct node * memArr[2];
+        memArr[0] = makeleaf($1);
+        memArr[1] = $2;
+        $$ = makeInternalNode("Pre", memArr, 2, 1);
     } 
 
 UnaryExpressionNotPlusMinus: 
@@ -1301,12 +1442,12 @@ UnaryExpressionNotPlusMinus:
     | Tilde UnaryExpression {
         struct node * memArr[1];
         memArr[0] = $2;
-        makeInternalNode("~",memArr,1);
+        $$ = makeInternalNode("Tilde", memArr, 1, 1);
     } 
     | NotOperator UnaryExpression {
-        struct node * memArr[1];
+         struct node * memArr[1];
         memArr[0] = $2;
-        makeInternalNode("!",memArr,1);
+        $$ = makeInternalNode("Not", memArr, 1, 1);
     } 
     | CastExpression {
         $$ = $1;
@@ -1314,26 +1455,22 @@ UnaryExpressionNotPlusMinus:
 
 CastExpression: 
     LeftParanthesis PrimitiveType Dims_opt RightParanthesis UnaryExpression {
-        struct  node * memArr[3];
-        memArr[0] = $2;
-        memArr[1] = $3;
-        memArr[2] = $5;
+        struct  node * memArr[1];
+        memArr[0] = $5;
         char * str = concatenate_string($2->data, $3->data);
-        $$ = makeInternalNode(str, memArr, 3);
+        $$ = makeInternalNode(str, memArr, 1, 1);
     }
     | LeftParanthesis Expression RightParanthesis UnaryExpressionNotPlusMinus {
         struct  node * memArr[2];
         memArr[0] = $2;
         memArr[1] = $4;
-        $$ = makeInternalNode($2->data, memArr, 2);
+        $$ = makeInternalNode("CastExpression", memArr, 2, 1);
     }
     | LeftParanthesis Name Dims RightParanthesis UnaryExpressionNotPlusMinus {
+        struct node * memArr[1];
+        memArr[0] = $5;
         char * str = concatenate_string($2->data, $3->data);
-        struct node * memArr[3];
-        memArr[0] = $2;
-        memArr[1] = $3;
-        memArr[2] = $5;
-        $$ = makeInternalNode(str, memArr, 3);
+        $$ = makeInternalNode(str, memArr, 1, 1);
     }
 
 MultiplicativeExpression: 
@@ -1344,19 +1481,19 @@ MultiplicativeExpression:
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode($2, memArr, 2); 
+        $$  = makeInternalNode("Multiply", memArr, 2, 1); 
     } 
     | MultiplicativeExpression Divide UnaryExpression {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode($2, memArr, 2); 
+        $$  = makeInternalNode("Divide", memArr, 2, 1); 
     } 
     | MultiplicativeExpression Modulo UnaryExpression {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode($2, memArr, 2); 
+        $$  = makeInternalNode("Modulo", memArr, 2, 1); 
     }
 
 AdditiveExpression: 
@@ -1365,15 +1502,17 @@ AdditiveExpression:
     }
     | AdditiveExpression Addition MultiplicativeExpression {
         struct node* memArr[2];
+        printf("Internal node line 1491 : %s\n", $1->data);
+        printf("Internal node line 1491 : %s\n", $3->data);
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode($2, memArr, 2); 
+        $$  = makeInternalNode("Addition", memArr, 2, 1); 
     }
     | AdditiveExpression Substraction MultiplicativeExpression {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode($2, memArr, 2); 
+        $$  = makeInternalNode("Substraction", memArr, 2, 1); 
     }
 
 ShiftExpression: 
@@ -1384,19 +1523,19 @@ ShiftExpression:
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode($2, memArr, 2); 
+        $$  = makeInternalNode("LeftShift", memArr, 2, 1); 
     }
     | ShiftExpression RightShift AdditiveExpression {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode($2, memArr, 2); 
+        $$  = makeInternalNode("RightShift", memArr, 2, 1); 
     }
     | ShiftExpression TripleGreaterThan AdditiveExpression {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode($2, memArr, 2); 
+        $$  = makeInternalNode("UnsignedRightShift", memArr, 2, 1); 
     }
 
 RelationalExpression: 
@@ -1407,31 +1546,31 @@ RelationalExpression:
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode($2, memArr, 2); 
+        $$  = makeInternalNode("LessThan", memArr, 2, 1); 
     } 
     | RelationalExpression GreaterThan ShiftExpression {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode($2, memArr, 2); 
+        $$  = makeInternalNode("GreaterThan", memArr, 2, 1); 
     }
     | RelationalExpression LessThanEqualTo ShiftExpression {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode($2, memArr, 2); 
+        $$  = makeInternalNode("LessThanEqualTo", memArr, 2, 1); 
     }
     | RelationalExpression GreaterThanEqualTo ShiftExpression {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode($2, memArr, 2); 
+        $$  = makeInternalNode("GreaterThanEqualTo", memArr, 2, 1); 
     } 
     | RelationalExpression Instanceof ReferenceType {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode($2, memArr, 2); 
+        $$  = makeInternalNode("Instanceof", memArr, 2, 1); 
     }
 
 EqualityExpression: 
@@ -1442,13 +1581,13 @@ EqualityExpression:
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode($2, memArr, 2); 
+        $$  = makeInternalNode("Equalto_Equalto", memArr, 2, 1); 
     } 
     | EqualityExpression NotEqualTo RelationalExpression {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode($2, memArr, 2); 
+        $$  = makeInternalNode("Not_Equalto", memArr, 2, 1); 
     }
 
 AndExpression: 
@@ -1459,7 +1598,7 @@ AndExpression:
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode($2, memArr, 2); 
+        $$  = makeInternalNode("BitwiseAnd", memArr, 2 ,1); 
     }
 
 ExclusiveOrExpression:
@@ -1470,7 +1609,7 @@ ExclusiveOrExpression:
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode($2, memArr, 2); 
+        $$  = makeInternalNode("xor", memArr, 2 ,1); 
     }
 
 InclusiveOrExpression:
@@ -1481,7 +1620,7 @@ InclusiveOrExpression:
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode($2, memArr, 2); 
+        $$  = makeInternalNode("BitwiseOR", memArr, 2, 1); 
     }
 
 ConditionalAndExpression:
@@ -1492,7 +1631,7 @@ ConditionalAndExpression:
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode($2, memArr, 2); 
+        $$  = makeInternalNode("BitwiseAND", memArr, 2, 1); 
     }
 
 ConditionalOrExpression: 
@@ -1503,7 +1642,7 @@ ConditionalOrExpression:
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode($2, memArr, 2); 
+        $$  = makeInternalNode("OR", memArr, 2, 1); 
     }
 
 ConditionalExpression: 
@@ -1515,7 +1654,7 @@ ConditionalExpression:
         memArr[0] = $1;
         memArr[1] = $3;
         memArr[2] = $5;
-        $$  = makeInternalNode("?:TernaryOperator", memArr, 3); 
+        $$  = makeInternalNode("?:TernaryOperator", memArr, 3, 1); 
     }
 
 AssignmentExpression: 
@@ -1531,7 +1670,7 @@ Assignment:
     struct node* memArr[2];
     memArr[0] = $1;
     memArr[1] = $3;
-    $$ = makeInternalNode($2->data, memArr, 2);
+    $$ = makeInternalNode("Assignment", memArr, 2, 1);
 }
 
 LeftHandSide: 
@@ -1625,26 +1764,45 @@ char* concatenate_string(char* s, char* s1)
 struct node* makeleaf(char* nodeStr){
     //printf("%s\n",nodeStr);
     struct node* leaf = (struct node*)malloc(sizeof(struct node));
+    printf("leaf: %s\n",nodeStr);
     leaf->data = nodeStr;
+    leaf->parentFlag = 1;
     for(int i = 0; i<N_NodeChild; i++){
         leaf->arr[i] = NULL;
     }
     return leaf;
 }
 
-struct node* makeInternalNode(char* rule, struct node* memArr[], int mem){
+struct node* makeInternalNode(char* rule, struct node* memArr[], int n, int isParent){
 
     struct node* internalNode = (struct node*)malloc(sizeof(struct node));
     internalNode->data = rule;
-    for(int i = 0; i<mem; i++){
-        internalNode->arr[i] = memArr[i];
-    }
-    for(int i = mem; i<N_NodeChild; i++){
+
+    for(int i = 0; i<N_NodeChild; i++){
         internalNode->arr[i] = NULL;
     }
+    int k = 0;
+    for(int i = 0; i<n; i++){
+        if(memArr[i]!=NULL){
+            if(memArr[i]->parentFlag == 0){
+                for(int j = 0; j<N_NodeChild; j++){
+                    if(memArr[i]->arr[j]!=NULL){
+                        internalNode->arr[k] = memArr[i]->arr[j];
+                        k++;
+                    }
+                }
+            }
+            else{
+                internalNode->arr[k] = memArr[i];
+                k++;
+            }
+        }
+    }
+    internalNode->parentFlag = isParent;
     return internalNode;
 
 }
+
 
 void ast_print(struct node* root, int d){
 
@@ -1661,7 +1819,7 @@ void ast_print(struct node* root, int d){
         if(root->arr[i]!= NULL){
             for(int i = 0 ; i<=d+1; i++)
             printf("\t");
-        ast_print(root->arr[i],d+1);
+            ast_print(root->arr[i],d+1);
         }
     }
 }
@@ -1713,7 +1871,9 @@ void graph_maker(struct node* root,FILE* graph,int depth,int child_num){
 int main(int argc , char** argv)
 {   
     assert(argc == 2);       // Need to add path to inputfile and output file
-
+    #ifdef YYDEBUG
+        yydebug = 0;
+    #endif
     yyin = fopen(argv[1] , "r");
     if(yyin == NULL){
         printf("No such file found ! \n");
