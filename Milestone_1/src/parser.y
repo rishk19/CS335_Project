@@ -20,7 +20,6 @@ struct node* makeInternalNode(char* rule, struct node* memArr[], int mem);
 struct node* makeleaf(char* node);
 char* concatenate_string(char* s, char* s1);
 void help();
-int verbose_flag = 0;
 
 %}
 
@@ -221,9 +220,15 @@ InterfaceType:
     }
 
 ArrayType: 
-    PrimitiveType LeftSquareBracket RightSquareBracket 
-    | Name LeftSquareBracket RightSquareBracket 
-    | ArrayType LeftSquareBracket RightSquareBracket
+    PrimitiveType LeftSquareBracket RightSquareBracket {
+    
+    }
+    | Name LeftSquareBracket RightSquareBracket {
+        
+    }
+    | ArrayType LeftSquareBracket RightSquareBracket {
+
+    }
 
 Name: 
     SimpleName {
