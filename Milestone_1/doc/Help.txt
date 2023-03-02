@@ -16,3 +16,6 @@ The executable for the parser is in the bin folder. To parse a java file run :
     cd bin
     ./parser --input= "PATH TO INPUT FILE" --ouput= "PATH TO OUTPUT FILE"
 
+If you want to run our test suite then from the folder Milestone_1 run :
+    make test
+And then give the test_suite number and the output file would be in the output folder.
