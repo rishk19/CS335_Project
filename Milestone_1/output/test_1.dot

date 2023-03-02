@@ -1,0 +1,20 @@
+digraph AST{ 
+	iCompilationUnit_0_0 [label= "CompilationUnit"]	iCompilationUnit_0_0 ->{ iDeclarations_1_0}
+	iDeclarations_1_0 [label= "Declarations"]	iDeclarations_1_0 ->{ iClassDeclaration_2_0}
+	iClassDeclaration_2_0 [label= "ClassDeclaration"]	iClassDeclaration_2_0 ->{ iclass_3_0 ,iackermann_3_1 ,iClassBody_3_2}
+	iclass_3_0 [label= "class"]	iclass_3_0 ->{}
+	iackermann_3_1 [label= "ackermann"]	iackermann_3_1 ->{}
+	iClassBody_3_2 [label= "ClassBody"]	iClassBody_3_2 ->{ imain_4_0}
+	imain_4_0 [label= "main"]	imain_4_0 ->{ iModifiers_5_0 ,ivoid_5_1 ,iMethodBody_5_2}
+	iModifiers_5_0 [label= "Modifiers"]	iModifiers_5_0 ->{ ipublic_6_0 ,istatic_6_1}
+	ipublic_6_0 [label= "public"]	ipublic_6_0 ->{}
+	istatic_6_1 [label= "static"]	istatic_6_1 ->{}
+	ivoid_5_1 [label= "void"]	ivoid_5_1 ->{}
+	iMethodBody_5_2 [label= "MethodBody"]	iMethodBody_5_2 ->{ istatements_6_0}
+	istatements_6_0 [label= "statements"]	istatements_6_0 ->{ iint_7_0 ,ii_7_1 ,iAddition_7_2}
+	iint_7_0 [label= "int"]	iint_7_0 ->{}
+	ii_7_1 [label= "i"]	ii_7_1 ->{}
+	iAddition_7_2 [label= "Addition"]	iAddition_7_2 ->{ i1_8_0 ,i2_8_1}
+	i1_8_0 [label= "1"]	i1_8_0 ->{}
+	i2_8_1 [label= "2"]	i2_8_1 ->{}
+} 
