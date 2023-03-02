@@ -1220,7 +1220,6 @@ Primary:
 
 PrimaryNoNewArray: 
     Literal {
-        printf("InternalNode at line 1222 : %s\n", $1->data);
         $$ = $1;
     }
     | This {
@@ -1748,7 +1747,6 @@ char* concatenate_string(char* s, char* s1)
 struct node* makeleaf(char nodeStr[100]){
     //printf("%s\n",nodeStr);
     struct node* leaf = (struct node*)malloc(sizeof(struct node));
-    printf("leaf: %s\n",nodeStr);
     strcpy(leaf->data, nodeStr);
     leaf->parentFlag = 1;
     for(int i = 0; i<N_NodeChild; i++){
@@ -1942,11 +1940,9 @@ int main(int argc , char** argv)
             while(input_file[0] == ' '){
                 input_file +=1;
             }
-            printf("%s \n",input_file);
             int k = 0;
             while(input_file[k]!='\n')k++;
             input_file[k]='\0';
-            printf("%s \n",input_file);
         }
         else{
             printf("No input file specified.\n");
@@ -1969,11 +1965,9 @@ int main(int argc , char** argv)
             while(output_file[0] == ' '){
                 output_file +=1;
             }
-            printf("%s\n",output_file);
             int k = 0;
-            while(input_file[k]!='\n')k++;
-            input_file[k]='\0';
-            printf("%s\n",output_file);
+            while(output_file[k]!='\n')k++;
+            output_file[k]='\0';
 
         }
         else{
@@ -1982,7 +1976,6 @@ int main(int argc , char** argv)
         }
     }
 
-    system("grep -c '[-][-]help' temp.txt");
 
     system("rm output2.txt");
     system("rm temp.txt");
