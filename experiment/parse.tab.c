@@ -70,6 +70,7 @@
 #line 1 "parse.y"
 
 #include <stdio.h>
+#include "stdlib.h"
 int yyerror(char *s);
 int yylex();
 extern FILE *yyin;
@@ -83,7 +84,8 @@ struct node{
 struct node* makeInternalNode(char* rule, struct node* memArr[], int mem);
 struct node* makeleaf(char* node);
 
-#line 87 "parse.tab.c"
+
+#line 89 "parse.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -505,7 +507,7 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    35,    35,    45,    51,    58
+       0,    37,    37,    47,    53,    60
 };
 #endif
 
@@ -1062,7 +1064,7 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* a: b c  */
-#line 35 "parse.y"
+#line 37 "parse.y"
         {
         //printf("a -> bc");
         struct node* memArr[2];
@@ -1070,19 +1072,19 @@ yyreduce:
         memArr[1] = (yyvsp[0].exp);
         root = makeInternalNode("Concat",memArr,2);
     }
-#line 1074 "parse.tab.c"
+#line 1076 "parse.tab.c"
     break;
 
   case 3: /* b: B  */
-#line 45 "parse.y"
+#line 47 "parse.y"
       {
     (yyval.exp) =  makeleaf((yyvsp[0].data));
     }
-#line 1082 "parse.tab.c"
+#line 1084 "parse.tab.c"
     break;
 
   case 4: /* c: c C  */
-#line 51 "parse.y"
+#line 53 "parse.y"
         {
         //printf("c->cC");
         struct node* memArr[2];
@@ -1090,20 +1092,20 @@ yyreduce:
         memArr[0] = (yyvsp[-1].exp);
        (yyval.exp) = makeInternalNode("C_Non_Terminal", memArr,2);
     }
-#line 1094 "parse.tab.c"
+#line 1096 "parse.tab.c"
     break;
 
   case 5: /* c: C  */
-#line 58 "parse.y"
+#line 60 "parse.y"
         {
         //printf("c-> C");
         (yyval.exp) =  makeleaf((yyvsp[0].data));
     }
-#line 1103 "parse.tab.c"
+#line 1105 "parse.tab.c"
     break;
 
 
-#line 1107 "parse.tab.c"
+#line 1109 "parse.tab.c"
 
       default: break;
     }
@@ -1296,7 +1298,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 64 "parse.y"
+#line 66 "parse.y"
 
 
 int yyerror(char *s)
@@ -1388,6 +1390,35 @@ void graph_maker(struct node* root,FILE* graph,int depth,int child_num){
 
 int main(int argc, char** argv)
 {   
+    FILE* fp;
+    char * line = NULL;
+    char * input_file = NULL;
+    char * output_file = NULL;
+    size_t len = 0;
+    ssize_t read;
+    fp = fopen("temp2.txt","w");
+    int i;
+    for(i=1; i<argc; i++){
+        fprintf(fp,"%s ",argv[i]);
+    }
+    fclose(fp);
+    system("grep -o '[-][-]verbose' temp2.txt > verbose.txt");
+
+    fp = fopen("verbose.txt","r");
+
+    if((read = getline(&output_file, &len, fp)) != -1) {
+        //printf("%s", output_file);
+        if(read > 0){
+            #ifdef YYDEBUG
+                yydebug =  1;
+            #endif
+            printf("Verbose Flag passed !\n");
+        }
+    }
+
+    fclose(fp);
+    system("rm verbose.txt");
+
     yyin = fopen("temp.txt","r");
     yyparse();
     //ast_print(root,0);

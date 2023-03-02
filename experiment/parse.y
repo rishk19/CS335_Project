@@ -1,5 +1,6 @@
 %{
 #include <stdio.h>
+#include "stdlib.h"
 int yyerror(char *s);
 int yylex();
 extern FILE *yyin;
@@ -12,6 +13,7 @@ struct node{
 };
 struct node* makeInternalNode(char* rule, struct node* memArr[], int mem);
 struct node* makeleaf(char* node);
+
 %}
 
 
@@ -152,6 +154,35 @@ void graph_maker(struct node* root,FILE* graph,int depth,int child_num){
 
 int main(int argc, char** argv)
 {   
+    FILE* fp;
+    char * line = NULL;
+    char * input_file = NULL;
+    char * output_file = NULL;
+    size_t len = 0;
+    ssize_t read;
+    fp = fopen("temp2.txt","w");
+    int i;
+    for(i=1; i<argc; i++){
+        fprintf(fp,"%s ",argv[i]);
+    }
+    fclose(fp);
+    system("grep -o '[-][-]verbose' temp2.txt > verbose.txt");
+
+    fp = fopen("verbose.txt","r");
+
+    if((read = getline(&output_file, &len, fp)) != -1) {
+        //printf("%s", output_file);
+        if(read > 0){
+            #ifdef YYDEBUG
+                yydebug =  1;
+            #endif
+            printf("Verbose Flag passed !\n");
+        }
+    }
+
+    fclose(fp);
+    system("rm verbose.txt");
+
     yyin = fopen("temp.txt","r");
     yyparse();
     //ast_print(root,0);

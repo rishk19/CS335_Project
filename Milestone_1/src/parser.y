@@ -20,6 +20,7 @@ struct node{
 struct node* makeInternalNode(char* rule, struct node* memArr[], int n, int isParent);
 struct node* makeleaf(char* node);
 char* concatenate_string(char* s, char* s1);
+void help();
 
 %}
 
@@ -1859,30 +1860,148 @@ void graph_maker(struct node* root,FILE* graph,int depth,int child_num){
 }
 
 
-
+void help()
+{
+    system("clear");
+    system("cat ../doc/Help.txt");
+}
 
 
 int main(int argc , char** argv)
 {   
-    assert(argc == 2);       // Need to add path to inputfile and output file
+           // Need to add path to inputfile and output file
     #ifdef YYDEBUG
         yydebug = 0;
     #endif
-    yyin = fopen(argv[1] , "r");
-    if(yyin == NULL){
-        printf("No such file found ! \n");
+    FILE* fp;
+    char * line = NULL;
+    char * input_file = NULL;
+    char * output_file = NULL;
+    size_t len = 0;
+    ssize_t read;
+    int help_flag = 0;
+
+    fp = fopen("temp.txt","w");
+    int i;
+    for(i=1; i<argc; i++){
+        fprintf(fp,"%s ",argv[i]);
+    }
+    fclose(fp);
+
+
+
+    /* Help Mode */
+    system("grep -o '[-][-]help' temp.txt > help.txt");
+
+    fp = fopen("help.txt","r");
+
+    if((read = getline(&output_file, &len, fp)) != -1) {
+        if(read > 0){
+            help_flag = 1;
+        }
+    }
+
+    fclose(fp);
+    system("rm help.txt");
+
+    if(help_flag){
+        help();
         return 0;
     }
-    printf("I am in before parse call \n");
+
+    /* Verbose Mode */
+
+    system("grep -o '[-][-]verbose' temp.txt > verbose.txt");
+
+    fp = fopen("verbose.txt","r");
+
+    if((read = getline(&output_file, &len, fp)) != -1) {
+        if(read > 0){
+            #ifdef YYDEBUG
+                yydebug =  1;
+            #endif
+        }
+    }
+
+    fclose(fp);
+    system("rm verbose.txt");
+
+    /* Finding Input File */
+
+    system("grep -o '[-][-]input[ ]*=[ ]*[a-zA-Z0-9._/]*' temp.txt > output1.txt");
+
+
+
+    fp = fopen("output1.txt","r");
+    while ((read = getline(&input_file, &len, fp)) != -1) {
+        if(read > 0){
+            while(input_file[0]!= '='){
+                input_file += 1;
+            }
+            input_file +=1;
+            while(input_file[0] == ' '){
+                input_file +=1;
+            }
+            printf("%s \n",input_file);
+            int k = 0;
+            while(input_file[k]!='\n')k++;
+            input_file[k]='\0';
+            printf("%s \n",input_file);
+        }
+        else{
+            printf("No input file specified.\n");
+            return 0;
+        }
+    }
+    system("rm output1.txt");
+
+    /* Finding Output File */
+
+    system("grep -o '[-][-]output[ ]*=[ ]*[a-zA-Z0-9._/]*' temp.txt > output2.txt");
+
+    fp = fopen("output2.txt","r");
+    while((read = getline(&output_file, &len, fp)) != -1) {
+        if(read > 0){
+            while(output_file[0]!= '='){
+                output_file += 1;
+            }
+            output_file +=1;
+            while(output_file[0] == ' '){
+                output_file +=1;
+            }
+            printf("%s\n",output_file);
+            int k = 0;
+            while(input_file[k]!='\n')k++;
+            input_file[k]='\0';
+            printf("%s\n",output_file);
+
+        }
+        else{
+            printf("No output file specified.\n");
+            return 0;
+        }
+    }
+
+    system("grep -c '[-][-]help' temp.txt");
+
+    system("rm output2.txt");
+    system("rm temp.txt");
+
+    /* Parsing Algorithm */
+    yyin = fopen(input_file,"r");
+
+    if(yyin == NULL){
+        printf("No such Input file found ! \n");
+        return 0;
+    }
 
     yyparse();
 
-    printf("I am out of parse call \n");
-    FILE* graph = fopen("AST.dot","w");
-    ast_print(root,0);
+    FILE* graph = fopen(output_file,"w");
     fprintf(graph, "digraph AST{ \n");
     graph_maker(root, graph,0,0);
     fprintf(graph, "} \n");
+
     fclose(graph);
     fclose(yyin);
 
