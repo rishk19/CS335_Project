@@ -1173,7 +1173,8 @@ void graph_maker(struct node* root,FILE* graph,int depth,int child_num){
 
 void help()
 {
-    printf("Welcome to Help Mode !");
+    system("clear");
+    system("cat ../doc/Help.txt");
 }
 
 
@@ -1223,7 +1224,9 @@ int main(int argc , char** argv)
 
     if((read = getline(&output_file, &len, fp)) != -1) {
         if(read > 0){
-            verbose_flag = 1;
+            #ifdef YYDEBUG
+                yydebug =  1;
+            #endif
         }
     }
 

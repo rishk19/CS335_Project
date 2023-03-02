@@ -154,8 +154,6 @@ void graph_maker(struct node* root,FILE* graph,int depth,int child_num){
 
 int main(int argc, char** argv)
 {   
-
-
     FILE* fp;
     char * line = NULL;
     char * input_file = NULL;
@@ -168,7 +166,7 @@ int main(int argc, char** argv)
         fprintf(fp,"%s ",argv[i]);
     }
     fclose(fp);
-    system("grep -o '[-][-]verbose' temp.txt > verbose.txt");
+    system("grep -o '[-][-]verbose' temp2.txt > verbose.txt");
 
     fp = fopen("verbose.txt","r");
 
@@ -176,21 +174,15 @@ int main(int argc, char** argv)
         //printf("%s", output_file);
         if(read > 0){
             #ifdef YYDEBUG
-            yydebug = 1;
+                yydebug =  1;
             #endif
+            printf("Verbose Flag passed !\n");
         }
     }
-
-    #ifdef YYDEBUG
-    yydebug = 0;
-    #endif
 
     fclose(fp);
     system("rm verbose.txt");
 
-    #ifdef YYDEBUG
-    yydebug = 1;
-    #endif
     yyin = fopen("temp.txt","r");
     yyparse();
     //ast_print(root,0);

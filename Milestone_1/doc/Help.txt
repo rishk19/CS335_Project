@@ -1,0 +1,6 @@
+Welcome to Help Mode !!
+
+The flags availiable :
+    --verbose : Use to switch on the debugger of bison
+    --input= : Use to specify input file
+    --output= : Use to specify output file
