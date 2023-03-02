@@ -4,3 +4,15 @@ The flags availiable :
     --verbose : Use to switch on the debugger of bison
     --input= : Use to specify input file
     --output= : Use to specify output file
+
+To compile the parser for the first time, on the Milestone_1 directory run the code
+    make parse
+    
+To compile the parser again first run :
+    make clean   // This removes the bin folder
+    make parse
+
+The executable for the parser is in the bin folder. To parse a java file run :
+    cd bin
+    ./parser --input= "PATH TO INPUT FILE" --ouput= "PATH TO OUTPUT FILE"
+

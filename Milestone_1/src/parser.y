@@ -1235,7 +1235,7 @@ int main(int argc , char** argv)
 
     /* Finding Input File */
 
-    system("grep -o '[-][-]input[ ]*=[ ]*[a-zA-Z0-9._]*' temp.txt > output1.txt");
+    system("grep -o '[-][-]input[ ]*=[ ]*[a-zA-Z0-9._/]*' temp.txt > output1.txt");
 
 
 
@@ -1260,7 +1260,7 @@ int main(int argc , char** argv)
 
     /* Finding Output File */
 
-    system("grep -o '[-][-]output[ ]*=[ ]*[a-zA-Z0-9._]*' temp.txt > output2.txt");
+    system("grep -o '[-][-]output[ ]*=[ ]*[a-zA-Z0-9._/]*' temp.txt > output2.txt");
 
     fp = fopen("output2.txt","r");
     while((read = getline(&output_file, &len, fp)) != -1) {
@@ -1292,11 +1292,15 @@ int main(int argc , char** argv)
         printf("No such file found ! \n");
         return 0;
     }
-    printf("I am in before parse call \n");
 
     yyparse();
 
-    printf("I am out of parse call \n");
+    FILE* graph = fopen(output_file,"w");
+    fprintf(graph, "digraph AST{ \n");
+    graph_maker(root, graph,0,0);
+    fprintf(graph, "} \n");
+
+
     fclose(yyin);
 
     return 0;
