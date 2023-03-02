@@ -22,6 +22,7 @@ struct node* makeInternalNode(char* rule, struct node* memArr[], int n, int isPa
 struct node* makeleaf(char* node);
 char* concatenate_string(char* s, char* s1);
 void help();
+long long int line_number=1;
 
 %}
 
@@ -1720,7 +1721,7 @@ Expression: AssignmentExpression {
 
 int yyerror(char* s)
 {
-    printf("%s\n",s);
+    printf("Error detected ! %s at line number %lld\n",s,line_number);
 }
 
 
@@ -1940,7 +1941,7 @@ int main(int argc , char** argv)
 
 
     fp = fopen("output1.txt","r");
-    while ((read = getline(&input_file, &len, fp)) != -1) {
+    if((read = getline(&input_file, &len, fp)) != -1) {
         if(read > 0){
             while(input_file[0]!= '='){
                 input_file += 1;
@@ -1965,7 +1966,7 @@ int main(int argc , char** argv)
     system("grep -o '[-][-]output[ ]*=[ ]*[a-zA-Z0-9._/]*' temp.txt > output2.txt");
 
     fp = fopen("output2.txt","r");
-    while((read = getline(&output_file, &len, fp)) != -1) {
+    if((read = getline(&output_file, &len, fp)) != -1) {
         if(read > 0){
             while(output_file[0]!= '='){
                 output_file += 1;
