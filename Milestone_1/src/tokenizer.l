@@ -2,9 +2,16 @@
     #include<stdio.h>
     #include"string.h"
     #include "parser.tab.h"
+
+    extern long long int line_number;
 %}
 
 %%
+
+"//"+.* {}
+
+"/*"+([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*(\*)*+"*/" {}
+
 true|false {
     sscanf(yytext,"%s", yylval.data);
             return (BooleanLiteral);
@@ -219,9 +226,6 @@ while {
     sscanf(yytext,"%s", yylval.data);
     return (Identifier);
 }
-"//"+.* {}
-
-"/*"+([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*(\*)*+"*/" {}
 
 [0-9_]*\.?[0-9_]+ {
     sscanf(yytext,"%s", yylval.data);
@@ -474,9 +478,14 @@ while {
     sscanf(yytext,"%s", yylval.data);
             return (StringLiteral);
 }
-" "|"\t"|"\s"|"\f"|"\n"|"r" {}
+" "|"\t"|"\s"|"\f"|"r" {}
+"\n" {
+    line_number +=1;
+}
 
 . {printf("error! unrecognised input character :%s, skipping\n", yytext);}
+
+
 %%
 
 

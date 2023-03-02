@@ -21,6 +21,7 @@ struct node* makeInternalNode(char* rule, struct node* memArr[], int n, int isPa
 struct node* makeleaf(char* node);
 char* concatenate_string(char* s, char* s1);
 void help();
+long long int line_number=1;
 
 %}
 
@@ -1715,7 +1716,7 @@ Expression: AssignmentExpression {
 
 int yyerror(char* s)
 {
-    printf("%s\n",s);
+    printf("Error detected ! %s at line number %lld\n",s,line_number);
 }
 
 
