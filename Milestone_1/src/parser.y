@@ -1721,7 +1721,7 @@ Expression: AssignmentExpression {
 
 int yyerror(char* s)
 {
-    printf("Error detected ! %s at line number %lld\n",s,line_number);
+    printf("Error detected ! %s at [ line number: %lld ] after removing the comments.\nExiting...\n",s,line_number);
 }
 
 
@@ -1999,8 +1999,7 @@ int main(int argc , char** argv)
     }
 
     yyparse();
-    ast_print(root,0,z);
-
+    ast_print(root, 0, z);
     FILE* graph = fopen(output_file,"w");
     fprintf(graph, "digraph AST{ \n");
     graph_maker(root, graph,0,0);

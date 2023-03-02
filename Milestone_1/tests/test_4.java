@@ -14,7 +14,7 @@ public class Stopwatch
         /**
          start the stop watch.
         */
-        int System,nanoTime;
+        int System,nanoTime());
         public long nanoTime(){}
         public void start(){
                 startTime = System.nanoTime();
@@ -23,7 +23,7 @@ public class Stopwatch
         /**
          stop the stop watch.
         */
-        public void stop()
+        public void stop ()
 
         {  
             int i = 0;
