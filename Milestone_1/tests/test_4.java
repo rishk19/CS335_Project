@@ -24,7 +24,10 @@ public class Stopwatch
          stop the stop watch.
         */
         public void stop()
-        {       stopTime = System.nanoTime();   }
+
+        {  
+            int i = 0;
+                 stopTime = System.nanoTime();   }
 
         /**
         elapsed time in seconds.
@@ -33,6 +36,7 @@ public class Stopwatch
         public double time()
         {       return (stopTime - startTime) / NANOS_PER_SEC;  }
 
+        @Override
         public String toString(){
             return "elapsed time: " + time() + " seconds.";
         }
