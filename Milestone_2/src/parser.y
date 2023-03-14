@@ -1,10 +1,19 @@
 %{
+#include <cstdio>
+#include <iostream>
+#include <string.h>
+#include <fstream>
 #include <stdio.h>
+#include <vector>
 #include "assert.h"
 #include "string.h"
 #include "stdlib.h"
+
+using namespace std;
+
 int yyerror(char *s);
-int yylex();
+extern int yylex();
+extern int yyparse();
 extern FILE *yyin;
 struct node *root = NULL;
 
@@ -538,7 +547,8 @@ VariableDeclarator:
         struct node * memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$ = makeInternalNode(concatenate_string($1, concatenate_string(" ", concatenate_string("= ",$3->data))), memArr, 2, 1);
+        $$ = makeInternalNode("Initialization", memArr, 2, 1);
+        // $$ = makeInternalNode(concatenate_string($1, concatenate_string("_", concatenate_string("= ",$3->data))), memArr, 2, 1);
     }
 
 VariableDeclaratorId: 
@@ -1876,6 +1886,10 @@ void help()
 
 int main(int argc , char** argv)
 {   
+
+    vector<int> v;
+    v.push_back(1);
+    cout << v[0]<<'\n';
            // Need to add path to inputfile and output file
     #ifdef YYDEBUG
         yydebug = 0;

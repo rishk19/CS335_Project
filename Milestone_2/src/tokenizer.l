@@ -6,6 +6,8 @@
     extern long long int line_number;
 %}
 
+%option noyywrap
+
 %%
 
 "//"+.* {}
@@ -476,7 +478,7 @@ while {
 
 \"(\\.|[^"\\])*\" {
     char str[1000];
-    for(int i = 1; i<1000 && yytext[i]!="\""; i++)
+    for(int i = 1; i<1000 && yytext[i]!='\"'; i++)
         str[i] = yytext[i]; 
     sscanf(str,"%s", yylval.data);
             return (StringLiteral);
@@ -492,4 +494,4 @@ while {
 %%
 
 
-int yywrap() {}
+//int yywrap() {}
