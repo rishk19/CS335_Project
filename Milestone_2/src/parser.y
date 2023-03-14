@@ -162,10 +162,12 @@ IntegerLiteral:
 
 Type: 
     PrimitiveType {
-        $$ = $1;
+        $$ = $1; 
+        cout << "The primitive type is "<< $1->data << "\n";
     }
     | ReferenceType {
         $$ = $1;
+        cout << "The reference type is "<< $1->data << "\n";
     }
 
 PrimitiveType: 
@@ -2013,7 +2015,7 @@ int main(int argc , char** argv)
     }
 
     yyparse();
-    ast_print(root, 0, z);
+    //ast_print(root, 0, z);
     FILE* graph = fopen(output_file,"w");
     fprintf(graph, "digraph AST{ \n");
     graph_maker(root, graph,0,0);
