@@ -8,6 +8,8 @@
 #include "assert.h"
 #include "string.h"
 #include "stdlib.h"
+#include "../src/DataStructures/GlobalSymbolTable.hpp"
+#include "../src/DataStructures/SymbolTable.hpp"
 
 using namespace std;
 
@@ -32,6 +34,8 @@ struct node* makeleaf(char* node);
 char* concatenate_string(char* s, char* s1);
 void help();
 long long int line_number=1;
+
+
 
 %}
 
@@ -1888,11 +1892,7 @@ void help()
 
 int main(int argc , char** argv)
 {   
-
-    vector<int> v;
-    v.push_back(1);
-    cout << v[0]<<'\n';
-           // Need to add path to inputfile and output file
+    // Need to add path to inputfile and output file
     #ifdef YYDEBUG
         yydebug = 0;
     #endif
