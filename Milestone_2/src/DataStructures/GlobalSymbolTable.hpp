@@ -2,6 +2,10 @@
 #define GLOBALSYMBOLTABLE_H_
 
 #include "SymbolTable.hpp"
+#include <bits/stdc++.h>
+#include "Type.hpp"
+
+using namespace std;
 
 struct GlobalSymbol {
     string scope;           // Assuming functions have different names
@@ -13,7 +17,7 @@ struct GlobalSymbolTable {
     map<string,int> scope_hash;
 };
 
-void insert(string, struct SymbolTable*, struct GlobalSymbolTable *);
-struct GlobalSymbol lookup(string, struct GlobalSymbolTable * );
+int glob_insert(string, struct SymbolTable*, struct GlobalSymbolTable *);
+struct GlobalSymbol glob_lookup(string, struct GlobalSymbolTable * );
 
 #endif
