@@ -8,6 +8,7 @@
 #include "assert.h"
 #include "string.h"
 #include "stdlib.h"
+#include <bits/stdc++.h>
 #include "../src/DataStructures/GlobalSymbolTable.hpp"
 #include "../src/DataStructures/SymbolTable.hpp"
 
@@ -1500,7 +1501,7 @@ MultiplicativeExpression:
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode("%", memArr, 2, 1); 
+        $$  = makeInternalNode("Modulo", memArr, 2, 1); 
     }
 
 AdditiveExpression: 
@@ -1659,7 +1660,7 @@ ConditionalExpression:
         memArr[0] = $1;
         memArr[1] = $3;
         memArr[2] = $5;
-        $$  = makeInternalNode("?:", memArr, 3, 1); 
+        $$  = makeInternalNode("TernaryOperator", memArr, 3, 1); 
     }
 
 AssignmentExpression: 
@@ -1878,11 +1879,58 @@ void graph_maker(struct node* root,FILE* graph,int depth,int child_num){
 
     }
     return;
-    
 
 }
 
+void generateGraph(struct node* root, FILE* graph, int nnode = 0){
+    if(root == NULL)
+        return ;
 
+    queue<node*> q;
+    q.push(root);
+    while(!q.empty()){
+        struct node * head = q.front();
+        q.pop();
+        fprintf(graph,"Node%d [label =\"%s\"]\n",nnode, head->data);
+        for(int i = 0; i<N_NodeChild; i++){
+            if(head->arr[i]!=NULL)
+                q.push(head->arr[i]);
+        }
+        nnode++;
+    }
+
+    nnode = 0;
+    int prevChild = 0;
+    q.push(root);
+    while(!q.empty()){
+        struct node * head = q.front();
+        q.pop();
+        fprintf(graph,"Node%d -> {",nnode);
+        int k = 0;
+        int l = 0;
+        for(; l < N_NodeChild; l++){
+            if(head->arr[l]!=NULL){
+                k++;
+                fprintf(graph,"Node%d",prevChild+0+1);
+                q.push(head->arr[l]);
+                l++;
+                break;
+            }
+        }
+        for(int i = l; i<N_NodeChild; i++){
+            if(head->arr[i]!=NULL){
+                k++;
+                fprintf(graph,",Node%d",prevChild+i+1);
+                q.push(head->arr[i]);
+            }
+            
+        }
+        fprintf(graph,"}\n");
+        prevChild += k;
+        nnode++;
+    }
+
+}
 void help()
 {
     system("clear");
@@ -2015,10 +2063,11 @@ int main(int argc , char** argv)
     }
 
     yyparse();
-    //ast_print(root, 0, z);
+    ast_print(root, 0, z);
     FILE* graph = fopen(output_file,"w");
     fprintf(graph, "digraph AST{ \n");
-    graph_maker(root, graph,0,0);
+    // graph_maker(root, graph,0,0);
+    generateGraph(root, graph);
     fprintf(graph, "} \n");
 
     fclose(graph);
