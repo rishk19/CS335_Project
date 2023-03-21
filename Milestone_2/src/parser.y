@@ -7,10 +7,14 @@
 #include <vector>
 #include "assert.h"
 #include "string.h"
+#include <string>
+#include <vector>
+#include <string.h>
 #include "stdlib.h"
-#include <bits/stdc++.h>
+#include "../src/DataStructures/Type.hpp"
 #include "../src/DataStructures/GlobalSymbolTable.hpp"
 #include "../src/DataStructures/SymbolTable.hpp"
+#include "../src/DataStructures/Includes.hpp"
 
 using namespace std;
 
@@ -34,9 +38,11 @@ struct node* makeInternalNode(char* rule, struct node* memArr[], int n, int isPa
 struct node* makeleaf(char* node);
 char* concatenate_string(char* s, char* s1);
 void help();
+// int dummy(string name, struct SymbolTable * curr, struct GlobalSymbolTable* glob_insert);
 long long int line_number=1;
 
-
+struct GlobalSymbolTable* glob_table = new struct GlobalSymbolTable;
+struct SymbolTable* curr = NULL;
 
 %}
 
@@ -168,11 +174,9 @@ IntegerLiteral:
 Type: 
     PrimitiveType {
         $$ = $1; 
-        cout << "The primitive type is "<< $1->data << "\n";
     }
     | ReferenceType {
         $$ = $1;
-        cout << "The reference type is "<< $1->data << "\n";
     }
 
 PrimitiveType: 
@@ -423,6 +427,17 @@ ClassDeclaration:
         memArr[4] = $5;
         memArr[5] = $6;
         $$ = makeInternalNode("ClassDeclaration", memArr, 6, 1);
+        string s = $3;
+        //cout << "Hello ";
+        
+        int ret = glob_insert($3, curr, glob_table);
+
+        if(ret < 0){
+            cout << "At line number" << line_number;
+            return -1;
+        }
+        
+        
     }
 
 Modifiers_opt : { 
@@ -478,6 +493,7 @@ InterfaceTypeList:
 ClassBody: 
     LeftCurlyBrace ClassBodyDeclarations_opt RightCurlyBrace {
         $$ = $2;
+        //cout << "Class body ended" <<endl;
     }
 
 ClassBodyDeclarations_opt : { 
@@ -487,6 +503,7 @@ ClassBodyDeclarations_opt : {
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("ClassBody", memArr, 1, 1);
+
     }
 
 ClassBodyDeclarations: 
@@ -1937,7 +1954,28 @@ void help()
     system("cat ../doc/Help.txt");
 }
 
+int semantic_analysis(struct node* root)
+{
+     if(root == NULL){
+        return 0;
+    }
 
+    if(root->data == "ClassDeclaration" )
+    {
+        
+    }
+
+    for(int i = 0;i<100;i++){
+        if(root->arr[i]!= NULL){
+           
+        }
+    }
+}
+
+
+// int dummy(string name, struct SymbolTable * curr, struct GlobalSymbolTable* glob_insert){
+//     return 0;
+// }
 int main(int argc , char** argv)
 {   
     // Need to add path to inputfile and output file
@@ -2063,6 +2101,7 @@ int main(int argc , char** argv)
     }
 
     yyparse();
+    ast_print(root, 0, z);
     ast_print(root, 0, z);
     FILE* graph = fopen(output_file,"w");
     fprintf(graph, "digraph AST{ \n");

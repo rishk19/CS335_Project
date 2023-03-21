@@ -1,16 +1,14 @@
 #ifndef SYMBOLTABLE_H_
 #define SYMBOLTABLE_H_
 
-
-#include <string>
-#include <vector>
-#include <map>
+#include "Type.hpp"
+#include <bits/stdc++.h>
 
 using namespace std;
 
 struct Symbol{
         string name;
-        string type;
+        struct Type type;
         string source_file;
         long long int line_num;
         long long int size;
@@ -24,8 +22,8 @@ struct SymbolTable {
     map<string,int> name_hash;
 };
 
-struct SymbolTable* mktable(struct SymbolTable*);
-void insert (struct SymbolTable*, string , string ,string, long long int, long long int, long long int);
-struct Symbol loopkup(struct SymbolTable* , string);
+struct SymbolTable* loc_mktable(struct SymbolTable*);
+int loc_insert (struct SymbolTable*, string , struct Type ,string, long long int, long long int, long long int);
+struct Symbol* loc_loopkup(struct SymbolTable* , string);
 
 #endif
