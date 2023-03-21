@@ -3,7 +3,9 @@ class mutual_recursion{
 
     int even_function(int n);
     int odd_function(int n){
-        int odd;
+        int odd = 4, jj;
+        int abc;
+        int xyz;
         if (n==0){
             odd = 0;
         }

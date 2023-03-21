@@ -24,6 +24,9 @@ extern int yyparse();
 extern FILE *yyin;
 struct node *root = NULL;
 
+#define DECLARATION 1
+#define INITIALIZATION 2
+#define NON_DECLARAION 3
 #define N_NodeChild 100
 #define N_DataSize 1000
 int ctr = 0;
@@ -31,6 +34,8 @@ struct node{
     char data[100];
     int nodenumber;
     int parentFlag;
+    int isDeclaration;
+    int t;
     struct node* arr[N_NodeChild];
 
 };
@@ -314,7 +319,7 @@ TypeDeclarations_opt :
     | TypeDeclarations {
         struct node * memArr[1];
         memArr[0] = $1;
-        $$ = makeInternalNode("Declarations", memArr, 1, 1);
+        $$ = makeInternalNode("Declarations", memArr, 1, 0);
     }
 
 TypeDeclarations: 
@@ -427,6 +432,7 @@ ClassDeclaration:
         memArr[4] = $5;
         memArr[5] = $6;
         $$ = makeInternalNode("ClassDeclaration", memArr, 6, 1);
+        $$->isDeclaration = DECLARATION;
         string s = $3;
         //cout << "Hello ";
         
@@ -446,7 +452,7 @@ Modifiers_opt : {
     | Modifiers {
         struct node * memArr[1];
         memArr[0] = $1;
-        $$ = makeInternalNode("Modifiers", memArr, 1, 1);
+        $$ = makeInternalNode("Modifiers", memArr, 1, 0);
     }
 
 ClassExtend_opt :{ 
@@ -545,6 +551,7 @@ FieldDeclaration:
         memArr[1] = $2;
         memArr[2] = $3;
         $$ = makeInternalNode("FieldDeclaration", memArr, 3, 0);
+        $$->isDeclaration = DECLARATION;
     }
 
 VariableDeclarators: 
@@ -552,26 +559,30 @@ VariableDeclarators:
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode($1->data, memArr, 1, 0);
+        // $$->isDeclaration = DECLARATION;
     }
     | VariableDeclarators Comma VariableDeclarator {
         struct node * memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
         $$ = makeInternalNode($3->data, memArr, 2, 0);
+        // $$->isDeclaration = DECLARATION;
     }
 
 VariableDeclarator: 
     VariableDeclaratorId {
         struct node * memArr[1];
         memArr[0] = $1;
-        $$ = makeInternalNode($1->data, memArr, 1, 1);
+        $$ = makeInternalNode($1->data, memArr, 1, 0);
+        $$->isDeclaration = DECLARATION;
 
     }
     | VariableDeclaratorId EqualTo VariableInitializer {
         struct node * memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$ = makeInternalNode("Initialization", memArr, 2, 1);
+        $$ = makeInternalNode("=", memArr, 2, 1);
+        $$->isDeclaration = INITIALIZATION;
         // $$ = makeInternalNode(concatenate_string($1, concatenate_string("_", concatenate_string("= ",$3->data))), memArr, 2, 1);
     }
 
@@ -597,6 +608,7 @@ MethodDeclaration:
         memArr[0] = $1;
         memArr[1] = $2;
         $$ = makeInternalNode($1->data, memArr,2, 1);
+        $$->isDeclaration = DECLARATION;
     }
 
 MethodHeader:
@@ -645,7 +657,7 @@ FormalParameterList_opt : {
     | FormalParameterList {
         struct node * memArr[1];
         memArr[0] = $1;
-        $$ = makeInternalNode("Parameters", memArr, 1, 1);
+        $$ = makeInternalNode("Parameters", memArr, 1, 0);
     }
 
 FormalParameterList: 
@@ -664,6 +676,7 @@ FormalParameterList:
 FormalParameter: 
     Type VariableDeclaratorId {
         $$ = makeleaf(concatenate_string($1->data, concatenate_string(" ", $2->data)));
+        $$->isDeclaration = DECLARATION;
     }
 
 Throws: 
@@ -690,7 +703,7 @@ MethodBody:
     Block {
         struct node * memArr[1];
         memArr[0] = $1;
-        $$ = makeInternalNode("MethodBody", memArr, 1, 1);
+        $$ = makeInternalNode("MethodBody", memArr, 1, 0);
     }
     | Semicolon {
         $$ = NULL;
@@ -711,6 +724,7 @@ ConstructorDeclaration:
         memArr[2] = $3;
         memArr[3] = $4;
         $$ = makeInternalNode($2->data, memArr, 4, 1);
+        $$->isDeclaration = DECLARATION;
     }
 
 ConstructorDeclarator: 
@@ -755,7 +769,7 @@ ArgumentList_opt: {
     | ArgumentList {
         struct node * memArr[1];
         memArr[0] =$1;
-        $$ = makeInternalNode("Arguments", memArr, 1, 1);
+        $$ = makeInternalNode("Arguments", memArr, 1, 0);
     }
 
 InterfaceDeclaration: 
@@ -766,6 +780,7 @@ InterfaceDeclaration:
         memArr[2] = $4;
         memArr[3] = $5;
         $$ = makeInternalNode($3, memArr, 4, 1);
+        $$->isDeclaration = DECLARATION;
     }
 
 ExtendsInterfaces_opt : {
@@ -820,9 +835,11 @@ InterfaceMemberDeclarations:
 InterfaceMemberDeclaration: 
     ConstantDeclaration {
         $$ = $1;
+        $$->isDeclaration = DECLARATION;
     }
     | AbstractMethodDeclaration {
         $$ = $1;
+        $$->isDeclaration = DECLARATION;
     }
 
 ConstantDeclaration: 
@@ -880,7 +897,7 @@ BlockStatements_opt : {
     | BlockStatements {
         struct node* memArr[1];
         memArr[0] = $1;
-        $$ = makeInternalNode("statements", memArr, 1, 1);
+        $$ = makeInternalNode("statements", memArr, 1, 0);
     }
 
 BlockStatements: 
@@ -916,7 +933,8 @@ LocalVariableDeclaration:
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $2;
-        $$ = makeInternalNode(concatenate_string($1->data, concatenate_string(" ",$2->data)), memArr, 2, 0);
+        $$ = makeInternalNode("Declaration", memArr, 2, 0);
+        $$->isDeclaration = DECLARATION;
     }
 
 Statement: 
@@ -1103,6 +1121,7 @@ ForInit_opt: {
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("ForInit", memArr, 1, 1);
+        $$->isDeclaration = DECLARATION;
     }
 
 Expression_opt: { 
@@ -1128,11 +1147,13 @@ ForInit:
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("ForInit", memArr, 1, 1);
+        // $$->isDeclaration = DECLARATION;
     }
     | LocalVariableDeclaration {
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("ForInit", memArr, 1, 1);
+        $$->isDeclaration = DECLARATION;
     }
 
 ForUpdate: 
@@ -1288,6 +1309,7 @@ ClassInstanceCreationExpression:
         memArr[1] =$2;
         memArr[2] =$4;
         $$ = makeInternalNode("ClassInstance", memArr, 3, 1);
+        $$->isDeclaration = DECLARATION;
     }
 
 ArgumentList: 
@@ -1311,6 +1333,7 @@ ArrayCreationExpression:
         memArr[2] =$3;
         memArr[3] =$4;
         $$ = makeInternalNode("ArrayCreation", memArr, 4, 0);
+        $$->isDeclaration = DECLARATION;
     }
     | New ClassOrInterfaceType DimExprs Dims_opt {
         struct node * memArr[4];
@@ -1319,6 +1342,7 @@ ArrayCreationExpression:
         memArr[2] =$3;
         memArr[3] =$4;
         $$ = makeInternalNode("ArrayCreation", memArr, 4, 0);
+        $$->isDeclaration = DECLARATION;
     }
 
 Dims_opt: { 
@@ -1792,6 +1816,7 @@ struct node* makeleaf(char nodeStr[100]){
     for(int i = 0; i<N_NodeChild; i++){
         leaf->arr[i] = NULL;
     }
+    leaf->isDeclaration = NON_DECLARAION;
     return leaf;
 }
 
@@ -1821,6 +1846,7 @@ struct node* makeInternalNode(char rule[100], struct node* memArr[], int n, int 
         }
     }
     internalNode->parentFlag = isParent;
+    internalNode->isDeclaration = NON_DECLARAION;
     return internalNode;
 
 }
