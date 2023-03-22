@@ -1,5 +1,7 @@
 class Qsort
-{
+{       public int a,b,c[][];
+        char d = 'd',e;
+
         int printInt(int n);
         public static int quicksort(int [][][]x, int first, int last){
                 int pivot,j,temp,i,f,e,a;

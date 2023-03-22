@@ -492,6 +492,7 @@ ClassDeclaration:
         $$->symbol.type.name = $3;
         $$->symbol.type.t = 1;
         
+        view_symbol($$->symbol);
         
     }
 
@@ -501,7 +502,7 @@ Modifiers_opt : {
     | Modifiers {
         struct node * memArr[1];
         memArr[0] = $1;
-        $$ = makeInternalNode("Modifiers", memArr, 1, 0);
+        $$ = makeInternalNode("Modifiers", memArr, 1, 1);
     }
 
 ClassExtend_opt :{ 
@@ -557,7 +558,7 @@ ClassBodyDeclarations_opt : {
     | ClassBodyDeclarations {
         struct node * memArr[1];
         memArr[0] = $1;
-        $$ = makeInternalNode("ClassBody", memArr, 1, 1);
+        $$ = makeInternalNode("ClassBody", memArr, 1, 0);
         for (int i =0; i < $1->arr.size(); i++){
             $$->symbol.size += $1->arr[i]->symbol.size;
             for (int j = 0; j < $1->arr[i]->symbol.structuretable->field_name.size(); j++)
@@ -608,14 +609,14 @@ FieldDeclaration:
         memArr[0] = $1;
         memArr[1] = $2;
         memArr[2] = $3;
-        $$ = makeInternalNode("FieldDeclaration", memArr, 3, 0);
+        $$ = makeInternalNode("FieldDeclaration", memArr, 3, 1);
         $$->isDeclaration = DECLARATION;
         $$->t = 0;
 
         if($1 != NULL)
         {
 
-            for(int j ; j< $3->arr.size(); j++)
+            for(int j = 0 ; j< $3->arr.size(); j++)
             {
                 $$->symbol.size += $2->symbol.size;
                 struct Type temp = $2->symbol.type;
@@ -648,7 +649,7 @@ FieldDeclaration:
         }
 
         else{
-            for(int j ; j< $3->arr.size(); j++)
+            for(int j =0; j< $3->arr.size(); j++)
             {
                 $$->symbol.size += $2->symbol.size;
                 struct Type temp = $2->symbol.type;
@@ -756,10 +757,24 @@ MethodHeader:
         if($1 != NULL){
             for(int i; i< $1->arr.size();i ++)
             {
-                //$$->symbol.type.modifier.push_back;
+                $$->symbol.type.modifier.push_back($1->arr[i]->data);
             }
         }
-        //$$->Symbol = memArr[2]->Symbol;
+        $$->symbol.type.return_type = $2->symbol.type.name;
+        $$->symbol.type.t = 2;
+        $$->symbol.name = $3->symbol.name;
+        
+        for(int i=0; i< $3->symbol.type.parameters.size(); i++)
+        {
+            $$->symbol.type.parameters.push_back($3->symbol.type.parameters[i]);
+            $$->symbol.type.parameters.push_back($3->symbol.type.parameters_type[i]);
+        }
+
+
+        $$->symbol.structuretable->field_type.push_back($$->symbol.type);
+        $$->symbol.structuretable->field_name.push_back($$->symbol.name);
+
+        
         //$$->Symbol.type.ret = memArr[1]->Symbol.name;
     }
     | Modifiers_opt Void MethodDeclarator Throws_opt {
@@ -769,6 +784,28 @@ MethodHeader:
         memArr[2] = $3;
         memArr[3] = $4;
         $$ = makeInternalNode($3->data, memArr, 4, 0);
+                $$ = makeInternalNode($3->data, memArr, 4, 0);
+        if($1 != NULL)
+        {
+            for(int i; i< $1->arr.size();i ++)
+            {
+                $$->symbol.type.modifier.push_back($1->arr[i]->data);
+            }
+        }
+        $$->symbol.type.return_type = "void";
+        $$->symbol.type.t = 2;
+        $$->symbol.name = $3->symbol.name;
+
+        for(int i=0; i< $3->symbol.type.parameters.size(); i++)
+        {
+            $$->symbol.type.parameters.push_back($3->symbol.type.parameters[i]);
+            $$->symbol.type.parameters.push_back($3->symbol.type.parameters_type[i]);
+        }
+
+        $$->symbol.structuretable->field_type.push_back($$->symbol.type);
+        $$->symbol.structuretable->field_name.push_back($$->symbol.name);
+
+
     }
 
 Throws_opt : 
@@ -785,13 +822,24 @@ MethodDeclarator:
     Identifier LeftParanthesis FormalParameterList_opt RightParanthesis {
         struct node * memArr[1];
         memArr[0]  = $3;
-        $$ = makeInternalNode($1, memArr,1, 0);
-        //$$->Symbol.name = $1;
+        $$ = makeInternalNode($1, memArr,1, 1);
+        string temp = string($1);
+        $$->symbol.name = temp;
+        if($3 != NULL)
+        {
+            for(int i=0; i < $3->arr.size(); i++)
+            {
+                $$->symbol.type.parameters.push_back($3->arr[i]->symbol.name);
+                $$->symbol.type.parameters_type.push_back($3->arr[i]->symbol.type.name);
+            }
+        }
     }
     | MethodDeclarator LeftSquareBracket RightSquareBracket {
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode(concatenate_string($1->data,"[]"), memArr, 1, 0);
+        string temp = string($1->data)+ "[]";
+        $$->symbol.name = temp;
     }
 
 FormalParameterList_opt : {
@@ -808,6 +856,7 @@ FormalParameterList:
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("Parameter", memArr, 1, 0);
+        
     }
     | FormalParameterList Comma FormalParameter{
         struct node * memArr[2];
@@ -1956,6 +2005,7 @@ struct node* makeleaf(char nodeStr[100]){
     //printf("%s\n",nodeStr);
     // cout << nodeStr <<" make leaf node\n";
     struct node* leaf = (struct node*)malloc(sizeof(struct node));
+    (leaf->symbol).structuretable = new struct StructureTable;
     strcpy(leaf->data, nodeStr);
     leaf->parentFlag = 1;
     // for(int i = 0; i<N_NodeChild; i++){

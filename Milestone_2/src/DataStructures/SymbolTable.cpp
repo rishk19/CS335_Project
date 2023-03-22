@@ -48,3 +48,27 @@ struct Symbol* loc_loopkup(struct SymbolTable* curr,string name)
     }
     return NULL;
 }
+
+void view_symbol(struct Symbol symbol)
+{
+    cout<< "Name : " << symbol.name << endl;
+    cout<< "Line Number : " << symbol.line_num << endl;
+    cout<< "Source File : " << symbol.source_file <<endl;
+    cout<< "Size : " <<symbol.size <<endl;
+    cout<< "Offset : "<<symbol.offset <<endl;
+    cout<< endl;
+    view_type(symbol.type);
+    view_structure_table(symbol.structuretable);
+
+}
+
+void view_structure_table(struct StructureTable * structuretable)
+{
+    cout << "Structure Table consists of : \n";
+    for (int i = 0; i < structuretable->field_type.size(); i++)
+    {
+        cout << "Field " << structuretable->field_name[i] << "     with the following type details :" <<endl;
+        view_type(structuretable->field_type[i]);
+        cout <<endl;
+    }
+}

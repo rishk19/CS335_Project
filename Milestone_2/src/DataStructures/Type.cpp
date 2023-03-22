@@ -21,3 +21,28 @@ void insert_type(string name, vector<string> modifier, string extendClass, int t
     }
 }
 
+void view_type(struct Type type)
+{
+    cout << "Type name : " << type.name << endl;
+    cout << "Type modifiers : ";
+    for (int i=0; i<type.modifier.size();i++)
+    {
+        cout << type.modifier[i] <<" ";
+    }
+    cout <<endl;
+    cout <<"Extend Class : " << type.extendClass <<endl;
+    cout << "Type t : "<< type.t << endl;
+    if(type.t==2){
+        cout << "Return Type : " << type.return_type << endl;
+    
+
+    cout << "Type Parameters : ";
+    for (int i=0; i<type.parameters.size();i++)
+    {
+        cout << type.parameters_type[i] <<" " << type.parameters[i] <<",";
+    }
+    cout <<endl;
+    }
+    cout << endl;
+}
+
