@@ -29,7 +29,9 @@ struct node *root = NULL;
 #define NON_DECLARAION 3
 #define N_NodeChild 100
 #define N_DataSize 1000
+
 int ctr = 0;
+
 struct node{
     char data[100];
     int nodenumber;
@@ -39,6 +41,7 @@ struct node{
     struct node* arr[N_NodeChild];
 
 };
+
 struct node* makeInternalNode(char* rule, struct node* memArr[], int n, int isParent);
 struct node* makeleaf(char* node);
 char* concatenate_string(char* s, char* s1);
@@ -433,6 +436,7 @@ ClassDeclaration:
         memArr[5] = $6;
         $$ = makeInternalNode("ClassDeclaration", memArr, 6, 1);
         $$->isDeclaration = DECLARATION;
+        $$->t = 1;
         string s = $3;
         //cout << "Hello ";
         
@@ -552,6 +556,7 @@ FieldDeclaration:
         memArr[2] = $3;
         $$ = makeInternalNode("FieldDeclaration", memArr, 3, 0);
         $$->isDeclaration = DECLARATION;
+        $$->t = 0;
     }
 
 VariableDeclarators: 
@@ -575,6 +580,7 @@ VariableDeclarator:
         memArr[0] = $1;
         $$ = makeInternalNode($1->data, memArr, 1, 0);
         $$->isDeclaration = DECLARATION;
+        $$->t = 0;
 
     }
     | VariableDeclaratorId EqualTo VariableInitializer {
@@ -583,6 +589,7 @@ VariableDeclarator:
         memArr[1] = $3;
         $$ = makeInternalNode("=", memArr, 2, 1);
         $$->isDeclaration = INITIALIZATION;
+        $$->t = 0;
         // $$ = makeInternalNode(concatenate_string($1, concatenate_string("_", concatenate_string("= ",$3->data))), memArr, 2, 1);
     }
 
@@ -609,6 +616,7 @@ MethodDeclaration:
         memArr[1] = $2;
         $$ = makeInternalNode($1->data, memArr,2, 1);
         $$->isDeclaration = DECLARATION;
+        $$->t = 2;
     }
 
 MethodHeader:
@@ -676,7 +684,8 @@ FormalParameterList:
 FormalParameter: 
     Type VariableDeclaratorId {
         $$ = makeleaf(concatenate_string($1->data, concatenate_string(" ", $2->data)));
-        $$->isDeclaration = DECLARATION;
+        //$$->isDeclaration = DECLARATION;
+        //$$->t = 0;
     }
 
 Throws: 
@@ -1817,6 +1826,7 @@ struct node* makeleaf(char nodeStr[100]){
         leaf->arr[i] = NULL;
     }
     leaf->isDeclaration = NON_DECLARAION;
+    leaf->t = -1;
     return leaf;
 }
 
@@ -1847,6 +1857,7 @@ struct node* makeInternalNode(char rule[100], struct node* memArr[], int n, int 
     }
     internalNode->parentFlag = isParent;
     internalNode->isDeclaration = NON_DECLARAION;
+    internalNode->t = -1;
     return internalNode;
 
 }
@@ -1980,28 +1991,18 @@ void help()
     system("cat ../doc/Help.txt");
 }
 
+/////////////////// Semantic Analysis ///////////////////
+
 int semantic_analysis(struct node* root)
 {
-     if(root == NULL){
+    if(root == NULL){
         return 0;
     }
 
-    if(root->data == "ClassDeclaration" )
-    {
-        
-    }
 
-    for(int i = 0;i<100;i++){
-        if(root->arr[i]!= NULL){
-           
-        }
-    }
 }
 
 
-// int dummy(string name, struct SymbolTable * curr, struct GlobalSymbolTable* glob_insert){
-//     return 0;
-// }
 int main(int argc , char** argv)
 {   
     // Need to add path to inputfile and output file
