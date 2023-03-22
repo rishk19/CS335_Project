@@ -64,7 +64,7 @@ void view_symbol(struct Symbol symbol)
 
 void view_structure_table(struct StructureTable * structuretable)
 {
-    cout << "Structure Table consists of : \n";
+    cout << "Structure Table consists of : \n\n";
     for (int i = 0; i < structuretable->field_type.size(); i++)
     {
         cout << "Field " << structuretable->field_name[i] << "     with the following type details :" <<endl;

@@ -282,6 +282,7 @@ InterfaceType:
 ArrayType: 
     PrimitiveType LeftSquareBracket RightSquareBracket {
         $$ = makeleaf(concatenate_string($1->data,"[]"));
+        //cout << $1->data <<endl;
         $$->symbol.type.t = 1;
         string temp = string($1->data)+"[]";
         $$->symbol.type.name = temp;
@@ -477,11 +478,11 @@ ClassDeclaration:
         if($1!=NULL)
             for(int i = 0; i<$1->arr.size(); i++){
                 if($1->arr[i]!=NULL)
-                    $$->symbol.type.modifier.push_back($1->arr[i]->data);
+                    $$->symbol.type.modifier.push_back(string($1->arr[i]->data));
         }
         $$->symbol.name = $3;
-        if($5!=NULL)
-            $$->symbol.type.extendClass = $5->data;
+        if($4!=NULL)
+            $$->symbol.type.extendClass = string($4->data);
         
         if($6 != NULL){
             $$->symbol.size = $6->symbol.size;
@@ -767,7 +768,7 @@ MethodHeader:
         for(int i=0; i< $3->symbol.type.parameters.size(); i++)
         {
             $$->symbol.type.parameters.push_back($3->symbol.type.parameters[i]);
-            $$->symbol.type.parameters.push_back($3->symbol.type.parameters_type[i]);
+            $$->symbol.type.parameters_type.push_back($3->symbol.type.parameters_type[i]);
         }
 
 
@@ -799,7 +800,7 @@ MethodHeader:
         for(int i=0; i< $3->symbol.type.parameters.size(); i++)
         {
             $$->symbol.type.parameters.push_back($3->symbol.type.parameters[i]);
-            $$->symbol.type.parameters.push_back($3->symbol.type.parameters_type[i]);
+            $$->symbol.type.parameters_type.push_back($3->symbol.type.parameters_type[i]);
         }
 
         $$->symbol.structuretable->field_type.push_back($$->symbol.type);
@@ -848,7 +849,7 @@ FormalParameterList_opt : {
     | FormalParameterList {
         struct node * memArr[1];
         memArr[0] = $1;
-        $$ = makeInternalNode("Parameters", memArr, 1, 0);
+        $$ = makeInternalNode("Parameters", memArr, 1, 1);
     }
 
 FormalParameterList: 
@@ -862,7 +863,7 @@ FormalParameterList:
         struct node * memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$ = makeInternalNode("Parameter", memArr, 1, 0);
+        $$ = makeInternalNode("Parameter", memArr, 2,0);
     }
 
 FormalParameter: 
@@ -870,6 +871,29 @@ FormalParameter:
         $$ = makeleaf(concatenate_string($1->data, concatenate_string(" ", $2->data)));
         //$$->isDeclaration = DECLARATION;
         //$$->t = 0;
+        //$$->symbol.name = $2->symbol.name;
+        //$$->symbol.type.name = $1->symbol.type.name;
+        //$$->symbol.size += $2->symbol.size;
+        struct Type temp = $1->symbol.type;
+        string txt = $2->symbol.name;
+        string name = "";
+        int count = 0;
+        for(int i=0; i<txt.size(); i++)
+        {
+            if(txt[i] != '[' && count == 0){
+                    name += txt[i];
+                }
+                else if(txt[i] == '['){
+                    count += 1;
+                }
+        }
+        for(int i = 0; i < count ; i++ )
+        {
+            temp.name += "[]";
+        }
+
+        $$->symbol.name = name;
+        $$->symbol.type.name = temp.name;
     }
 
 Throws: 
@@ -1988,9 +2012,10 @@ char* concatenate_string(char* s, char* s1)
         c[j] = s[j];
         j+=1;
     }
+    /*
     c[j] = ' ';
     j++;
- 
+    */
     for (i = 0; s1[i] != '\0'; i++) {
         c[i+j] = s1[i];
      }

@@ -37,12 +37,18 @@ void view_type(struct Type type)
     
 
     cout << "Type Parameters : ";
+    //cout << type.parameters.size();
+    
     for (int i=0; i<type.parameters.size();i++)
     {
-        cout << type.parameters_type[i] <<" " << type.parameters[i] <<",";
+        cout << type.parameters_type[i] <<" -> " << type.parameters[i] <<",";
+        //cout << "Hi";
     }
     cout <<endl;
+    
     }
     cout << endl;
+    
+
 }
 
