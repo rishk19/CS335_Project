@@ -8,7 +8,8 @@
 using namespace std;
 
 struct GlobalSymbol {
-    string scope;           // Assuming functions have different names
+    string scope;
+    string methodName;           // Assuming functions have different names
     struct SymbolTable* LocalSymbolTable;
 };
 
@@ -17,7 +18,7 @@ struct GlobalSymbolTable {
     map<string,int> scope_hash;
 };
 
-int glob_insert(string, struct SymbolTable*, struct GlobalSymbolTable *);
-struct GlobalSymbol glob_lookup(string, struct GlobalSymbolTable * );
+int glob_insert(string, string, struct SymbolTable*, struct GlobalSymbolTable *);
+struct GlobalSymbol* glob_lookup(string, string, struct GlobalSymbolTable * );
 
 #endif
