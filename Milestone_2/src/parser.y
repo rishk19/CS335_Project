@@ -41,6 +41,7 @@ struct node{
     int lineNumber;
     vector<struct node*> arr;
     struct Symbol symbol;
+    struct SymbolTable symboltable;
 };
 
 struct node* makeInternalNode(char* rule, struct node* memArr[], int n, int isParent);
@@ -869,11 +870,6 @@ FormalParameterList:
 FormalParameter: 
     Type VariableDeclaratorId {
         $$ = makeleaf(concatenate_string($1->data, concatenate_string(" ", $2->data)));
-        //$$->isDeclaration = DECLARATION;
-        //$$->t = 0;
-        //$$->symbol.name = $2->symbol.name;
-        //$$->symbol.type.name = $1->symbol.type.name;
-        //$$->symbol.size += $2->symbol.size;
         struct Type temp = $1->symbol.type;
         string txt = $2->symbol.name;
         string name = "";
@@ -1114,7 +1110,7 @@ BlockStatements_opt : {
     | BlockStatements {
         struct node* memArr[1];
         memArr[0] = $1;
-        $$ = makeInternalNode("statements", memArr, 1, 0);
+        $$ = makeInternalNode("statements", memArr, 1, 1);
     }
 
 BlockStatements: 
