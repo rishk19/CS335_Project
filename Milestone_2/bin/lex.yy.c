@@ -1,6 +1,6 @@
-#line 1 "bin/lex.yy.c"
+#line 2 "bin/lex.yy.c"
 
-#line 3 "bin/lex.yy.c"
+#line 4 "bin/lex.yy.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -786,8 +786,8 @@ char *yytext;
     #include "parser.tab.h"
 
     extern long long int line_number;
-#line 789 "bin/lex.yy.c"
 #line 790 "bin/lex.yy.c"
+#line 791 "bin/lex.yy.c"
 
 #define INITIAL 0
 
@@ -1007,7 +1007,7 @@ YY_DECL
 #line 11 "src/tokenizer.l"
 
 
-#line 1010 "bin/lex.yy.c"
+#line 1011 "bin/lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -2059,7 +2059,7 @@ YY_RULE_SETUP
 #line 494 "src/tokenizer.l"
 ECHO;
 	YY_BREAK
-#line 2062 "bin/lex.yy.c"
+#line 2063 "bin/lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
