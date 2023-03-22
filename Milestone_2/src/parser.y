@@ -39,7 +39,7 @@ struct node{
     int isDeclaration;
     int t;
     struct node* arr[N_NodeChild];
-
+    struct Symbol symbol;
 };
 
 struct node* makeInternalNode(char* rule, struct node* memArr[], int n, int isParent);
@@ -181,10 +181,14 @@ IntegerLiteral:
 
 Type: 
     PrimitiveType {
-        $$ = $1; 
+        $$ = $1;
+        //cout << "Primitive Type :" <<endl; 
+        //cout << $$->symbol.type.name << endl;
     }
     | ReferenceType {
         $$ = $1;
+        //cout << "Reference Type :" <<endl; 
+        //cout << $$->symbol.type.name << endl;
     }
 
 PrimitiveType: 
@@ -193,6 +197,8 @@ PrimitiveType:
     }
     | Boolean {
         $$ = makeleaf($1);
+        $$->symbol.type.name = "boolean";
+        $$->symbol.type.t = 0;
     }
 
 NumericType: 
@@ -206,26 +212,40 @@ NumericType:
 IntegralType: 
     Byte {
         $$ = makeleaf($1);
+        $$->symbol.type.name = "byte";
+        $$->symbol.type.t = 0;
     }
     | Short {
         $$ = makeleaf($1);
+        $$->symbol.type.name = "short";
+        $$->symbol.type.t = 0;
     }
     | Int {
         $$ = makeleaf($1);
+        $$->symbol.type.name = "int";
+        $$->symbol.type.t = 0;
     }
     | Long {
         $$ = makeleaf($1);
+        $$->symbol.type.name = "long";
+        $$->symbol.type.t = 0;
     }
     | Char {
         $$ = makeleaf($1);
+        $$->symbol.type.name = "char";
+        $$->symbol.type.t = 0;
     }
 
 FloatingPointType: 
     Float {
         $$ = makeleaf($1);
+        $$->symbol.type.t = 0;
+        $$->symbol.type.name = "float";
     }
     | Double {
         $$ = makeleaf($1);
+        $$->symbol.type.name = "double";
+        $$->symbol.type.t = 0;
     }
 
 ReferenceType: 
@@ -254,13 +274,19 @@ InterfaceType:
 ArrayType: 
     PrimitiveType LeftSquareBracket RightSquareBracket {
         $$ = makeleaf(concatenate_string($1->data,"[]"));
+        $$->symbol.type.t = 1;
+        $$->symbol.type.name = concatenate_string($1->data,"[]");
     }
     | Name LeftSquareBracket RightSquareBracket {
         $$ = makeleaf(concatenate_string($1->data,"[]"));
+        $$->symbol.type.t = 1;
+        $$->symbol.type.name = concatenate_string($1->data,"[]");
 
     }
     | ArrayType LeftSquareBracket RightSquareBracket {
         $$ = makeleaf(concatenate_string($1->data,"[]"));
+        $$->symbol.type.t = 1;
+        $$->symbol.type.name = concatenate_string($1->data,"[]");
 
     }
 
@@ -438,14 +464,21 @@ ClassDeclaration:
         $$->isDeclaration = DECLARATION;
         $$->t = 1;
         string s = $3;
+        for(int i = 0; i<N_NodeChild; i++){
+            if($1->arr[i]!=NULL)
+                $$->symbol.type.modifier.push_back($1->arr[i]->data);
+        }
+        $$->symbol.name = $3;
+        if($5!=NULL)
+            $$->symbol.type.extendClass = $5->data;
         //cout << "Hello ";
         
-        int ret = glob_insert($3, curr, glob_table);
+        // int ret = glob_insert($3, curr, glob_table);
 
-        if(ret < 0){
-            cout << "At line number" << line_number;
-            return -1;
-        }
+        // if(ret < 0){
+        //     cout << "At line number" << line_number;
+        //     return -1;
+        // }
         
         
     }
@@ -475,7 +508,7 @@ Interfaces_opt : {
 
 ClassExtend : 
     Extends ClassType {
-        $$ = makeleaf(concatenate_string($1, concatenate_string(" ",$2->data)));
+        $$ = makeleaf($2->data);
     }
 
 Interfaces: 
@@ -615,6 +648,7 @@ MethodDeclaration:
         memArr[0] = $1;
         memArr[1] = $2;
         $$ = makeInternalNode($1->data, memArr,2, 1);
+        //$$->Symbol = memArr[0]->Symbol;
         $$->isDeclaration = DECLARATION;
         $$->t = 2;
     }
@@ -627,6 +661,8 @@ MethodHeader:
         memArr[2] = $3;
         memArr[3] = $4;
         $$ = makeInternalNode($3->data, memArr, 4, 0);
+        //$$->Symbol = memArr[2]->Symbol;
+        //$$->Symbol.type.ret = memArr[1]->Symbol.name;
     }
     | Modifiers_opt Void MethodDeclarator Throws_opt {
         struct node * memArr[4];
@@ -652,6 +688,7 @@ MethodDeclarator:
         struct node * memArr[1];
         memArr[0]  = $3;
         $$ = makeInternalNode($1, memArr,1, 0);
+        //$$->Symbol.name = $1;
     }
     | MethodDeclarator LeftSquareBracket RightSquareBracket {
         struct node * memArr[1];
@@ -675,7 +712,7 @@ FormalParameterList:
         $$ = makeInternalNode("Parameter", memArr, 1, 0);
     }
     | FormalParameterList Comma FormalParameter{
-         struct node * memArr[2];
+        struct node * memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
         $$ = makeInternalNode("Parameter", memArr, 1, 0);
@@ -2128,8 +2165,8 @@ int main(int argc , char** argv)
     }
 
     yyparse();
-    ast_print(root, 0, z);
-    ast_print(root, 0, z);
+    //ast_print(root, 0, z);
+    //ast_print(root, 0, z);
     FILE* graph = fopen(output_file,"w");
     fprintf(graph, "digraph AST{ \n");
     // graph_maker(root, graph,0,0);
