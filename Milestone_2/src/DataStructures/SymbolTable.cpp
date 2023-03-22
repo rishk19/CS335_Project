@@ -1,10 +1,11 @@
 #include "Includes.hpp"
 
 using namespace std;
-struct SymbolTable* loc_mktable(struct SymbolTable* table)
+struct SymbolTable* loc_mktable(struct SymbolTable* table, string scope)
 {   
     struct SymbolTable* new_table = new struct SymbolTable;
     new_table->parent = table;
+    new_table->scope = scope;
     if(table != NULL) table->children.push_back(new_table);
     return new_table;
 }

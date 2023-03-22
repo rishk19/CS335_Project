@@ -9,7 +9,7 @@ int glob_insert(string scope, string methodName, struct SymbolTable* curr, struc
         return DECLARATION_ERROR;
     }
 
-    struct SymbolTable* LocalSymbolTable = loc_mktable(curr);
+    struct SymbolTable* LocalSymbolTable = loc_mktable(curr, scope);
     struct GlobalSymbol entry;
     entry.scope = scope;
     entry.LocalSymbolTable = LocalSymbolTable;

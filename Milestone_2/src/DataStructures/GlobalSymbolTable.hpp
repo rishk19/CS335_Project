@@ -19,6 +19,8 @@ struct GlobalSymbolTable {
 };
 
 int glob_insert(string, string, struct SymbolTable*, struct GlobalSymbolTable *);
+//int glob_insert(string scope, string methodName, struct SymbolTable* curr, struct GlobalSymbolTable* glob)
 struct GlobalSymbol* glob_lookup(string, string, struct GlobalSymbolTable * );
+//struct GlobalSymbol* glob_lookup(string scope, string methodName, struct GlobalSymbolTable * glob)
 
 #endif

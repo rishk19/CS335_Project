@@ -36,18 +36,20 @@ struct node{
     int parentFlag;
     int isDeclaration;
     int t;
+    int lineNumber;
     struct node* arr[N_NodeChild];
 
 };
 struct node* makeInternalNode(char* rule, struct node* memArr[], int n, int isParent);
 struct node* makeleaf(char* node);
 char* concatenate_string(char* s, char* s1);
+int semantic_analysis(struct node* root);
 void help();
 // int dummy(string name, struct SymbolTable * curr, struct GlobalSymbolTable* glob_insert);
 long long int line_number=1;
 
 struct GlobalSymbolTable* glob_table = new struct GlobalSymbolTable;
-struct SymbolTable* curr = NULL;
+struct SymbolTable* curr = loc_mktable(NULL,"RR_GLOBAL_"); //parameters are parent-pointer,  local-table-name
 
 %}
 
@@ -436,12 +438,12 @@ ClassDeclaration:
         string s = $3;
         //cout << "Hello ";
         
-        int ret = glob_insert($3, curr, glob_table);
+        // int ret = glob_insert($3, curr, glob_table);
 
-        if(ret < 0){
-            cout << "At line number" << line_number;
-            return -1;
-        }
+        // if(ret < 0){
+        //     cout << "At line number" << line_number;
+        //     return -1;
+        // }
         
         
     }
@@ -1817,6 +1819,8 @@ struct node* makeleaf(char nodeStr[100]){
         leaf->arr[i] = NULL;
     }
     leaf->isDeclaration = NON_DECLARAION;
+    leaf->lineNumber = line_number;
+
     return leaf;
 }
 
@@ -1847,6 +1851,7 @@ struct node* makeInternalNode(char rule[100], struct node* memArr[], int n, int 
     }
     internalNode->parentFlag = isParent;
     internalNode->isDeclaration = NON_DECLARAION;
+    internalNode->lineNumber = line_number;
     return internalNode;
 
 }
@@ -1985,17 +1990,33 @@ int semantic_analysis(struct node* root)
      if(root == NULL){
         return 0;
     }
+    queue<struct node*> q;
+    q.push(root);
 
-    if(root->data == "ClassDeclaration" )
-    {
-        
-    }
-
-    for(int i = 0;i<100;i++){
-        if(root->arr[i]!= NULL){
-           
+    while(!q.empty()){
+        struct node* head = q.front();
+        q.pop();
+        for(int i = 0; i<N_NodeChild; i++){
+            if(head->arr[i]!=NULL)
+                q.push(head->arr[i]);
         }
+        switch(head->isDeclaration){
+            case DECLARATION:
+                    cout << "This is a declaration: " <<head->data<<endl;
+                break;
+            case INITIALIZATION:
+                    cout << "This is a initialization: " <<head->data<<endl;
+                
+                break;
+            
+            case NON_DECLARAION:
+                    cout << "This is a non declaration: " <<head->data<<endl;
+
+                break;
+        }
+
     }
+    return 0;
 }
 
 
@@ -2134,7 +2155,7 @@ int main(int argc , char** argv)
     // graph_maker(root, graph,0,0);
     generateGraph(root, graph);
     fprintf(graph, "} \n");
-
+    semantic_analysis(root);
     fclose(graph);
     fclose(yyin);
 
