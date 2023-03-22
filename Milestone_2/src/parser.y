@@ -283,18 +283,21 @@ ArrayType:
     PrimitiveType LeftSquareBracket RightSquareBracket {
         $$ = makeleaf(concatenate_string($1->data,"[]"));
         $$->symbol.type.t = 1;
-        $$->symbol.type.name = concatenate_string($1->data,"[]");
+        string temp = string($1->data)+"[]";
+        $$->symbol.type.name = temp;
     }
     | Name LeftSquareBracket RightSquareBracket {
         $$ = makeleaf(concatenate_string($1->data,"[]"));
         $$->symbol.type.t = 1;
-        $$->symbol.type.name = concatenate_string($1->data,"[]");
+        string temp = string($1->data) + "[]";
+        $$->symbol.type.name = temp;
 
     }
     | ArrayType LeftSquareBracket RightSquareBracket {
         $$ = makeleaf(concatenate_string($1->data,"[]"));
         $$->symbol.type.t = 1;
-        $$->symbol.type.name = concatenate_string($1->data,"[]");
+        string temp = string($1->data) + "[]";
+        $$->symbol.type.name = temp;
 
     }
 
@@ -471,7 +474,6 @@ ClassDeclaration:
         $$ = makeInternalNode("ClassDeclaration", memArr, 6, 1);
         $$->isDeclaration = DECLARATION;
         $$->t = 1;
-        string s = $3;
         if($1!=NULL)
             for(int i = 0; i<$1->arr.size(); i++){
                 if($1->arr[i]!=NULL)
@@ -483,8 +485,13 @@ ClassDeclaration:
         
         if($6 != NULL){
             $$->symbol.size = $6->symbol.size;
+            $$->symbol.structuretable = $6->symbol.structuretable;
         }
+
         $$->symbol.offset = 0;
+        $$->symbol.type.name = $3;
+        $$->symbol.type.t = 1;
+        
         
     }
 
@@ -551,7 +558,15 @@ ClassBodyDeclarations_opt : {
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("ClassBody", memArr, 1, 1);
-
+        for (int i =0; i < $1->arr.size(); i++){
+            $$->symbol.size += $1->arr[i]->symbol.size;
+            for (int j = 0; j < $1->arr[i]->symbol.structuretable->field_name.size(); j++)
+            {   
+                //cout << "Scrumptous" <<endl;
+                ($$->symbol.structuretable)->field_type.push_back($1->arr[i]->symbol.structuretable->field_type[j]);
+                ($$->symbol.structuretable)->field_name.push_back($1->arr[i]->symbol.structuretable->field_name[j]);
+            }
+        }
     }
 
 ClassBodyDeclarations: 
@@ -559,6 +574,7 @@ ClassBodyDeclarations:
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("ClassBody", memArr, 1, 0);
+
     }
     | ClassBodyDeclarations ClassBodyDeclaration {
         struct node * memArr[2];
@@ -595,6 +611,70 @@ FieldDeclaration:
         $$ = makeInternalNode("FieldDeclaration", memArr, 3, 0);
         $$->isDeclaration = DECLARATION;
         $$->t = 0;
+
+        if($1 != NULL)
+        {
+
+            for(int j ; j< $3->arr.size(); j++)
+            {
+                $$->symbol.size += $2->symbol.size;
+                struct Type temp = $2->symbol.type;
+                string txt = $3->arr[j]->symbol.name;
+                string name = "";
+                int count = 0;
+                for(int i=0; i<txt.size(); i++)
+                {
+                    if(txt[i] != '[' && count == 0){
+                        name += txt[i];
+                    }
+                    else if(txt[i] == '['){
+                        count += 1;
+                    }
+                }
+                for(int i = 0; i < count ; i++ )
+                {
+                    temp.name += "[]";
+                }
+
+                for(int i ; i< $1->arr.size();i++)
+                {
+                    temp.modifier.push_back($1->arr[i]->data);
+                }
+
+                $$->symbol.structuretable->field_type.push_back(temp);
+                $$->symbol.structuretable->field_name.push_back(name);
+
+            }
+        }
+
+        else{
+            for(int j ; j< $3->arr.size(); j++)
+            {
+                $$->symbol.size += $2->symbol.size;
+                struct Type temp = $2->symbol.type;
+                string txt = $3->arr[j]->symbol.name;
+                string name = "";
+                int count = 0;
+                for(int i=0; i<txt.size(); i++)
+                {
+                    if(txt[i] != '[' && count == 0){
+                        name += txt[i];
+                    }
+                    else if(txt[i] == '['){
+                        count += 1;
+                    }
+                }
+                for(int i = 0; i < count ; i++ )
+                {
+                    temp.name += "[]";
+                }
+
+                $$->symbol.structuretable->field_type.push_back(temp);
+                $$->symbol.structuretable->field_name.push_back(name);
+
+            }
+        }
+
     }
 
 VariableDeclarators: 
@@ -619,6 +699,8 @@ VariableDeclarator:
         $$ = makeInternalNode($1->data, memArr, 1, 0);
         $$->isDeclaration = DECLARATION;
         $$->t = 0;
+        $$->symbol.name = $1->symbol.name;
+
 
     }
     | VariableDeclaratorId EqualTo VariableInitializer {
@@ -628,15 +710,19 @@ VariableDeclarator:
         $$ = makeInternalNode("=", memArr, 2, 1);
         $$->isDeclaration = INITIALIZATION;
         $$->t = 0;
-        // $$ = makeInternalNode(concatenate_string($1, concatenate_string("_", concatenate_string("= ",$3->data))), memArr, 2, 1);
+        $$->symbol.name = $1->symbol.name;
     }
 
 VariableDeclaratorId: 
     Identifier {
         $$ = makeleaf($1);
+        string temp  = string($1);
+        $$->symbol.name = temp;
     }
     | VariableDeclaratorId LeftSquareBracket RightSquareBracket {
         $$ = makeleaf(concatenate_string($1->data,"[]"));
+        string temp = string($1->data) + "[]";
+        $$->symbol.name = temp;
     }
 
 VariableInitializer:
@@ -653,9 +739,10 @@ MethodDeclaration:
         memArr[0] = $1;
         memArr[1] = $2;
         $$ = makeInternalNode($1->data, memArr,2, 1);
-        //$$->Symbol = memArr[0]->Symbol;
+        $$->symbol = $1->symbol;
         $$->isDeclaration = DECLARATION;
         $$->t = 2;
+        
     }
 
 MethodHeader:
@@ -666,6 +753,12 @@ MethodHeader:
         memArr[2] = $3;
         memArr[3] = $4;
         $$ = makeInternalNode($3->data, memArr, 4, 0);
+        if($1 != NULL){
+            for(int i; i< $1->arr.size();i ++)
+            {
+                //$$->symbol.type.modifier.push_back;
+            }
+        }
         //$$->Symbol = memArr[2]->Symbol;
         //$$->Symbol.type.ret = memArr[1]->Symbol.name;
     }
@@ -1880,6 +1973,7 @@ struct node* makeleaf(char nodeStr[100]){
 struct node* makeInternalNode(char rule[100], struct node* memArr[], int n, int isParent){
     // cout << rule <<" make internal node\n";
     struct node* internalNode = new struct node;
+    (internalNode->symbol).structuretable = new struct StructureTable;
     strcpy(internalNode->data,rule);
 
     // for(int i = 0; i<N_NodeChild; i++){
@@ -1906,6 +2000,7 @@ struct node* makeInternalNode(char rule[100], struct node* memArr[], int n, int 
     internalNode->isDeclaration = NON_DECLARAION;
     internalNode->lineNumber = line_number;
     internalNode->t = -1;
+    internalNode->symbol.size= 0;
     // cout << rule <<" exit internal node\n";
 
     return internalNode;

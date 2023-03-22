@@ -13,6 +13,7 @@ struct Symbol{
         long long int line_num;
         long long int size;
         long long int offset;
+        struct StructureTable * structuretable;
 };
 
 struct SymbolTable {
@@ -23,9 +24,14 @@ struct SymbolTable {
     map<string,int> name_hash;
 };
 
+struct StructureTable{
+    vector<Type> field_type;
+    vector<string> field_name;
+};
+
 struct SymbolTable* loc_mktable(struct SymbolTable*, string);
 //struct SymbolTable* loc_mktable(struct SymbolTable* table, string scope)
-int loc_insert (struct SymbolTable*, string , struct Type ,string, long long int, long long int, long long int);
+int loc_insert (struct SymbolTable*, string , struct Type ,string, long long int, long long int, long long int,struct StructureTable *);
 //int loc_insert (struct SymbolTable* table, string name, struct Type type, string source_file, long long int line_num, long long int size, long long int offset)
 struct Symbol* loc_loopkup(struct SymbolTable* , string);
 //struct Symbol* loc_loopkup(struct SymbolTable* curr,string name)

@@ -2,7 +2,7 @@
 
 using namespace std;
 
-void insert_type(string name, vector<string> modifier, string extendClass, int t, string return_type, vector<string> parameters, struct Type* type)
+void insert_type(string name, vector<string> modifier, string extendClass, int t, string return_type, vector<string> parameters, vector<string> parameters_type, struct Type* type)
 {   
     type->name = name;
     type->t = t;
@@ -12,6 +12,7 @@ void insert_type(string name, vector<string> modifier, string extendClass, int t
         for (int i=0; i < parameters.size(); i++)
         {
             type->parameters.push_back(parameters[i]);
+            type->parameters_type.push_back(parameters_type[i]);
         }
     }
     type->extendClass = extendClass;
