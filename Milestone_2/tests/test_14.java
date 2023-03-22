@@ -3,7 +3,7 @@ class jumps_over_jump{
 
     public static void main(){
 
-
+        char[][] y2j;
 
     }
 }

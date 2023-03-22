@@ -29,7 +29,9 @@ struct node *root = NULL;
 #define NON_DECLARAION 3
 #define N_NodeChild 100
 #define N_DataSize 1000
+
 int ctr = 0;
+
 struct node{
     char data[100];
     int nodenumber;
@@ -37,9 +39,10 @@ struct node{
     int isDeclaration;
     int t;
     int lineNumber;
-    struct node* arr[N_NodeChild];
-
+    vector<struct node*> arr;
+    struct Symbol symbol;
 };
+
 struct node* makeInternalNode(char* rule, struct node* memArr[], int n, int isParent);
 struct node* makeleaf(char* node);
 char* concatenate_string(char* s, char* s1);
@@ -180,10 +183,14 @@ IntegerLiteral:
 
 Type: 
     PrimitiveType {
-        $$ = $1; 
+        $$ = $1;
+        //cout << "Primitive Type :" <<endl; 
+        //cout << $$->symbol.type.name << endl;
     }
     | ReferenceType {
         $$ = $1;
+        //cout << "Reference Type :" <<endl; 
+        //cout << $$->symbol.type.name << endl;
     }
 
 PrimitiveType: 
@@ -192,6 +199,8 @@ PrimitiveType:
     }
     | Boolean {
         $$ = makeleaf($1);
+        $$->symbol.type.name = "boolean";
+        $$->symbol.type.t = 0;
     }
 
 NumericType: 
@@ -205,26 +214,40 @@ NumericType:
 IntegralType: 
     Byte {
         $$ = makeleaf($1);
+        $$->symbol.type.name = "byte";
+        $$->symbol.type.t = 0;
     }
     | Short {
         $$ = makeleaf($1);
+        $$->symbol.type.name = "short";
+        $$->symbol.type.t = 0;
     }
     | Int {
         $$ = makeleaf($1);
+        $$->symbol.type.name = "int";
+        $$->symbol.type.t = 0;
     }
     | Long {
         $$ = makeleaf($1);
+        $$->symbol.type.name = "long";
+        $$->symbol.type.t = 0;
     }
     | Char {
         $$ = makeleaf($1);
+        $$->symbol.type.name = "char";
+        $$->symbol.type.t = 0;
     }
 
 FloatingPointType: 
     Float {
         $$ = makeleaf($1);
+        $$->symbol.type.t = 0;
+        $$->symbol.type.name = "float";
     }
     | Double {
         $$ = makeleaf($1);
+        $$->symbol.type.name = "double";
+        $$->symbol.type.t = 0;
     }
 
 ReferenceType: 
@@ -253,13 +276,19 @@ InterfaceType:
 ArrayType: 
     PrimitiveType LeftSquareBracket RightSquareBracket {
         $$ = makeleaf(concatenate_string($1->data,"[]"));
+        $$->symbol.type.t = 1;
+        $$->symbol.type.name = concatenate_string($1->data,"[]");
     }
     | Name LeftSquareBracket RightSquareBracket {
         $$ = makeleaf(concatenate_string($1->data,"[]"));
+        $$->symbol.type.t = 1;
+        $$->symbol.type.name = concatenate_string($1->data,"[]");
 
     }
     | ArrayType LeftSquareBracket RightSquareBracket {
         $$ = makeleaf(concatenate_string($1->data,"[]"));
+        $$->symbol.type.t = 1;
+        $$->symbol.type.name = concatenate_string($1->data,"[]");
 
     }
 
@@ -435,15 +464,24 @@ ClassDeclaration:
         memArr[5] = $6;
         $$ = makeInternalNode("ClassDeclaration", memArr, 6, 1);
         $$->isDeclaration = DECLARATION;
+        $$->t = 1;
         string s = $3;
+        if($1!=NULL)
+            for(int i = 0; i<$1->arr.size(); i++){
+                if($1->arr[i]!=NULL)
+                    $$->symbol.type.modifier.push_back($1->arr[i]->data);
+        }
+        $$->symbol.name = $3;
+        if($5!=NULL)
+            $$->symbol.type.extendClass = $5->data;
         //cout << "Hello ";
         
-        // int ret = glob_insert($3, curr, glob_table);
+        // // int ret = glob_insert($3, curr, glob_table);
 
-        // if(ret < 0){
-        //     cout << "At line number" << line_number;
-        //     return -1;
-        // }
+        // // if(ret < 0){
+        // //     cout << "At line number" << line_number;
+        // //     return -1;
+        // // }
         
         
     }
@@ -473,7 +511,7 @@ Interfaces_opt : {
 
 ClassExtend : 
     Extends ClassType {
-        $$ = makeleaf(concatenate_string($1, concatenate_string(" ",$2->data)));
+        $$ = makeleaf($2->data);
     }
 
 Interfaces: 
@@ -554,6 +592,7 @@ FieldDeclaration:
         memArr[2] = $3;
         $$ = makeInternalNode("FieldDeclaration", memArr, 3, 0);
         $$->isDeclaration = DECLARATION;
+        $$->t = 0;
     }
 
 VariableDeclarators: 
@@ -577,6 +616,7 @@ VariableDeclarator:
         memArr[0] = $1;
         $$ = makeInternalNode($1->data, memArr, 1, 0);
         $$->isDeclaration = DECLARATION;
+        $$->t = 0;
 
     }
     | VariableDeclaratorId EqualTo VariableInitializer {
@@ -585,6 +625,7 @@ VariableDeclarator:
         memArr[1] = $3;
         $$ = makeInternalNode("=", memArr, 2, 1);
         $$->isDeclaration = INITIALIZATION;
+        $$->t = 0;
         // $$ = makeInternalNode(concatenate_string($1, concatenate_string("_", concatenate_string("= ",$3->data))), memArr, 2, 1);
     }
 
@@ -610,7 +651,9 @@ MethodDeclaration:
         memArr[0] = $1;
         memArr[1] = $2;
         $$ = makeInternalNode($1->data, memArr,2, 1);
+        //$$->Symbol = memArr[0]->Symbol;
         $$->isDeclaration = DECLARATION;
+        $$->t = 2;
     }
 
 MethodHeader:
@@ -621,6 +664,8 @@ MethodHeader:
         memArr[2] = $3;
         memArr[3] = $4;
         $$ = makeInternalNode($3->data, memArr, 4, 0);
+        //$$->Symbol = memArr[2]->Symbol;
+        //$$->Symbol.type.ret = memArr[1]->Symbol.name;
     }
     | Modifiers_opt Void MethodDeclarator Throws_opt {
         struct node * memArr[4];
@@ -646,6 +691,7 @@ MethodDeclarator:
         struct node * memArr[1];
         memArr[0]  = $3;
         $$ = makeInternalNode($1, memArr,1, 0);
+        //$$->Symbol.name = $1;
     }
     | MethodDeclarator LeftSquareBracket RightSquareBracket {
         struct node * memArr[1];
@@ -669,7 +715,7 @@ FormalParameterList:
         $$ = makeInternalNode("Parameter", memArr, 1, 0);
     }
     | FormalParameterList Comma FormalParameter{
-         struct node * memArr[2];
+        struct node * memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
         $$ = makeInternalNode("Parameter", memArr, 1, 0);
@@ -678,7 +724,8 @@ FormalParameterList:
 FormalParameter: 
     Type VariableDeclaratorId {
         $$ = makeleaf(concatenate_string($1->data, concatenate_string(" ", $2->data)));
-        $$->isDeclaration = DECLARATION;
+        //$$->isDeclaration = DECLARATION;
+        //$$->t = 0;
     }
 
 Throws: 
@@ -1812,39 +1859,43 @@ char* concatenate_string(char* s, char* s1)
 
 struct node* makeleaf(char nodeStr[100]){
     //printf("%s\n",nodeStr);
+    cout << nodeStr <<" make leaf node\n";
     struct node* leaf = (struct node*)malloc(sizeof(struct node));
     strcpy(leaf->data, nodeStr);
     leaf->parentFlag = 1;
-    for(int i = 0; i<N_NodeChild; i++){
-        leaf->arr[i] = NULL;
-    }
+    // for(int i = 0; i<N_NodeChild; i++){
+    //     leaf->arr.push_back(NULL);
+    // }
     leaf->isDeclaration = NON_DECLARAION;
     leaf->lineNumber = line_number;
+
+    leaf->t = -1;
+    cout << nodeStr <<" exit leaf node\n";
 
     return leaf;
 }
 
 struct node* makeInternalNode(char rule[100], struct node* memArr[], int n, int isParent){
-
-    struct node* internalNode = (struct node*)malloc(sizeof(struct node));
+    cout << rule <<" make internal node\n";
+    struct node* internalNode = new struct node;
     strcpy(internalNode->data,rule);
 
-    for(int i = 0; i<N_NodeChild; i++){
-        internalNode->arr[i] = NULL;
-    }
+    // for(int i = 0; i<N_NodeChild; i++){
+    //     internalNode->arr[i] = NULL;
+    // }
     int k = 0;
     for(int i = 0; i<n; i++){
         if(memArr[i]!=NULL){
             if(memArr[i]->parentFlag == 0){
-                for(int j = 0; j<N_NodeChild; j++){
+                for(int j = 0; j<memArr[i]->arr.size(); j++){
                     if(memArr[i]->arr[j]!=NULL){
-                        internalNode->arr[k] = memArr[i]->arr[j];
+                        internalNode->arr.push_back(memArr[i]->arr[j]);
                         k++;
                     }
                 }
             }
             else{
-                internalNode->arr[k] = memArr[i];
+                internalNode->arr.push_back(memArr[i]);
                 k++;
             }
         }
@@ -1852,172 +1903,177 @@ struct node* makeInternalNode(char rule[100], struct node* memArr[], int n, int 
     internalNode->parentFlag = isParent;
     internalNode->isDeclaration = NON_DECLARAION;
     internalNode->lineNumber = line_number;
+    internalNode->t = -1;
+    cout << rule <<" exit internal node\n";
+
     return internalNode;
 
 }
 
 
-void ast_print(struct node* root, int d, int n){
+// void ast_print(struct node* root, int d, int n){
 
-    if(root == NULL){
-        return;
-    }
+//     if(root == NULL){
+//         return;
+//     }
 
-    printf("%s",root->data);
-    root->nodenumber = n;
-    n++;
-    printf("\n");
-    int i =0;
+//     printf("%s",root->data);
+//     root->nodenumber = n;
+//     n++;
+//     printf("\n");
+//     int i =0;
 
     
-    for(;i<100;i++){
-        if(root->arr[i]!= NULL){
-            for(int i = 0 ; i<=d; i++)
-            printf("     ");
-            printf("|----->");
-            ast_print(root->arr[i],d+1, n);
-        }
-    }
-}
-
-// digraph D {
-//   nodeA [label="Node A"];
-//   nodeB [label="Node B"];
-//   nodeA -> nodeB;
+//     for(;i<100;i++){
+//         if(root->arr[i]!= NULL){
+//             for(int i = 0 ; i<=d; i++)
+//             printf("     ");
+//             printf("|----->");
+//             ast_print(root->arr[i],d+1, n);
+//         }
+//     }
 // }
-void neighbour_append(struct node *root, FILE *graph, int depth, int child_num)
-{
-    int i, leaf_flag = 0;
-    for (i = 0; i < N_NodeChild; i++)
-    {
-        if (root->arr[i] != NULL)
-        {   fprintf(graph,"\ti%d_%d_%d [label= \"%s\"]",root->nodenumber, depth, child_num, root->data);
-            fprintf(graph, "\ti%d_%d_%d ->{ i%d_%d_0", root->nodenumber, depth, child_num, (root->arr[i])->nodenumber, depth + 1);
-            leaf_flag = 1;
-            break;
-        }
-    }
-    if (!leaf_flag)
-    {
-        fprintf(graph,"\ti%d_%d_%d [label= \"%s\"]",root->nodenumber, depth, child_num, root->data);
-        fprintf(graph, "\ti%d_%d_%d ->{}\n", root->nodenumber, depth, child_num);
-        return;
-    }
 
-    for (int j = i+1; j < N_NodeChild; j++)
-    {
-        if (root->arr[j] != NULL)
-        {
-            fprintf(graph, " ,i%d_%d_%d", (root->arr[j])->nodenumber, depth + 1, j);
-        }
-    }
-    fprintf(graph, "}\n");
-    return;
-}
+// // digraph D {
+// //   nodeA [label="Node A"];
+// //   nodeB [label="Node B"];
+// //   nodeA -> nodeB;
+// // }
+// void neighbour_append(struct node *root, FILE *graph, int depth, int child_num)
+// {
+//     int i, leaf_flag = 0;
+//     for (i = 0; i < N_NodeChild; i++)
+//     {
+//         if (root->arr[i] != NULL)
+//         {   fprintf(graph,"\ti%d_%d_%d [label= \"%s\"]",root->nodenumber, depth, child_num, root->data);
+//             fprintf(graph, "\ti%d_%d_%d ->{ i%d_%d_0", root->nodenumber, depth, child_num, (root->arr[i])->nodenumber, depth + 1);
+//             leaf_flag = 1;
+//             break;
+//         }
+//     }
+//     if (!leaf_flag)
+//     {
+//         fprintf(graph,"\ti%d_%d_%d [label= \"%s\"]",root->nodenumber, depth, child_num, root->data);
+//         fprintf(graph, "\ti%d_%d_%d ->{}\n", root->nodenumber, depth, child_num);
+//         return;
+//     }
 
-void graph_maker(struct node* root,FILE* graph,int depth,int child_num){
+//     for (int j = i+1; j < N_NodeChild; j++)
+//     {
+//         if (root->arr[j] != NULL)
+//         {
+//             fprintf(graph, " ,i%d_%d_%d", (root->arr[j])->nodenumber, depth + 1, j);
+//         }
+//     }
+//     fprintf(graph, "}\n");
+//     return;
+// }
+
+// void graph_maker(struct node* root,FILE* graph,int depth,int child_num){
     
-    if(root!=NULL){
-        neighbour_append(root, graph, depth, child_num);
-        for(int i = 0; i<N_NodeChild; i++){
-            if(root->arr[i]!=NULL){
-                graph_maker(root->arr[i], graph,depth+1,i);
-            }
-        }
+//     if(root!=NULL){
+//         neighbour_append(root, graph, depth, child_num);
+//         for(int i = 0; i<N_NodeChild; i++){
+//             if(root->arr[i]!=NULL){
+//                 graph_maker(root->arr[i], graph,depth+1,i);
+//             }
+//         }
 
-    }
-    return;
+//     }
+//     return;
 
-}
+// }
 
-void generateGraph(struct node* root, FILE* graph, int nnode = 0){
-    if(root == NULL)
-        return ;
+// void generateGraph(struct node* root, FILE* graph, int nnode = 0){
+//     if(root == NULL)
+//         return ;
 
-    queue<node*> q;
-    q.push(root);
-    while(!q.empty()){
-        struct node * head = q.front();
-        q.pop();
-        fprintf(graph,"Node%d [label =\"%s\"]\n",nnode, head->data);
-        for(int i = 0; i<N_NodeChild; i++){
-            if(head->arr[i]!=NULL)
-                q.push(head->arr[i]);
-        }
-        nnode++;
-    }
+//     queue<node*> q;
+//     q.push(root);
+//     while(!q.empty()){
+//         struct node * head = q.front();
+//         q.pop();
+//         fprintf(graph,"Node%d [label =\"%s\"]\n",nnode, head->data);
+//         for(int i = 0; i<N_NodeChild; i++){
+//             if(head->arr[i]!=NULL)
+//                 q.push(head->arr[i]);
+//         }
+//         nnode++;
+//     }
 
-    nnode = 0;
-    int prevChild = 0;
-    q.push(root);
-    while(!q.empty()){
-        struct node * head = q.front();
-        q.pop();
-        fprintf(graph,"Node%d -> {",nnode);
-        int k = 0;
-        int l = 0;
-        for(; l < N_NodeChild; l++){
-            if(head->arr[l]!=NULL){
-                k++;
-                fprintf(graph,"Node%d",prevChild+0+1);
-                q.push(head->arr[l]);
-                l++;
-                break;
-            }
-        }
-        for(int i = l; i<N_NodeChild; i++){
-            if(head->arr[i]!=NULL){
-                k++;
-                fprintf(graph,",Node%d",prevChild+i+1);
-                q.push(head->arr[i]);
-            }
+//     nnode = 0;
+//     int prevChild = 0;
+//     q.push(root);
+//     while(!q.empty()){
+//         struct node * head = q.front();
+//         q.pop();
+//         fprintf(graph,"Node%d -> {",nnode);
+//         int k = 0;
+//         int l = 0;
+//         for(; l < N_NodeChild; l++){
+//             if(head->arr[l]!=NULL){
+//                 k++;
+//                 fprintf(graph,"Node%d",prevChild+0+1);
+//                 q.push(head->arr[l]);
+//                 l++;
+//                 break;
+//             }
+//         }
+//         for(int i = l; i<N_NodeChild; i++){
+//             if(head->arr[i]!=NULL){
+//                 k++;
+//                 fprintf(graph,",Node%d",prevChild+i+1);
+//                 q.push(head->arr[i]);
+//             }
             
-        }
-        fprintf(graph,"}\n");
-        prevChild += k;
-        nnode++;
-    }
+//         }
+//         fprintf(graph,"}\n");
+//         prevChild += k;
+//         nnode++;
+//     }
 
-}
+// }
 void help()
 {
     system("clear");
     system("cat ../doc/Help.txt");
 }
 
-int semantic_analysis(struct node* root)
-{
-     if(root == NULL){
-        return 0;
-    }
-    queue<struct node*> q;
-    q.push(root);
+// /////////////////// Semantic Analysis ///////////////////
 
-    while(!q.empty()){
-        struct node* head = q.front();
-        q.pop();
-        for(int i = 0; i<N_NodeChild; i++){
-            if(head->arr[i]!=NULL)
-                q.push(head->arr[i]);
-        }
-        switch(head->isDeclaration){
-            case DECLARATION:
-                    cout << "This is a declaration: " <<head->data<<endl;
-                break;
-            case INITIALIZATION:
-                    cout << "This is a initialization: " <<head->data<<endl;
+// int semantic_analysis(struct node* root)
+// {
+//     if(root == NULL){
+//         return 0;
+//     }
+//     queue<struct node*> q;
+//     q.push(root);
+
+//     while(!q.empty()){
+//         struct node* head = q.front();
+//         q.pop();
+//         for(int i = 0; i<N_NodeChild; i++){
+//             if(head->arr[i]!=NULL)
+//                 q.push(head->arr[i]);
+//         }
+//         switch(head->isDeclaration){
+//             case DECLARATION:
+//                     cout << "This is a declaration: " <<head->data<<endl;
+//                 break;
+//             case INITIALIZATION:
+//                     cout << "This is a initialization: " <<head->data<<endl;
                 
-                break;
+//                 break;
             
-            case NON_DECLARAION:
-                    cout << "This is a non declaration: " <<head->data<<endl;
+//             case NON_DECLARAION:
+//                     cout << "This is a non declaration: " <<head->data<<endl;
 
-                break;
-        }
+//                 break;
+//         }
 
-    }
-    return 0;
-}
+//     }
+//     return 0;
+// }
 
 
 // int dummy(string name, struct SymbolTable * curr, struct GlobalSymbolTable* glob_insert){
@@ -2150,12 +2206,14 @@ int main(int argc , char** argv)
     yyparse();
     //ast_print(root, 0, z);
     //ast_print(root, 0, z);
+    //ast_print(root, 0, z);
+    //ast_print(root, 0, z);
     FILE* graph = fopen(output_file,"w");
-    fprintf(graph, "digraph AST{ \n");
+    // fprintf(graph, "digraph AST{ \n");
     // graph_maker(root, graph,0,0);
-    generateGraph(root, graph);
-    fprintf(graph, "} \n");
-    semantic_analysis(root);
+    // generateGraph(root, graph);
+    // fprintf(graph, "} \n");
+    // semantic_analysis(root);
     fclose(graph);
     fclose(yyin);
 

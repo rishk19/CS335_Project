@@ -7,10 +7,14 @@ using namespace std;
 
 struct Type{
     string name;
-    int t;          //t->0 means Basic Data Type     t->1 means Derived Data Type    t->2 means Function
+    vector<string> modifier;
+    string extendClass;
+    int t;          //t->0 means Basic Data Type     t->1 means Derived Data Type    t->2 means Function 
     string return_type;
     vector<string> parameters;
 };
+
+void insert_type(string, vector<string>, string, int, string, vector<string>, struct Type*);
 
 void insert_type(string, int, string, vector<string>, struct Type*);
 //void insert_type(string name, int t, string return_type, vector<string> parameters, struct Type* type)
