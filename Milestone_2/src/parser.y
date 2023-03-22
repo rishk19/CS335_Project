@@ -494,7 +494,8 @@ ClassDeclaration:
         $$->symbol.type.name = $3;
         $$->symbol.type.t = 1;
         addGlobalEntry($$->symbol,glob_table);
-        view_symbol($$->symbol);
+        //view_symbol($$->symbol);
+        //viewGlobal(glob_table);
         
     }
 
@@ -806,6 +807,7 @@ MethodHeader:
 
         $$->symbol.structuretable->field_type.push_back($$->symbol.type);
         $$->symbol.structuretable->field_name.push_back($$->symbol.name);
+        //view_symbol($$->symbol);
 
 
     }
@@ -824,7 +826,7 @@ MethodDeclarator:
     Identifier LeftParanthesis FormalParameterList_opt RightParanthesis {
         struct node * memArr[1];
         memArr[0]  = $3;
-        $$ = makeInternalNode($1, memArr,1, 1);
+        $$ = makeInternalNode($1, memArr,1, 0);
         string temp = string($1);
         $$->symbol.name = temp;
         if($3 != NULL)
@@ -1100,7 +1102,7 @@ VariableInitializers:
     }
 
 Block: 
-    LeftCurlyBrace BlockStatements_opt RightCurlyBrace {
+    LeftCurlyBrace BlockStatements_opt RightCurlyBrace {    
         $$ = $2;
     }
 
@@ -1110,7 +1112,19 @@ BlockStatements_opt : {
     | BlockStatements {
         struct node* memArr[1];
         memArr[0] = $1;
-        $$ = makeInternalNode("statements", memArr, 1, 1);
+        $$ = makeInternalNode("statements", memArr, 1, 0);
+        //cout << $1->arr.size() <<endl;
+        for (int i =0 ;i < $1->arr.size(); i++)
+        {   
+            //cout << $1->arr[i]->symboltable.entries.size() << endl;
+            for(int j = 0; j< $1->arr[i]->symboltable.entries.size();j++)
+            {
+                $$->symboltable.entries.push_back($1->arr[i]->symboltable.entries[j]);
+                //view_symbol($$->symboltable.entries[i]);
+            }
+        }
+        // cout << $$->symboltable.entries.size() <<endl << endl;
+        
     }
 
 BlockStatements: 
@@ -1118,17 +1132,50 @@ BlockStatements:
         struct node* memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("Blocks", memArr, 1, 0);
+        $$->symboltable = $1->symboltable;
+        // cout << $1->symboltable.entries.size() <<endl;
     }
     | BlockStatements BlockStatement {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $2;
-        $$ = makeInternalNode("Block", memArr, 2, 0);
+        $$ = makeInternalNode("Block", memArr, 2, 1);
+        $$->symboltable = $1->symboltable;
+        //cout << $1->symboltable.entries.size() << endl <<endl;
+        
+        // for (int i = 0 ; i< $1->symboltable.entries.size();i++)
+        // {   
+        //     //cout << "Hello1" <<endl;
+        //     //$$->symboltable.entries.push_back($1->symboltable.entries[i]);
+        //     loc_insert(&$$->symboltable, $1->symboltable.entries[i]);
+        //     //view_symbol($1->symboltable.entries[i]);
+        // }
+
+        for (int i = 0 ; i < $2->symboltable.entries.size(); i++)
+        {
+        cout << $2->symboltable.entries.size() << endl <<endl;
+            cout << "Hello2" <<endl;
+            // loc_insert(&$$->symboltable, $2->symboltable.entries[i]);
+            // view_symbol($2->symboltable.entries[i]);
+            struct Symbol temp;
+            temp.name = $2->symboltable.entries[i].name;
+            temp.type = $2->symboltable.entries[i].type;
+            temp.source_file = $2->symboltable.entries[i].source_file;
+            temp.line_num = $2->symboltable.entries[i].line_num;
+            temp.size = $2->symboltable.entries[i].size;
+            temp.offset = $2->symboltable.entries[i].offset;
+            temp.structuretable = $2->symboltable.entries[i].structuretable;
+            //$$->symboltable.entries.push_back(temp);
+             view_symbol(temp);
+            //$$->symboltable.entries.push_back($2->symboltable.entries[i]);
+        }
+        
     }
 
 BlockStatement: 
     LocalVariableDeclarationStatement {
         $$ = $1;
+        //cout << $$->symboltable.entries.size() << endl;
     }
     | Statement {
         $$ = $1;
@@ -1138,7 +1185,16 @@ LocalVariableDeclarationStatement:
     LocalVariableDeclaration Semicolon {
         struct node* memArr[1];
         memArr[0] = $1;
-        $$ = makeInternalNode($1->data, memArr, 1, 1);
+        $$ = makeInternalNode($1->data, memArr, 1, 0);
+        $$->symboltable = $1->symboltable;
+        /*
+        cout << $$->symboltable.entries.size() << endl;
+        for(int i =0 ; i < $$->symboltable.entries.size(); i++)
+        {
+            cout << "New LocalVariableDeclaration " <<endl <<endl;
+            view_symbol($$->symboltable.entries[i]);
+        }
+        */
     }
 
 LocalVariableDeclaration: 
@@ -1148,6 +1204,43 @@ LocalVariableDeclaration:
         memArr[1] = $2;
         $$ = makeInternalNode("Declaration", memArr, 2, 0);
         $$->isDeclaration = DECLARATION;
+        for(int j = 0 ; j< $2->arr.size(); j++)
+            {
+                $$->symbol.size += $1->symbol.size;
+                struct Type temp = $1->symbol.type;
+                struct Symbol temp_symbol = $2->arr[j]->symbol;
+                string txt = $2->arr[j]->symbol.name;
+                string name = "";
+                int count = 0;
+                for(int i=0; i<txt.size(); i++)
+                {
+                    if(txt[i] != '[' && count == 0){
+                        name += txt[i];
+                    }
+                    else if(txt[i] == '['){
+                        count += 1;
+                    }
+                }
+                for(int i = 0; i < count ; i++ )
+                {
+                    temp.name += "[]";
+                }
+                
+                temp_symbol.name = name;
+                temp_symbol.type = temp;
+                $$->symbol = temp_symbol;
+
+                //view_symbol(temp)
+                loc_insert(&$$->symboltable,temp_symbol);
+                
+                //view_symbol($$->symboltable.entries[j]);
+
+
+                //$$->symbol.structuretable->field_type.push_back(temp);
+                //$$->symbol.structuretable->field_name.push_back(name);
+
+
+            }
     }
 
 Statement: 

@@ -10,15 +10,16 @@ struct SymbolTable* loc_mktable(struct SymbolTable* table, string scope)
     return new_table;
 }
 
-int loc_insert (struct SymbolTable* table, string name, struct Type type, string source_file, long long int line_num, long long int size, long long int offset, struct StructureTable * structuretable)
+int loc_insert (struct SymbolTable* table, struct Symbol symbol)
 {   
-    struct Symbol* temp = loc_loopkup(table,name);
+    //struct Symbol* temp = loc_loopkup(table,name);
+    /*
     if(temp!= NULL)
     {
         cout << "Declaration already exists of " << name << "\n";
         return DECLARATION_ERROR;
     }
-
+    
     struct Symbol entry;
     entry.name = name;
 
@@ -37,7 +38,8 @@ int loc_insert (struct SymbolTable* table, string name, struct Type type, string
     entry.structuretable = structuretable;
 
     table->name_hash[name] = table->entries.size();
-    table->entries.push_back(entry);
+    */
+    table->entries.push_back(symbol);
     return 0;
 }
 
@@ -64,6 +66,8 @@ void view_symbol(struct Symbol symbol)
 
 void view_structure_table(struct StructureTable * structuretable)
 {
+    if(structuretable->field_type.size() > 0)
+    {
     cout << "Structure Table consists of : \n\n";
     for (int i = 0; i < structuretable->field_type.size(); i++)
     {
@@ -71,4 +75,7 @@ void view_structure_table(struct StructureTable * structuretable)
         view_type(structuretable->field_type[i]);
         cout <<endl;
     }
+    }
+    cout << "--------------------------------------------" <<endl;
+    
 }
