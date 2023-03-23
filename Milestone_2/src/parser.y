@@ -493,7 +493,7 @@ ClassDeclaration:
         $$->symbol.offset = 0;
         $$->symbol.type.name = $3;
         $$->symbol.type.t = 1;
-        
+        addGlobalEntry($$->symbol,glob_table);
         view_symbol($$->symbol);
         
     }
