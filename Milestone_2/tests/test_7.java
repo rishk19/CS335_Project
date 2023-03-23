@@ -2,9 +2,15 @@ class Qsort
 {       public int a,b,c[][];
         char d = 'd',e;
 
+        static {
+                int xyzz = 1;
+                float ghd = 9.00;
+        }
+
         int printInt(int n);
         public static int quicksort(int [][]x[], int first, int last){
-                int pivot,j,temp,i,f,e,a[];
+                int pivot,j,temp,i1,f,e,a[];
+                int first;
                 int arr[]={1,2,3};
                 if(first<last){
                         pivot=first;
@@ -44,7 +50,7 @@ class Qsort
                 int size = 5;
                 int first = 0;
                 int l = size - 1;
-                int i;
+                int i2;
 
                 x[0] = 2;
                 x[1] = 1;
@@ -58,6 +64,7 @@ class Qsort
                 quicksort(x,first,l);
 
                 for(i=0;i<size;i++){
+                        int jjk;
                         printInt(x[i]);
                 }
         }

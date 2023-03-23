@@ -12,33 +12,13 @@ struct SymbolTable* loc_mktable(struct SymbolTable* table, string scope)
 
 int loc_insert (struct SymbolTable* table, struct Symbol symbol)
 {   
-    //struct Symbol* temp = loc_loopkup(table,name);
-    /*
-    if(temp!= NULL)
+    struct Symbol* temp = loc_loopkup(table,symbol.name);
+        if(temp!= NULL)
     {
-        cout << "Declaration already exists of " << name << "\n";
+        //cout << "Declaration already exists of " << symbol.name << " at line number " << symbol.line_num;
         return DECLARATION_ERROR;
     }
-    
-    struct Symbol entry;
-    entry.name = name;
-
-    entry.type.name = type.name;
-    entry.type.t = type.t;
-    entry.type.return_type = type.return_type;
-    for (int i=0; i < type.parameters.size(); i++)
-    {
-           entry.type.parameters.push_back(type.parameters[i]);
-     }
-
-    entry.source_file = source_file;
-    entry.line_num = line_num;
-    entry.size = size;
-    entry.offset = offset;
-    entry.structuretable = structuretable;
-
-    table->name_hash[name] = table->entries.size();
-    */
+    table->name_hash[symbol.name] = table->entries.size();
     table->entries.push_back(symbol);
     return 0;
 }
@@ -78,4 +58,14 @@ void view_structure_table(struct StructureTable * structuretable)
     }
     cout << "--------------------------------------------" <<endl;
     
+}
+
+void view_symbol_table(struct SymbolTable symboltable)
+{   
+
+    cout << "The symbols of the symbol table are : \n\n";
+    for(int i = 0; i< symboltable.entries.size(); i++)
+    {
+        view_symbol(symboltable.entries[i]);
+    }
 }

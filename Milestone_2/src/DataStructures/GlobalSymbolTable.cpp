@@ -47,7 +47,7 @@ void viewGlobal(struct GlobalSymbolTable* glob_table){
 
     cout << "The entries of global symbol table are : \n";
     for(int i = 0; i<glob_table->entries.size(); i++){
-        cout <<"scope: "<<glob_table->entries[i].scope << "  ";
+        cout <<"scope: "<<glob_table->entries[i].scope << "::";
         cout <<"methodName: "<<glob_table->entries[i].methodName;
         cout << endl;
     }

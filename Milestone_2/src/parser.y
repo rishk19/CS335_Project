@@ -18,7 +18,7 @@
 
 using namespace std;
 
-int yyerror(char *s);
+int yyerror(string s);
 extern int yylex();
 extern int yyparse();
 extern FILE *yyin;
@@ -144,7 +144,7 @@ struct SymbolTable* curr = loc_mktable(NULL,"RR_GLOBAL_"); //parameters are pare
 
 %%
 Goal: CompilationUnit {
-    printf("Parsing was successful !\n");
+    printf("Parsing stage was successful !\n");
     $$ = $1;
 }
 
@@ -493,7 +493,15 @@ ClassDeclaration:
         $$->symbol.offset = 0;
         $$->symbol.type.name = $3;
         $$->symbol.type.t = 1;
+
         addGlobalEntry($$->symbol,glob_table);
+        for(int i = 0; i<$$->symbol.structuretable->field_name.size(); i++){
+            struct Symbol temp;
+            temp.type =  $$->symbol.structuretable->field_type[i];
+            temp.name = $$->symbol.structuretable->field_name[i];
+            $$->symboltable.entries.push_back(temp);
+        }
+        //view_symbol_table($$->symboltable);
         //view_symbol($$->symbol);
         //viewGlobal(glob_table);
         
@@ -561,7 +569,7 @@ ClassBodyDeclarations_opt : {
     | ClassBodyDeclarations {
         struct node * memArr[1];
         memArr[0] = $1;
-        $$ = makeInternalNode("ClassBody", memArr, 1, 0);
+        $$ = makeInternalNode("ClassBody", memArr, 1, 1);
         for (int i =0; i < $1->arr.size(); i++){
             $$->symbol.size += $1->arr[i]->symbol.size;
             for (int j = 0; j < $1->arr[i]->symbol.structuretable->field_name.size(); j++)
@@ -569,8 +577,10 @@ ClassBodyDeclarations_opt : {
                 //cout << "Scrumptous" <<endl;
                 ($$->symbol.structuretable)->field_type.push_back($1->arr[i]->symbol.structuretable->field_type[j]);
                 ($$->symbol.structuretable)->field_name.push_back($1->arr[i]->symbol.structuretable->field_name[j]);
+                
             }
         }
+        
     }
 
 ClassBodyDeclarations: 
@@ -592,10 +602,10 @@ ClassBodyDeclaration:
         $$ = $1;
     }
     | StaticInitializer {
-        $$ = $1;
+        $$=$1;
     }
     | ConstructorDeclaration {
-        $$ = $1;
+        $$=$1;
     }
 
 ClassMemberDeclaration: 
@@ -744,8 +754,32 @@ MethodDeclaration:
         memArr[1] = $2;
         $$ = makeInternalNode($1->data, memArr,2, 1);
         $$->symbol = $1->symbol;
+
+        $$->symbol.structuretable->method_map[$1->symbol.name] = &$$->symboltable;
         $$->isDeclaration = DECLARATION;
         $$->t = 2;
+        for(int i=0; i< $1->symbol.type.parameters.size(); i++)
+        {
+            struct Symbol temp;
+            temp.type.name = $1->symbol.type.parameters_type[i];
+            temp.type.t = 0;
+            temp.name = $1->symbol.type.parameters[i];
+            if(loc_insert(&$$->symboltable, temp) == DECLARATION_ERROR)
+                {
+                    yyerror("\nDeclaration of \nSemantic Analysis failed !");
+                }
+        }
+        if($2!=NULL){
+            // cout << $2->symboltable.entries.size()<<endl<<endl;
+            for(int i = 0; i<$2->symboltable.entries.size(); i++){
+                if(loc_insert(&$$->symboltable, $2->symboltable.entries[i]) == DECLARATION_ERROR)
+                    {
+                        yyerror("\nDeclaration of " +$2->symboltable.entries[i].name + " already exists at line number " + to_string($2->symboltable.entries[i].line_num) +"\nSemantic Analysis failed !");
+                    }
+            }
+        }
+        //view_symbol_table(*$$->symbol.structuretable->method_map[$1->symbol.name]);
+
         
     }
 
@@ -916,19 +950,20 @@ ClassTypeList:
 
 MethodBody: 
     Block {
-        struct node * memArr[1];
-        memArr[0] = $1;
-        $$ = makeInternalNode("MethodBody", memArr, 1, 0);
+        $$ = $1;
     }
     | Semicolon {
         $$ = NULL;
     }
+    
 
 StaticInitializer: 
     Static Block {
         struct node* memArr[1];
         memArr[0] = $2;
         $$ = makeInternalNode("static", memArr, 1, 1);
+        //if($2 != NULL)
+        //view_symbol_table($$->arr[0]->symboltable);
     }
 
 ConstructorDeclaration: 
@@ -1112,17 +1147,25 @@ BlockStatements_opt : {
     | BlockStatements {
         struct node* memArr[1];
         memArr[0] = $1;
-        $$ = makeInternalNode("statements", memArr, 1, 0);
-        //cout << $1->arr.size() <<endl;
+        $$ = makeInternalNode("statements", memArr, 1, 1);
         for (int i =0 ;i < $1->arr.size(); i++)
         {   
-            //cout << $1->arr[i]->symboltable.entries.size() << endl;
             for(int j = 0; j< $1->arr[i]->symboltable.entries.size();j++)
             {
-                $$->symboltable.entries.push_back($1->arr[i]->symboltable.entries[j]);
+                if(loc_insert(&$$->symboltable, $1->arr[i]->symboltable.entries[j]) == DECLARATION_ERROR)
+                {
+                    yyerror("\nDeclaration of " + $1->arr[i]->symboltable.entries[j].name + " already exists at line number " + to_string($1->arr[i]->symboltable.entries[j].line_num) + "\nSemantic Analysis failed !");
+                }
+                //$$->symboltable.entries.push_back($1->arr[i]->symboltable.entries[j]);
                 //view_symbol($$->symboltable.entries[i]);
             }
         }
+        /*
+        for (int i=0; i< $$->symboltable.entries.size(); i++)
+        {
+            view_symbol($$->symboltable.entries[i]);
+        }
+        */
         // cout << $$->symboltable.entries.size() <<endl << endl;
         
     }
@@ -1133,52 +1176,29 @@ BlockStatements:
         memArr[0] = $1;
         $$ = makeInternalNode("Blocks", memArr, 1, 0);
         $$->symboltable = $1->symboltable;
-        // cout << $1->symboltable.entries.size() <<endl;
     }
     | BlockStatements BlockStatement {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $2;
-        $$ = makeInternalNode("Block", memArr, 2, 1);
-        $$->symboltable = $1->symboltable;
-        //cout << $1->symboltable.entries.size() << endl <<endl;
-        
-        // for (int i = 0 ; i< $1->symboltable.entries.size();i++)
-        // {   
-        //     //cout << "Hello1" <<endl;
-        //     //$$->symboltable.entries.push_back($1->symboltable.entries[i]);
-        //     loc_insert(&$$->symboltable, $1->symboltable.entries[i]);
-        //     //view_symbol($1->symboltable.entries[i]);
-        // }
-
-        for (int i = 0 ; i < $2->symboltable.entries.size(); i++)
-        {
-        cout << $2->symboltable.entries.size() << endl <<endl;
-            cout << "Hello2" <<endl;
-            // loc_insert(&$$->symboltable, $2->symboltable.entries[i]);
-            // view_symbol($2->symboltable.entries[i]);
-            struct Symbol temp;
-            temp.name = $2->symboltable.entries[i].name;
-            temp.type = $2->symboltable.entries[i].type;
-            temp.source_file = $2->symboltable.entries[i].source_file;
-            temp.line_num = $2->symboltable.entries[i].line_num;
-            temp.size = $2->symboltable.entries[i].size;
-            temp.offset = $2->symboltable.entries[i].offset;
-            temp.structuretable = $2->symboltable.entries[i].structuretable;
-            //$$->symboltable.entries.push_back(temp);
-             view_symbol(temp);
-            //$$->symboltable.entries.push_back($2->symboltable.entries[i]);
-        }
+        $$ = makeInternalNode("Block", memArr, 2, 0);
         
     }
 
 BlockStatement: 
     LocalVariableDeclarationStatement {
-        $$ = $1;
+        //$$ = $1;
+        struct node* memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("LocalVariableDeclaration", memArr, 1, 1);
+        $$->symboltable = $1->symboltable;
         //cout << $$->symboltable.entries.size() << endl;
     }
     | Statement {
         $$ = $1;
+        struct node* memArr[1];
+        memArr[0] = $1;
+        $$ = makeInternalNode("Statement", memArr, 1, 1);
     }
 
 LocalVariableDeclarationStatement:
@@ -2083,9 +2103,10 @@ Expression: AssignmentExpression {
 %%
 
 
-int yyerror(char* s)
+int yyerror(string s)
 {
-    printf("Error detected ! %s at [ line number: %lld ] after removing the comments.\nExiting...\n",s,line_number);
+    //printf("Error detected ! %s at [ line number: %lld ] after removing the comments.\nExiting...\n",s,line_number);
+    cout << s <<endl <<endl;
 }
 
 
@@ -2127,7 +2148,7 @@ struct node* makeleaf(char nodeStr[100]){
     // }
     leaf->isDeclaration = NON_DECLARAION;
     leaf->lineNumber = line_number;
-
+    leaf->symbol.line_num = line_number;
     leaf->t = -1;
     // cout << nodeStr <<" exit leaf node\n";
 
@@ -2163,6 +2184,7 @@ struct node* makeInternalNode(char rule[100], struct node* memArr[], int n, int 
     internalNode->parentFlag = isParent;
     internalNode->isDeclaration = NON_DECLARAION;
     internalNode->lineNumber = line_number;
+    internalNode->symbol.line_num = line_number;
     internalNode->t = -1;
     internalNode->symbol.size= 0;
     // cout << rule <<" exit internal node\n";
@@ -2467,12 +2489,12 @@ int main(int argc , char** argv)
     yyparse();
     //ast_print(root, 0, z);
 
-    FILE* graph = fopen(output_file,"w");
+     FILE* graph = fopen(output_file,"w");
     fprintf(graph, "digraph AST{ \n");
     // graph_maker(root, graph,0,0);
     generateGraph(root, graph);
     fprintf(graph, "} \n");
-    // semantic_analysis(root);
+    //semantic_analysis(root);
     fclose(graph);
     fclose(yyin);
 

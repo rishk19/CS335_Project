@@ -14,6 +14,7 @@ struct Symbol{
         long long int size;
         long long int offset;
         struct StructureTable * structuretable;
+        struct MethodTable* methodtable;
 };
 
 struct SymbolTable {
@@ -27,6 +28,7 @@ struct SymbolTable {
 struct StructureTable{
     vector<Type> field_type;
     vector<string> field_name;
+    map<string,SymbolTable*> method_map;
 };
 
 struct SymbolTable* loc_mktable(struct SymbolTable*, string);
@@ -37,5 +39,6 @@ struct Symbol* loc_loopkup(struct SymbolTable* , string);
 //struct Symbol* loc_loopkup(struct SymbolTable* curr,string name)
 void view_symbol(struct Symbol);
 void view_structure_table(struct StructureTable*);
+void view_symbol_table(struct SymbolTable symboltable);
 
 #endif
