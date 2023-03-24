@@ -14,7 +14,6 @@ struct Symbol{
         long long int size;
         long long int offset;
         struct StructureTable * structuretable;
-        struct MethodTable* methodtable;
 };
 
 struct SymbolTable {
@@ -40,5 +39,7 @@ struct Symbol* loc_loopkup(struct SymbolTable* , string);
 void view_symbol(struct Symbol);
 void view_structure_table(struct StructureTable*);
 void view_symbol_table(struct SymbolTable symboltable);
+void view_symbol_table_with_children_hierarchy(struct SymbolTable *symboltable );
+void view_symbol_table_with_parent_hierarchy(struct SymbolTable *symboltable );
 
 #endif

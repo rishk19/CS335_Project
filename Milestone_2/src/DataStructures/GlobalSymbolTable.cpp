@@ -36,7 +36,13 @@ void addGlobalEntry(struct Symbol symbol, struct GlobalSymbolTable* glob_table){
             struct GlobalSymbol temp;
             temp.scope = symbol.name;
             temp.methodName = symbol.structuretable->field_name[i];
-            temp.LocalSymbolTable = NULL;
+        /*
+        if(glob_table->scope_hash.find(scope+"::"+methodName) !=  glob->scope_hash.end())
+            return &(glob->entries[glob->scope_hash[scope+"::"+methodName]]);
+        */
+            temp.LocalSymbolTable = symbol.structuretable->method_map[temp.methodName];
+            //temp.LocalSymbolTable = NULL;
+
             glob_table->entries.push_back(temp);
             glob_table->scope_hash[temp.scope+"::"+temp.methodName] = 1;
         }
@@ -45,10 +51,14 @@ void addGlobalEntry(struct Symbol symbol, struct GlobalSymbolTable* glob_table){
 
 void viewGlobal(struct GlobalSymbolTable* glob_table){
 
-    cout << "The entries of global symbol table are : \n";
+    cout << "\nThe entries of global symbol table are : \n\n";
     for(int i = 0; i<glob_table->entries.size(); i++){
-        cout <<"scope: "<<glob_table->entries[i].scope << "::";
-        cout <<"methodName: "<<glob_table->entries[i].methodName;
+        cout <<glob_table->entries[i].scope << "::";
+        cout <<glob_table->entries[i].methodName <<endl <<endl;
+        cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" <<endl;
+        if(glob_table->entries[i].LocalSymbolTable != NULL)
+        view_symbol_table_with_children_hierarchy(glob_table->entries[i].LocalSymbolTable);
+        cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" <<endl;
         cout << endl;
     }
 

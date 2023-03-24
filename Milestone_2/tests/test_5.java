@@ -12,7 +12,13 @@ class complex_data_type{
       }
       return 0;
     }
-    public static void main() {
+
+    public void mm()
+    {
+      
+    }
+
+    private public static void main() {
         int l[] = new int[5];
         int i,j,y;
         for (i=0;i<5;i++){

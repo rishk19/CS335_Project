@@ -10,9 +10,9 @@ class Qsort
         int printInt(int n);
         public static int quicksort(int [][]x[], int first, int last){
                 int pivot,j,temp,i1,f,e,a[];
-                int first;
                 int arr[]={1,2,3};
                 if(first<last){
+                        int arr2;
                         pivot=first;
                         i=first;
                         j=last;
@@ -20,12 +20,15 @@ class Qsort
                         while(i<j){
                                 int while_x,yy,zz;
                                 while((x[i] <= x[pivot]) && (i < last)){
+                                        int k;
                                         i= i + 1;
                                 }
                                 while(x[j]>x[pivot]){
+                                        int dd;
                                         j= j - 1;
                                 }
                                 if(i<j){
+                                        int x;
                                         temp=x[i];
                                         x[i]=x[j];
                                         x[j]=temp;
@@ -45,7 +48,10 @@ class Qsort
                 return 0;
         }
 
-        public static void main(){
+        private void mm(int alpha){
+                int delta;
+        }
+        public private static void main(int delta){
                 int x[] = new int[5];
                 int size = 5;
                 int first = 0;
@@ -63,10 +69,11 @@ class Qsort
                 // }
                 quicksort(x,first,l);
 
-                for(i=0;i<size;i++){
-                        int jjk;
+                for(int i=0;i<size;i++){
+                        int i;
                         printInt(x[i]);
                 }
+                return 0;
         }
 
 }

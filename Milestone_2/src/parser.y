@@ -34,7 +34,7 @@ int ctr = 0;
 
 struct node{
     char data[100];
-    int nodenumber;
+    long long int nodenumber;
     int parentFlag;
     int isDeclaration;
     int t;
@@ -560,7 +560,6 @@ InterfaceTypeList:
 ClassBody: 
     LeftCurlyBrace ClassBodyDeclarations_opt RightCurlyBrace {
         $$ = $2;
-        //cout << "Class body ended" <<endl;
     }
 
 ClassBodyDeclarations_opt : { 
@@ -572,11 +571,20 @@ ClassBodyDeclarations_opt : {
         $$ = makeInternalNode("ClassBody", memArr, 1, 1);
         for (int i =0; i < $1->arr.size(); i++){
             $$->symbol.size += $1->arr[i]->symbol.size;
+            //cout << $1->arr[i]->symbol.type.modifier.size()<<endl;
             for (int j = 0; j < $1->arr[i]->symbol.structuretable->field_name.size(); j++)
             {   
                 //cout << "Scrumptous" <<endl;
                 ($$->symbol.structuretable)->field_type.push_back($1->arr[i]->symbol.structuretable->field_type[j]);
                 ($$->symbol.structuretable)->field_name.push_back($1->arr[i]->symbol.structuretable->field_name[j]);
+                if($1->arr[i]->symbol.type.t ==2)
+                {
+                    //cout << "Function Declaration of " << $1->arr[i]->symbol.name <<endl;
+                    //view_symbol_table_with_children_hierarchy(&$1->arr[i]->symboltable);
+                    $$->symbol.structuretable->method_map[$1->arr[i]->symbol.name] = &$1->arr[i]->symboltable;
+                    //cout << "Ungabunga" <<endl <<endl;
+
+                }
                 
             }
         }
@@ -614,6 +622,7 @@ ClassMemberDeclaration:
     }
     | MethodDeclaration {
         $$ = $1;
+
     }
 
 FieldDeclaration: 
@@ -650,7 +659,7 @@ FieldDeclaration:
                     temp.name += "[]";
                 }
 
-                for(int i ; i< $1->arr.size();i++)
+                for(int i=0 ; i< $1->arr.size();i++)
                 {
                     temp.modifier.push_back($1->arr[i]->data);
                 }
@@ -754,10 +763,13 @@ MethodDeclaration:
         memArr[1] = $2;
         $$ = makeInternalNode($1->data, memArr,2, 1);
         $$->symbol = $1->symbol;
+        //cout << $$->symbol.type.modifier.size() <<endl;
 
-        $$->symbol.structuretable->method_map[$1->symbol.name] = &$$->symboltable;
+        //$$->symbol.structuretable->method_map[$1->symbol.name] = &$$->symboltable;
         $$->isDeclaration = DECLARATION;
         $$->t = 2;
+        //cout << $1->symbol.type.parameters.size() <<endl <<endl;
+        //$$->symboltable = $2->symboltable;
         for(int i=0; i< $1->symbol.type.parameters.size(); i++)
         {
             struct Symbol temp;
@@ -779,6 +791,7 @@ MethodDeclaration:
             }
         }
         //view_symbol_table(*$$->symbol.structuretable->method_map[$1->symbol.name]);
+        //view_symbol_table_with_children_hierarchy($$->symbol.structuretable->method_map[$1->symbol.name]);
 
         
     }
@@ -792,9 +805,11 @@ MethodHeader:
         memArr[3] = $4;
         $$ = makeInternalNode($3->data, memArr, 4, 0);
         if($1 != NULL){
-            for(int i; i< $1->arr.size();i ++)
+            for(int i=0; i< $1->arr.size();i ++)
             {
-                $$->symbol.type.modifier.push_back($1->arr[i]->data);
+                string temp = string($1->arr[i]->data);
+                //cout << temp <<endl;
+                $$->symbol.type.modifier.push_back(temp);
             }
         }
         $$->symbol.type.return_type = $2->symbol.type.name;
@@ -821,12 +836,16 @@ MethodHeader:
         memArr[2] = $3;
         memArr[3] = $4;
         $$ = makeInternalNode($3->data, memArr, 4, 0);
-                $$ = makeInternalNode($3->data, memArr, 4, 0);
         if($1 != NULL)
-        {
-            for(int i; i< $1->arr.size();i ++)
+        {   
+            //cout << $1->arr.size() <<endl <<endl;
+            for(int i=0; i< $1->arr.size();i ++)
             {
-                $$->symbol.type.modifier.push_back($1->arr[i]->data);
+                string temp = string($1->arr[i]->data);
+                //cout << temp <<endl;
+                $$->symbol.type.modifier.push_back(temp);
+                //cout <<$$->symbol.type.modifier[i] <<endl <<endl;
+            
             }
         }
         $$->symbol.type.return_type = "void";
@@ -1149,24 +1168,24 @@ BlockStatements_opt : {
         memArr[0] = $1;
         $$ = makeInternalNode("statements", memArr, 1, 1);
         for (int i =0 ;i < $1->arr.size(); i++)
-        {   
-            for(int j = 0; j< $1->arr[i]->symboltable.entries.size();j++)
-            {
-                if(loc_insert(&$$->symboltable, $1->arr[i]->symboltable.entries[j]) == DECLARATION_ERROR)
-                {
-                    yyerror("\nDeclaration of " + $1->arr[i]->symboltable.entries[j].name + " already exists at line number " + to_string($1->arr[i]->symboltable.entries[j].line_num) + "\nSemantic Analysis failed !");
+        {   if($1->arr[i]->t ==1){
+                for(int j = 0; j< $1->arr[i]->symboltable.entries.size();j++)
+                {   
+                    if(loc_insert(&$$->symboltable, $1->arr[i]->symboltable.entries[j]) == DECLARATION_ERROR)
+                    {
+                        yyerror("\nDeclaration of " + $1->arr[i]->symboltable.entries[j].name + " already exists at line number " + to_string($1->arr[i]->symboltable.entries[j].line_num) + "\nSemantic Analysis failed !");
+                    }
                 }
-                //$$->symboltable.entries.push_back($1->arr[i]->symboltable.entries[j]);
-                //view_symbol($$->symboltable.entries[i]);
             }
+            else{
+                    //cout << $1->arr[i]->t <<endl <<endl;
+                    if($1->arr[i]->t==2){
+                        //cout << "Yowzzzza" <<endl;
+                        $$->symboltable.children.push_back(&$1->arr[i]->symboltable);
+                        $1->arr[i]->symboltable.parent = &$$->symboltable;
+                    }
+                }
         }
-        /*
-        for (int i=0; i< $$->symboltable.entries.size(); i++)
-        {
-            view_symbol($$->symboltable.entries[i]);
-        }
-        */
-        // cout << $$->symboltable.entries.size() <<endl << endl;
         
     }
 
@@ -1175,7 +1194,7 @@ BlockStatements:
         struct node* memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("Blocks", memArr, 1, 0);
-        $$->symboltable = $1->symboltable;
+        //$$->symboltable = $1->symboltable;
     }
     | BlockStatements BlockStatement {
         struct node* memArr[2];
@@ -1190,8 +1209,9 @@ BlockStatement:
         //$$ = $1;
         struct node* memArr[1];
         memArr[0] = $1;
-        $$ = makeInternalNode("LocalVariableDeclaration", memArr, 1, 1);
+        $$ = makeInternalNode("LocalVariableDeclarationStatement", memArr, 1, 1);
         $$->symboltable = $1->symboltable;
+        $$->t = 1;
         //cout << $$->symboltable.entries.size() << endl;
     }
     | Statement {
@@ -1199,6 +1219,8 @@ BlockStatement:
         struct node* memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("Statement", memArr, 1, 1);
+        $$->symboltable = $1->symboltable;
+        $$->t = $1->t;
     }
 
 LocalVariableDeclarationStatement:
@@ -1207,14 +1229,6 @@ LocalVariableDeclarationStatement:
         memArr[0] = $1;
         $$ = makeInternalNode($1->data, memArr, 1, 0);
         $$->symboltable = $1->symboltable;
-        /*
-        cout << $$->symboltable.entries.size() << endl;
-        for(int i =0 ; i < $$->symboltable.entries.size(); i++)
-        {
-            cout << "New LocalVariableDeclaration " <<endl <<endl;
-            view_symbol($$->symboltable.entries[i]);
-        }
-        */
     }
 
 LocalVariableDeclaration: 
@@ -1303,6 +1317,8 @@ StatementNoShortIf:
 StatementWithoutTrailingSubstatement: 
     Block {
         $$ = $1;
+        //$$->symboltable.children.push_back(&$1->symboltable);
+        //$1->symboltable
     }
     | EmptyStatement {
         $$ = NULL;
@@ -1384,6 +1400,13 @@ IfThenStatement:
         memArr[0] = $3;
         memArr[1] = $5;
         $$ = makeInternalNode("IfThen", memArr, 2, 1);
+        if(&$5->symboltable == NULL){
+            cout << "What the fuck" <<endl <<endl;
+        }
+        $$->t = 2;
+        //$$->symboltable = $5->symboltable;
+        $$->symboltable.children.push_back(&$5->symboltable);
+        $5->symboltable.parent = &$$->symboltable;
     }
 
 IfThenElseStatement: 
@@ -1392,7 +1415,18 @@ IfThenElseStatement:
         memArr[0] = $3;
         memArr[1] = $5;
         memArr[2] = $7;
+        if(&$5->symboltable == NULL){
+            cout << "What the fuck" <<endl <<endl;
+        }
         $$ = makeInternalNode("IfElse", memArr, 3, 1);
+        $$->t = 2;
+        $$->symboltable.children.push_back(&$5->symboltable);
+        $$->symboltable.children.push_back(&$7->symboltable);
+        $5->symboltable.parent = &$$->symboltable;
+        $7->symboltable.parent = &$$->symboltable;
+        //cout << $$->symboltable.children.size() <<endl;
+        //view_symbol_table($5->symboltable);
+        //view_symbol_table($7->symboltable);
     }
 
 IfThenElseStatementNoShortIf: 
@@ -1401,7 +1435,18 @@ IfThenElseStatementNoShortIf:
         memArr[0] = $3;
         memArr[1] = $5;
         memArr[2] = $7;
+        if(&$5->symboltable == NULL){
+            cout << "What the fuck" <<endl <<endl;
+        }
         $$ = makeInternalNode("IfElseIf", memArr, 3, 1);
+        $$->symboltable.children.push_back(&$5->symboltable);
+        $$->symboltable.children.push_back(&$7->symboltable);
+        $$->t = 2;
+        $5->symboltable.parent = &$$->symboltable;
+        $7->symboltable.parent = &$$->symboltable;
+        //cout << $$->symboltable.children.size() <<endl;
+        //view_symbol_table($5->symboltable);
+        //view_symbol_table($7->symboltable);
     }
 
 WhileStatement: 
@@ -1410,6 +1455,9 @@ WhileStatement:
         memArr[0] = $3;
         memArr[1] = $5;
         $$ = makeInternalNode("While", memArr, 2, 1);
+        $$->symboltable.children.push_back(&$5->symboltable);
+        $$->t = 2;
+        $5->symboltable.parent = &$$->symboltable;
     }
 
 WhileStatementNoShortIf: 
@@ -1418,6 +1466,9 @@ WhileStatementNoShortIf:
         memArr[0] = $3;
         memArr[1] = $5;
         $$ = makeInternalNode("While", memArr, 2, 1);
+        $$->symboltable.children.push_back(&$5->symboltable);
+        $$->t = 2;
+        $5->symboltable.parent = &$$->symboltable;
     }
 
 ForStatement: 
@@ -1428,6 +1479,23 @@ ForStatement:
         memArr[2] = $7;
         memArr[3] = $9;
         $$ = makeInternalNode("For", memArr, 4, 1);
+        $$->t = 2;
+        if($3!=NULL)
+        {
+            if($3->t == 1){
+                for(int i=0 ; i<$3->symboltable.entries.size(); i++)
+                {
+                    if(loc_insert(&$9->symboltable, $3->symboltable.entries[i]) == DECLARATION_ERROR)
+                    {
+                        yyerror("\nDeclaration of " + $3->symboltable.entries[i].name + " already exists at line number " + to_string($3->symboltable.entries[i].line_num) + "\nSemantic Analysis failed !");
+                    }
+                }
+                
+            }
+        }
+        $9->symboltable.parent = &$$->symboltable;
+        $$->symboltable.children.push_back(&$9->symboltable);
+
     }
 
 ForStatementNoShortIf: 
@@ -1438,6 +1506,23 @@ ForStatementNoShortIf:
         memArr[2] = $7;
         memArr[3] = $9;
         $$ = makeInternalNode("For", memArr, 4, 1);
+        $$->t = 2;
+               if($3!=NULL)
+        {
+            if($3->t == 1){
+                for(int i=0 ; i<$3->symboltable.entries.size(); i++)
+                {
+                    if( loc_insert(&$9->symboltable, $3->symboltable.entries[i]) == DECLARATION_ERROR)
+                    {
+                        yyerror("\nDeclaration of " + $3->symboltable.entries[i].name + " already exists at line number " + to_string($3->symboltable.entries[i].line_num) + "\nSemantic Analysis failed !");
+                    }
+                }
+                
+            }
+        }
+        $9->symboltable.parent = &$$->symboltable;
+        $$->symboltable.children.push_back(&$9->symboltable);
+        
     }
 
 ForInit_opt: { 
@@ -1448,6 +1533,8 @@ ForInit_opt: {
         memArr[0] = $1;
         $$ = makeInternalNode("ForInit", memArr, 1, 1);
         $$->isDeclaration = DECLARATION;
+        $$->symboltable = $1->symboltable;
+        $$->t = 1;
     }
 
 Expression_opt: { 
@@ -1479,7 +1566,9 @@ ForInit:
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("ForInit", memArr, 1, 1);
+        $$->symboltable = $1->symboltable;
         $$->isDeclaration = DECLARATION;
+        $$->t=1;
     }
 
 ForUpdate: 
@@ -2149,7 +2238,10 @@ struct node* makeleaf(char nodeStr[100]){
     leaf->isDeclaration = NON_DECLARAION;
     leaf->lineNumber = line_number;
     leaf->symbol.line_num = line_number;
-    leaf->t = -1;
+    leaf->t = 0;
+    leaf->arr.clear();
+    leaf->symboltable.parent = NULL;
+    leaf->symboltable.children.clear();
     // cout << nodeStr <<" exit leaf node\n";
 
     return leaf;
@@ -2160,6 +2252,7 @@ struct node* makeInternalNode(char rule[100], struct node* memArr[], int n, int 
     struct node* internalNode = new struct node;
     (internalNode->symbol).structuretable = new struct StructureTable;
     strcpy(internalNode->data,rule);
+    internalNode->arr.clear();
 
     // for(int i = 0; i<N_NodeChild; i++){
     //     internalNode->arr[i] = NULL;
@@ -2185,8 +2278,10 @@ struct node* makeInternalNode(char rule[100], struct node* memArr[], int n, int 
     internalNode->isDeclaration = NON_DECLARAION;
     internalNode->lineNumber = line_number;
     internalNode->symbol.line_num = line_number;
-    internalNode->t = -1;
+    internalNode->t = 0;
     internalNode->symbol.size= 0;
+    internalNode->symboltable.parent = NULL;
+    internalNode->symboltable.children.clear();
     // cout << rule <<" exit internal node\n";
 
     return internalNode;
@@ -2194,23 +2289,26 @@ struct node* makeInternalNode(char rule[100], struct node* memArr[], int n, int 
 }
 
 
-void ast_print(struct node* root, int d, int n){
+void ast_print(struct node* root, long long int d, long long int n){
 
     if(root == NULL){
         return;
     }
 
-    printf("%s",root->data);
+    //printf("%s",string(root->data));
+    //cout <<root->arr.size() << "  ";
+    cout << root->data;
+    //cout << "hghg";
     root->nodenumber = n;
     n++;
     printf("\n");
-    int i =0;
 
-    
-    for(;i<root->arr.size();i++){
+    for(long long int i=0;i<root->arr.size();i++){
         if(root->arr[i]!= NULL){
-            for(int i = 0 ; i<=d; i++)
-            printf("     ");
+            for(long long int j = 0 ; j<=d; j++)
+            {
+                printf("     ");
+            }
             printf("|----->");
             ast_print(root->arr[i],d+1, n);
         }
@@ -2268,8 +2366,10 @@ void ast_print(struct node* root, int d, int n){
 // }
 
 void generateGraph(struct node* root, FILE* graph, int nnode = 0){
-    if(root == NULL)
-        return ;
+    if(root == NULL){
+        cout << "Graph is empty !!\n\n";
+        return;
+    }
 
     queue<node*> q;
     q.push(root);
@@ -2277,6 +2377,8 @@ void generateGraph(struct node* root, FILE* graph, int nnode = 0){
         struct node * head = q.front();
         q.pop();
         fprintf(graph,"Node%d [label =\"%s\"]\n",nnode, head->data);
+        //printf("Node%d [label =\"%s\"]\n",nnode, head->data);
+        //cout<<head->data <<endl;
         for(int i = 0; i<head->arr.size(); i++){
             if(head->arr[i]!=NULL)
                 q.push(head->arr[i]);
@@ -2291,26 +2393,30 @@ void generateGraph(struct node* root, FILE* graph, int nnode = 0){
         struct node * head = q.front();
         q.pop();
         fprintf(graph,"Node%d -> {",nnode);
+        //printf("Node%d -> {",nnode);
         int k = 0;
         int l = 0;
-        for(; l < head->arr.size(); l++){
+        for(; head!=NULL && l < head->arr.size(); l++){
             if(head->arr[l]!=NULL){
                 k++;
                 fprintf(graph,"Node%d",prevChild+0+1);
+                //printf("Node%d",prevChild+0+1);
                 q.push(head->arr[l]);
                 l++;
                 break;
             }
         }
-        for(int i = l; i<head->arr.size(); i++){
+        for(int i = l; head!=NULL && i<head->arr.size(); i++){
             if(head->arr[i]!=NULL){
                 k++;
                 fprintf(graph,",Node%d",prevChild+i+1);
+                //printf(",Node%d",prevChild+i+1);
                 q.push(head->arr[i]);
             }
             
         }
         fprintf(graph,"}\n");
+        //printf("}\n");
         prevChild += k;
         nnode++;
     }
@@ -2489,7 +2595,8 @@ int main(int argc , char** argv)
     yyparse();
     //ast_print(root, 0, z);
 
-     FILE* graph = fopen(output_file,"w");
+    //cout <<output_file <<endl;
+    FILE* graph = fopen(output_file,"w");
     fprintf(graph, "digraph AST{ \n");
     // graph_maker(root, graph,0,0);
     generateGraph(root, graph);
