@@ -956,7 +956,7 @@ StaticInitializer:
     }
 
 ConstructorDeclaration: 
-    Modifiers_opt ConstructorDeclarator Throws_opt ConstructorBody {
+    Modifiers_opt ConstructorDeclarator Throws_opt ConstructorBody Symbol_Table_Back {
         struct node* memArr[4];
         memArr[0] = $1;
         memArr[1] = $2;
@@ -964,16 +964,25 @@ ConstructorDeclaration:
         memArr[3] = $4;
         $$ = makeInternalNode($2->data, memArr, 4, 1);
         $$->isDeclaration = DECLARATION;
+        if($1 != NULL);
     }
 
 ConstructorDeclarator: 
-    SimpleName LeftParanthesis FormalParameterList_opt RightParanthesis {
+    SimpleName Symbol_Table_Change LeftParanthesis FormalParameterList_opt RightParanthesis {
+        
         struct node* memArr[1];
-        memArr[0] = $3;
+        memArr[0] = $4;
         $$ = makeInternalNode($1->data, memArr, 1, 0);
         if(string($1->data) != class_name){
             semantic_error("Constructor Declaration at line number " + to_string(line_number) +  " is not declared properly." );
         }
+        $$->symbol.name = $1->data;
+        Struct Symbol * class_scope_entry = loc_lookup(glob_class_scope,class_name);
+        if(class_scope_entry !=  NULL)
+        {
+            $$->symbol.type = class_scope_entry->type;
+        }
+        
     }
 
 ConstructorBody: 
