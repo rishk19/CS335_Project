@@ -14,6 +14,7 @@ struct Symbol{
         long long int size;
         long long int offset;
         struct StructureTable * structuretable;
+        long int place;
 };
 
 struct SymbolTable {

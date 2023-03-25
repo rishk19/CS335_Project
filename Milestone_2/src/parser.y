@@ -33,8 +33,8 @@ struct node{
     int isDeclaration;
     int t;
     int lineNumber;
-    vector<struct node*> arr;
-    struct Symbol symbol;
+    vector<node*> arr;
+    Symbol symbol;
 };
 
 struct node* makeInternalNode(char* rule, struct node* memArr[], int n, int isParent);
@@ -47,13 +47,12 @@ long long int line_number=1;
 
 struct GlobalSymbolTable* glob_table = new struct GlobalSymbolTable;
 struct SymbolTable* curr = loc_mktable(NULL,"RR_GLOBAL_"); //parameters are parent-pointer,  local-table-name
-string scope;
+int class_num = 0;
 
 struct Symbol func_params;
 int symb_insert = 0;
 
 %}
-
 
 %token Exports Opens Requires Uses Module Permits Sealed Var Non_sealed Provides To With Open Record Transitive Yield Abstract Continue For New Switch Assert Default If Package Synchronized Boolean Do Goto Private This Break Double Implements Protected THROW Byte Else Import Public THROWS Case Enum Instanceof Return Transient Catch Extends Int Short Try Char Final Interface Static Void Class FINALLY Long Strictfp Volatile Const Float Native Super While
 %token BooleanLiteral NullLiteral Identifier DecimalIntegerLiteral HexIntegerLiteral OctalIntegerLiteral FloatingPointIntegerLiteral FloatingPointLiteral BooleanIntegerLiteral CharacterLiteral TextBlock Operator Seperator StringLiteral
@@ -307,6 +306,7 @@ Name:
 SimpleName: 
     Identifier {
         $$ = makeleaf($1);
+        
     }
 
 QualifiedName: 
@@ -487,7 +487,7 @@ ClassDeclaration:
         $$->symbol.offset = 0;
         $$->symbol.type.name = $3;
         $$->symbol.type.t = 1;        
-        
+        class_num +=1;
     }
 
 Modifiers_opt : { 
@@ -551,7 +551,7 @@ ClassBodyDeclarations_opt : {
     | ClassBodyDeclarations {
         struct node * memArr[1];
         memArr[0] = $1;
-        cout << "Class Declarations Reached !" <<endl;
+        //cout << "Class Declarations Reached !" <<endl;
         $$ = makeInternalNode("ClassBody", memArr, 1, 1);
         /*
         for (int i =0; i < $1->arr.size(); i++){
@@ -754,7 +754,7 @@ MethodDeclaration:
         $$->symbol = $1->symbol;
         $$->isDeclaration = DECLARATION;
         
-        glob_insert("scope",$1->symbol.name,$1->symbol.type,curr,glob_table);
+        //glob_insert("scope",$1->symbol.name,$1->symbol.type,curr,glob_table);
         curr = curr->parent;
 
     }
@@ -793,6 +793,7 @@ MethodHeader:
         $$->symbol.structuretable->field_type.push_back($$->symbol.type);
         $$->symbol.structuretable->field_name.push_back($$->symbol.name);
 
+        glob_insert(to_string(class_num),$$->symbol.name,$$->symbol.type,curr,glob_table);
         /*
         func_params = $$->symbol;
         symb_insert = 1;
@@ -903,9 +904,10 @@ FormalParameterList:
 FormalParameter: 
     Type VariableDeclaratorId {
         $$ = makeleaf(concatenate_string($1->data, concatenate_string(" ", $2->data)));
-        struct Type temp;
-        temp.name = $1->symbol.type.name;
-        temp.t = $1->symbol.type.t;
+        //cout << "Hello" <<endl;
+
+        $$->symbol.type.name = $1->symbol.type.name;
+        $$->symbol.type.t = $1->symbol.type.t;
         //$$->symbol.type.name = $1->symbol.type.name;
         string txt = $2->symbol.name;
         string name = "";
@@ -921,11 +923,15 @@ FormalParameter:
         }
         for(int i = 0; i < count ; i++ )
         {
-            temp.name += "[]";
+            $$->symbol.type.name += "[]";
         }
 
+
+        //cout << name;
+        //cout << name<<endl;
+
         $$->symbol.name = name;
-        $$->symbol.type.name = temp.name;
+        //$$->symbol.type.name = temp.name;
         loc_insert(curr,$$->symbol);
     }
 
@@ -2110,7 +2116,7 @@ int yyerror(string s)
 
 char* concatenate_string(char* s, char* s1)
 {
-    char* c = (char*) malloc(sizeof(char)*100);
+    char* c = new char[100];
     int i;
     
     int j = 0;
@@ -2136,7 +2142,7 @@ char* concatenate_string(char* s, char* s1)
 struct node* makeleaf(char nodeStr[100]){
     //printf("%s\n",nodeStr);
     // cout << nodeStr <<" make leaf node\n";
-    struct node* leaf = (struct node*)malloc(sizeof(struct node));
+    struct node* leaf = new struct node;
     (leaf->symbol).structuretable = new struct StructureTable;
     strcpy(leaf->data, nodeStr);
     leaf->parentFlag = 1;
@@ -2146,6 +2152,7 @@ struct node* makeleaf(char nodeStr[100]){
     leaf->t = 0;
     leaf->arr.clear();
     leaf->symbol.type.modifier.clear();
+    //leaf->symbol.place = 0;
     // cout << nodeStr <<" exit leaf node\n";
 
     return leaf;
@@ -2185,6 +2192,7 @@ struct node* makeInternalNode(char rule[100], struct node* memArr[], int n, int 
     internalNode->t = 0;
     internalNode->symbol.size= 0;
     internalNode->symbol.type.modifier.clear();
+    //internalNode->symbol.place = 0;
     // cout << rule <<" exit internal node\n";
 
     return internalNode;
@@ -2408,7 +2416,7 @@ int main(int argc , char** argv)
 
     yyparse();
 
-    viewGlobal(glob_table);
+    //viewGlobal(glob_table);
 
     //ast_print(root,0,0);
 
