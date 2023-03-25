@@ -10,14 +10,15 @@ struct SymbolTable* loc_mktable(struct SymbolTable* table, string scope)
     return new_table;
 }
 
-int loc_insert (struct SymbolTable* table, struct Symbol symbol)
+long long int loc_insert (struct SymbolTable* table, struct Symbol symbol)
 {   
     //view_symbol(symbol);
-    struct Symbol* temp = loc_loopkup(table,symbol.name);
+    struct Symbol* temp = loc_lookup(table,symbol.name);
         if(temp!= NULL)
     {
         //cout << "Declaration already exists of " << symbol.name << " at line number " << symbol.line_num;
-        return DECLARATION_ERROR;
+        //cout << temp->line_num <<endl;
+        return -(temp->line_num);
     }
     //view_symbol(symbol);
     table->name_hash[symbol.name] = table->entries.size();
@@ -25,7 +26,7 @@ int loc_insert (struct SymbolTable* table, struct Symbol symbol)
     return 0;
 }
 
-struct Symbol* loc_loopkup(struct SymbolTable* curr,string name)
+struct Symbol* loc_lookup(struct SymbolTable* curr,string name)
 {   
     if(curr->name_hash.find(name) != curr->name_hash.end()){
         return &(curr->entries[curr->name_hash[name]]);
@@ -42,10 +43,12 @@ void view_symbol(struct Symbol symbol)
     cout<< "Offset : "<<symbol.offset <<endl;
     cout<< endl;
     view_type(symbol.type);
+    /*
     if(symbol.structuretable != NULL)
     {
         view_structure_table(symbol.structuretable);
     }
+    */
     cout << "--------------------------------------------" << endl;
 }
 
@@ -120,4 +123,18 @@ void view_symbol_table_with_parent_hierarchy(struct SymbolTable *symboltable )
     //cout << symboltable->children.size() << endl <<endl;
     }
     return;
+}
+
+struct Symbol* check_scope(struct SymbolTable* curr, string name)
+{
+    if(curr == NULL){
+        return NULL;
+    }
+    struct Symbol* sym = loc_lookup(curr, name);
+    if(sym == NULL){
+        return(check_scope(curr->parent,name));
+    }
+    else{
+        return sym;
+    }
 }

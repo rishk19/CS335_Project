@@ -62,3 +62,4 @@ void copy_type(struct Type* type_1, struct Type type_2)
     }
 
 }
+

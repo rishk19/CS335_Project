@@ -1,7 +1,6 @@
 class Qsort
 {       public int a,b,c[][];
         char d = 'd',e;
-
         static {
                 int xyzz = 1;
                 float ghd = 9.00;
@@ -9,14 +8,16 @@ class Qsort
 
         int printInt(int n);
         public static int quicksort(int [][]x[], int first, int last){
-                int pivot,j,temp,i1,f,e,a[];
+                int pivot,i,temp,i1,f,e,a[];
                 char arr;
+                int j;
                 if(first<last){
+                        xyzz = 1;
                         int arr2;
+                        int xcc = 1;
                         pivot=first;
                         i=first;
                         j=last;
-
                         while(i<j){
                                 int while_x,yy,zz;
                                 while((x[i] <= x[pivot]) && (i < last)){
@@ -29,7 +30,7 @@ class Qsort
                                         j= j - 1;
                                 }
                                 if(i<j){
-                                        int x;
+                                        //int x;
                                         temp=x[i];
                                         x[i]=x[j];
                                         x[j]=temp;
@@ -42,6 +43,7 @@ class Qsort
                         f = j - 1 ;
                         e = j + 1;
 
+                        //quicksort(t);
                         quicksort(x,first,f);
                         quicksort(x,e,last);
 
@@ -53,7 +55,8 @@ class Qsort
                 int delta;
         }
         public private static void main(int delta){
-                int x[] = new int[5];
+                //int x[] = new int[5];
+                int x[][];
                 int size = 5;
                 int first = 0;
                 int l = size - 1;
@@ -65,11 +68,11 @@ class Qsort
                 x[4] = 6;
                 x[2] = 0;
 
-                quicksort(x,first,l);
+                //quicksort(x,first,l);
 
-                for(int i=0;i<size;i++){
+                for(byte i=0;i<size;i++){
                         int j;
-                        printInt(x[i]);
+                        printInt(x[i][i]);
                 }
                 return 0;
         }
