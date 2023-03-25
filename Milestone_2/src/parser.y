@@ -971,6 +971,9 @@ ConstructorDeclarator:
         struct node* memArr[1];
         memArr[0] = $3;
         $$ = makeInternalNode($1->data, memArr, 1, 0);
+        if(string($1->data) != class_name){
+            semantic_error("Constructor Declaration at line number " + to_string(line_number) +  " is not declared properly." );
+        }
     }
 
 ConstructorBody: 
@@ -984,7 +987,7 @@ ConstructorBody:
 ExplicitConstructorInvocation_opt : { 
     $$ = NULL; 
     }
-    | ExplicitConstructorInvocation {
+/*    | ExplicitConstructorInvocation {
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("ExplicitConstructorInvocation", memArr, 1, 1);
@@ -1001,7 +1004,7 @@ ExplicitConstructorInvocation:
         memArr[0] = $3;
         $$ = makeInternalNode("super", memArr, 1, 0);
     }
-
+*/
 ArgumentList_opt: {
     $$ = NULL; 
     }
