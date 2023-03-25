@@ -796,7 +796,10 @@ MethodHeader:
             $$->symbol.type.parameters.push_back($3->symbol.type.parameters[i]);
             $$->symbol.type.parameters_type.push_back($3->symbol.type.parameters_type[i]);
         }
-        glob_insert(line_number,class_name,$$->symbol.name,$$->symbol.type,curr,glob_table);
+       long long int x = glob_insert(line_number,class_name,$$->symbol.name,$$->symbol.type,curr,glob_table);
+       if(x < 0){
+        semantic_error("Method declaration at line number " + to_string(line_number)+ " is invalid as constructor already with same name declared at line number " + to_string(-x) +".");
+       }
         
     }
     | Modifiers_opt Void MethodDeclarator Throws_opt {
@@ -826,7 +829,10 @@ MethodHeader:
             $$->symbol.type.parameters_type.push_back($3->symbol.type.parameters_type[i]);
         }
 
-        glob_insert(line_number,class_name,$$->symbol.name,$$->symbol.type,curr,glob_table);
+        long long int x = glob_insert(line_number,class_name,$$->symbol.name,$$->symbol.type,curr,glob_table);
+        if(x < 0){
+            semantic_error("Method declaration at line number " + to_string(line_number)+ " is invalid as constructor already with same name declared at line number " + to_string(-x) +".");
+        }
         
     }
 
@@ -964,7 +970,20 @@ ConstructorDeclaration:
         memArr[3] = $4;
         $$ = makeInternalNode($2->data, memArr, 4, 1);
         $$->isDeclaration = DECLARATION;
-        if($1 != NULL);
+        $$->symbol = $2->symbol;
+        if($1 != NULL)
+        {
+            for(int i = 0; i<$1->arr.size(); i++)
+            {
+                $$->symbol.type.modifier.push_back($1->arr[i]->data);
+            }
+            
+        }
+
+        long long int x = glob_insert(line_number,class_name,$$->symbol.name,$$->symbol.type,curr,glob_table);
+        if(x < 0){
+            semantic_error("Constructor declaration at line number " + to_string(line_number)+ " is invalid as constructor already defined at line number " + to_string(-x) +".");
+        }
     }
 
 ConstructorDeclarator: 
@@ -977,11 +996,23 @@ ConstructorDeclarator:
             semantic_error("Constructor Declaration at line number " + to_string(line_number) +  " is not declared properly." );
         }
         $$->symbol.name = $1->data;
-        Struct Symbol * class_scope_entry = loc_lookup(glob_class_scope,class_name);
+        struct Symbol * class_scope_entry = loc_lookup(glob_class_scope,class_name);
         if(class_scope_entry !=  NULL)
         {
             $$->symbol.type = class_scope_entry->type;
         }
+        $$->symbol.type.t = 3;
+
+        if($4 != NULL){
+            for(int i=0; i< $4->symbol.type.parameters.size(); i++)
+            {
+                $$->symbol.type.parameters.push_back($4->symbol.type.parameters[i]);
+                $$->symbol.type.parameters_type.push_back($4->symbol.type.parameters_type[i]);
+            }
+        }
+        $$->symbol.line_num = line_number;
+        //glob_insert(line_number,class_name,$$->symbol.name,$$->symbol.type,curr,glob_table);
+        
         
     }
 
@@ -2501,7 +2532,8 @@ int main(int argc , char** argv)
     }
 
     yyparse();
-    view_symbol_table(*glob_class_scope);
+    //view_symbol_table(*glob_class_scope);
+    //viewGlobal(glob_table);
     FILE* graph = fopen(output_file,"w");
     fprintf(graph, "digraph AST{ \n");
     generateGraph(root, graph);
