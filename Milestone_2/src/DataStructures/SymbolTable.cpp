@@ -12,15 +12,11 @@ struct SymbolTable* loc_mktable(struct SymbolTable* table, string scope)
 
 long long int loc_insert (struct SymbolTable* table, struct Symbol symbol)
 {   
-    //view_symbol(symbol);
     struct Symbol* temp = loc_lookup(table,symbol.name);
         if(temp!= NULL)
     {
-        //cout << "Declaration already exists of " << symbol.name << " at line number " << symbol.line_num;
-        //cout << temp->line_num <<endl;
         return -(temp->line_num);
     }
-    //view_symbol(symbol);
     table->name_hash[symbol.name] = table->entries.size();
     table->entries.push_back(symbol);
     return 0;
@@ -43,12 +39,6 @@ void view_symbol(struct Symbol symbol)
     cout<< "Offset : "<<symbol.offset <<endl;
     cout<< endl;
     view_type(symbol.type);
-    /*
-    if(symbol.structuretable != NULL)
-    {
-        view_structure_table(symbol.structuretable);
-    }
-    */
     cout << "--------------------------------------------" << endl;
 }
 
@@ -77,31 +67,23 @@ void view_symbol_table(struct SymbolTable symboltable)
         return;
     }
     cout << "The symbols of the symbol table are : \n\n";
-    //cout << "The number of entries in the symbol table are " << symboltable.entries.size() << "." << endl << endl;
     for(int i = 0; i< symboltable.entries.size(); i++)
     {
         view_symbol(symboltable.entries[i]);
     }
     cout << "#########################################################" <<endl;
-    //cout << "The symbol table has ended !\n\n";
 }
 
 void view_symbol_table_with_children_hierarchy(struct SymbolTable *symboltable )
 {
-    //cout << "Hello" <<endl;
-    //cout << "Child Hierarchy going on !" <<endl;
     if(symboltable == NULL)
     {
         return;
     }
     view_symbol_table(*symboltable);
-    //cout << symboltable->children.size() << endl <<endl;
     for (int i =0;i< symboltable->children.size();i++)
     {
         if(symboltable->children[i]!= NULL){
-            //view_symbol_table_with_children_hierarchy(symboltable->children[i]);
-            //cout << "Parent Hierarchy for testing" <<endl <<endl;
-            //view_symbol_table_with_parent_hierarchy(symboltable->children[i]);
             view_symbol_table_with_children_hierarchy(symboltable->children[i]);
         }
     }
@@ -110,7 +92,6 @@ void view_symbol_table_with_children_hierarchy(struct SymbolTable *symboltable )
 
 void view_symbol_table_with_parent_hierarchy(struct SymbolTable *symboltable )
 {
-    //cout << "Hello" <<endl;
     if(symboltable == NULL)
     {
         return;
@@ -120,7 +101,6 @@ void view_symbol_table_with_parent_hierarchy(struct SymbolTable *symboltable )
     if(symboltable->parent != NULL)
     {
         view_symbol_table_with_parent_hierarchy(symboltable->parent);
-    //cout << symboltable->children.size() << endl <<endl;
     }
     return;
 }

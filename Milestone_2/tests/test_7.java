@@ -12,7 +12,7 @@ class Qsort
                 char arr;
                 int j;
                 if(first<last){
-                        xyzz = 1;
+                        //xyzz = 1;
                         int arr2;
                         int xcc = 1;
                         pivot=first;
