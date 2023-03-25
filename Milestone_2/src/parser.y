@@ -1,16 +1,10 @@
 %{
 #include <cstdio>
 #include <iostream>
-#include <string.h>
 #include <fstream>
 #include <stdio.h>
 #include <vector>
-#include "assert.h"
-#include "string.h"
-#include <string>
-#include <vector>
-#include <string.h>
-#include "stdlib.h"
+#include <bits/stdc++.h>
 #include "../src/DataStructures/Type.hpp"
 #include "../src/DataStructures/GlobalSymbolTable.hpp"
 #include "../src/DataStructures/SymbolTable.hpp"
@@ -41,7 +35,6 @@ struct node{
     int lineNumber;
     vector<struct node*> arr;
     struct Symbol symbol;
-    struct SymbolTable symboltable;
 };
 
 struct node* makeInternalNode(char* rule, struct node* memArr[], int n, int isParent);
@@ -54,6 +47,10 @@ long long int line_number=1;
 
 struct GlobalSymbolTable* glob_table = new struct GlobalSymbolTable;
 struct SymbolTable* curr = loc_mktable(NULL,"RR_GLOBAL_"); //parameters are parent-pointer,  local-table-name
+string scope;
+
+struct Symbol func_params;
+int symb_insert = 0;
 
 %}
 
@@ -183,13 +180,9 @@ IntegerLiteral:
 Type: 
     PrimitiveType {
         $$ = $1;
-        //cout << "Primitive Type :" <<endl; 
-        //cout << $$->symbol.type.name << endl;
     }
     | ReferenceType {
         $$ = $1;
-        //cout << "Reference Type :" <<endl; 
-        //cout << $$->symbol.type.name << endl;
     }
 
 PrimitiveType: 
@@ -474,6 +467,7 @@ ClassDeclaration:
         memArr[4] = $5;
         memArr[5] = $6;
         $$ = makeInternalNode("ClassDeclaration", memArr, 6, 1);
+        
         $$->isDeclaration = DECLARATION;
         $$->t = 1;
         if($1!=NULL)
@@ -492,18 +486,7 @@ ClassDeclaration:
 
         $$->symbol.offset = 0;
         $$->symbol.type.name = $3;
-        $$->symbol.type.t = 1;
-
-        addGlobalEntry($$->symbol,glob_table);
-        for(int i = 0; i<$$->symbol.structuretable->field_name.size(); i++){
-            struct Symbol temp;
-            temp.type =  $$->symbol.structuretable->field_type[i];
-            temp.name = $$->symbol.structuretable->field_name[i];
-            $$->symboltable.entries.push_back(temp);
-        }
-        //view_symbol_table($$->symboltable);
-        //view_symbol($$->symbol);
-        //viewGlobal(glob_table);
+        $$->symbol.type.t = 1;        
         
     }
 
@@ -568,7 +551,9 @@ ClassBodyDeclarations_opt : {
     | ClassBodyDeclarations {
         struct node * memArr[1];
         memArr[0] = $1;
+        cout << "Class Declarations Reached !" <<endl;
         $$ = makeInternalNode("ClassBody", memArr, 1, 1);
+        /*
         for (int i =0; i < $1->arr.size(); i++){
             $$->symbol.size += $1->arr[i]->symbol.size;
             //cout << $1->arr[i]->symbol.type.modifier.size()<<endl;
@@ -588,6 +573,7 @@ ClassBodyDeclarations_opt : {
                 
             }
         }
+        */
         
     }
 
@@ -641,7 +627,8 @@ FieldDeclaration:
             for(int j = 0 ; j< $3->arr.size(); j++)
             {
                 $$->symbol.size += $2->symbol.size;
-                struct Type temp = $2->symbol.type;
+                $$->symbol.type = $2->symbol.type;
+                //struct Type temp = $2->symbol.type;
                 string txt = $3->arr[j]->symbol.name;
                 string name = "";
                 int count = 0;
@@ -656,15 +643,15 @@ FieldDeclaration:
                 }
                 for(int i = 0; i < count ; i++ )
                 {
-                    temp.name += "[]";
+                    $$->symbol.type.name += "[]";
                 }
 
                 for(int i=0 ; i< $1->arr.size();i++)
                 {
-                    temp.modifier.push_back($1->arr[i]->data);
+                    $$->symbol.type.modifier.push_back($1->arr[i]->data);
                 }
 
-                $$->symbol.structuretable->field_type.push_back(temp);
+                $$->symbol.structuretable->field_type.push_back($$->symbol.type);
                 $$->symbol.structuretable->field_name.push_back(name);
 
             }
@@ -757,53 +744,31 @@ VariableInitializer:
     }
 
 MethodDeclaration: 
-    MethodHeader MethodBody {
+    MethodHeader MethodBody{
+        
+        
         struct node * memArr[2];
         memArr[0] = $1;
         memArr[1] = $2;
         $$ = makeInternalNode($1->data, memArr,2, 1);
         $$->symbol = $1->symbol;
-        //cout << $$->symbol.type.modifier.size() <<endl;
-
-        //$$->symbol.structuretable->method_map[$1->symbol.name] = &$$->symboltable;
         $$->isDeclaration = DECLARATION;
-        $$->t = 2;
-        //cout << $1->symbol.type.parameters.size() <<endl <<endl;
-        //$$->symboltable = $2->symboltable;
-        for(int i=0; i< $1->symbol.type.parameters.size(); i++)
-        {
-            struct Symbol temp;
-            temp.type.name = $1->symbol.type.parameters_type[i];
-            temp.type.t = 0;
-            temp.name = $1->symbol.type.parameters[i];
-            if(loc_insert(&$$->symboltable, temp) == DECLARATION_ERROR)
-                {
-                    yyerror("\nDeclaration of \nSemantic Analysis failed !");
-                }
-        }
-        if($2!=NULL){
-            // cout << $2->symboltable.entries.size()<<endl<<endl;
-            for(int i = 0; i<$2->symboltable.entries.size(); i++){
-                if(loc_insert(&$$->symboltable, $2->symboltable.entries[i]) == DECLARATION_ERROR)
-                    {
-                        yyerror("\nDeclaration of " +$2->symboltable.entries[i].name + " already exists at line number " + to_string($2->symboltable.entries[i].line_num) +"\nSemantic Analysis failed !");
-                    }
-            }
-        }
-        //view_symbol_table(*$$->symbol.structuretable->method_map[$1->symbol.name]);
-        //view_symbol_table_with_children_hierarchy($$->symbol.structuretable->method_map[$1->symbol.name]);
-
         
+        glob_insert("scope",$1->symbol.name,$1->symbol.type,curr,glob_table);
+        curr = curr->parent;
+
     }
 
 MethodHeader:
     Modifiers_opt Type MethodDeclarator Throws_opt {
+        
         struct node * memArr[4];
         memArr[0] = $1;
         memArr[1] = $2;
         memArr[2] = $3;
         memArr[3] = $4;
         $$ = makeInternalNode($3->data, memArr, 4, 0);
+
         if($1 != NULL){
             for(int i=0; i< $1->arr.size();i ++)
             {
@@ -815,6 +780,7 @@ MethodHeader:
         $$->symbol.type.return_type = $2->symbol.type.name;
         $$->symbol.type.t = 2;
         $$->symbol.name = $3->symbol.name;
+
         
         for(int i=0; i< $3->symbol.type.parameters.size(); i++)
         {
@@ -822,14 +788,19 @@ MethodHeader:
             $$->symbol.type.parameters_type.push_back($3->symbol.type.parameters_type[i]);
         }
 
+        //glob_insert("scope",$3->symbol.name,$$->symbol.type,curr,glob_table);
 
         $$->symbol.structuretable->field_type.push_back($$->symbol.type);
         $$->symbol.structuretable->field_name.push_back($$->symbol.name);
 
+        /*
+        func_params = $$->symbol;
+        symb_insert = 1;
+        */
         
-        //$$->Symbol.type.ret = memArr[1]->Symbol.name;
     }
     | Modifiers_opt Void MethodDeclarator Throws_opt {
+        
         struct node * memArr[4];
         memArr[0] = $1;
         memArr[1] = makeleaf($2);
@@ -858,10 +829,15 @@ MethodHeader:
             $$->symbol.type.parameters_type.push_back($3->symbol.type.parameters_type[i]);
         }
 
+        
+
         $$->symbol.structuretable->field_type.push_back($$->symbol.type);
         $$->symbol.structuretable->field_name.push_back($$->symbol.name);
-        //view_symbol($$->symbol);
 
+        /*
+        func_params = $$->symbol;
+        symb_insert = 1;
+        */
 
     }
 
@@ -876,20 +852,22 @@ Throws_opt :
     }
 
 MethodDeclarator: 
-    Identifier LeftParanthesis FormalParameterList_opt RightParanthesis {
+    Identifier Symbol_Table_Change LeftParanthesis FormalParameterList_opt RightParanthesis {
+        
         struct node * memArr[1];
-        memArr[0]  = $3;
+        memArr[0]  = $4;
         $$ = makeInternalNode($1, memArr,1, 0);
         string temp = string($1);
         $$->symbol.name = temp;
         if($3 != NULL)
         {
-            for(int i=0; i < $3->arr.size(); i++)
+            for(int i=0; i < $4->arr.size(); i++)
             {
-                $$->symbol.type.parameters.push_back($3->arr[i]->symbol.name);
-                $$->symbol.type.parameters_type.push_back($3->arr[i]->symbol.type.name);
+                $$->symbol.type.parameters.push_back($4->arr[i]->symbol.name);
+                $$->symbol.type.parameters_type.push_back($4->arr[i]->symbol.type.name);
             }
         }
+        
     }
     | MethodDeclarator LeftSquareBracket RightSquareBracket {
         struct node * memArr[1];
@@ -945,6 +923,7 @@ FormalParameter:
 
         $$->symbol.name = name;
         $$->symbol.type.name = temp.name;
+        loc_insert(curr,$$->symbol);
     }
 
 Throws: 
@@ -977,12 +956,10 @@ MethodBody:
     
 
 StaticInitializer: 
-    Static Block {
+    Static Symbol_Table_Change Block Symbol_Table_Back {
         struct node* memArr[1];
-        memArr[0] = $2;
+        memArr[0] = $3;
         $$ = makeInternalNode("static", memArr, 1, 1);
-        //if($2 != NULL)
-        //view_symbol_table($$->arr[0]->symboltable);
     }
 
 ConstructorDeclaration: 
@@ -1158,6 +1135,46 @@ VariableInitializers:
 Block: 
     LeftCurlyBrace BlockStatements_opt RightCurlyBrace {    
         $$ = $2;
+        //cout << "After block !" << endl;
+    }
+
+Symbol_Table_Change :
+    { 
+        curr = loc_mktable(curr,"local");
+        if(symb_insert == 1)
+        {   
+            //cout << func_params.type.parameters.size();
+            
+            for(int i = 0; i<func_params.type.parameters.size(); i++)
+            {   
+                struct Symbol temp;
+                temp.structuretable = new struct StructureTable;
+                
+                temp.name = func_params.type.parameters[i];
+
+                temp.type.name = func_params.type.parameters_type[i];
+                temp.type.t = 0;
+                //temp.type.modifier = func_params.type.modifier;
+                //temp.type.extendClass = func_params.type.extendClass;
+
+                temp.source_file = func_params.source_file;
+                temp.line_num = func_params.line_num;
+                temp.size = func_params.size;
+                temp.structuretable->field_name.clear();
+                temp.structuretable->field_type.clear();
+                //view_symbol(temp);
+                //temp.structuretable = func_params.structuretable;
+
+                loc_insert(curr, temp);
+            }
+            
+            symb_insert =0;
+        }
+    }
+
+Symbol_Table_Back :
+    {
+        curr = curr->parent;
     }
 
 BlockStatements_opt : {
@@ -1167,26 +1184,6 @@ BlockStatements_opt : {
         struct node* memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("statements", memArr, 1, 1);
-        for (int i =0 ;i < $1->arr.size(); i++)
-        {   if($1->arr[i]->t ==1){
-                for(int j = 0; j< $1->arr[i]->symboltable.entries.size();j++)
-                {   
-                    if(loc_insert(&$$->symboltable, $1->arr[i]->symboltable.entries[j]) == DECLARATION_ERROR)
-                    {
-                        yyerror("\nDeclaration of " + $1->arr[i]->symboltable.entries[j].name + " already exists at line number " + to_string($1->arr[i]->symboltable.entries[j].line_num) + "\nSemantic Analysis failed !");
-                    }
-                }
-            }
-            else{
-                    //cout << $1->arr[i]->t <<endl <<endl;
-                    if($1->arr[i]->t==2){
-                        //cout << "Yowzzzza" <<endl;
-                        $$->symboltable.children.push_back(&$1->arr[i]->symboltable);
-                        $1->arr[i]->symboltable.parent = &$$->symboltable;
-                    }
-                }
-        }
-        
     }
 
 BlockStatements: 
@@ -1194,7 +1191,6 @@ BlockStatements:
         struct node* memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("Blocks", memArr, 1, 0);
-        //$$->symboltable = $1->symboltable;
     }
     | BlockStatements BlockStatement {
         struct node* memArr[2];
@@ -1210,17 +1206,13 @@ BlockStatement:
         struct node* memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("LocalVariableDeclarationStatement", memArr, 1, 1);
-        $$->symboltable = $1->symboltable;
-        $$->t = 1;
-        //cout << $$->symboltable.entries.size() << endl;
     }
     | Statement {
-        $$ = $1;
+        //$$ = $1;
         struct node* memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("Statement", memArr, 1, 1);
-        $$->symboltable = $1->symboltable;
-        $$->t = $1->t;
+
     }
 
 LocalVariableDeclarationStatement:
@@ -1228,7 +1220,6 @@ LocalVariableDeclarationStatement:
         struct node* memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode($1->data, memArr, 1, 0);
-        $$->symboltable = $1->symboltable;
     }
 
 LocalVariableDeclaration: 
@@ -1240,9 +1231,13 @@ LocalVariableDeclaration:
         $$->isDeclaration = DECLARATION;
         for(int j = 0 ; j< $2->arr.size(); j++)
             {
+                $$->symbol.type.name = $1->symbol.type.name;
+                $$-> symbol.type.t = $1->symbol.type.t;
+                //cout << $2->arr[j]->symbol.name <<endl;
+                $$->symbol= $2->arr[j]->symbol;
                 $$->symbol.size += $1->symbol.size;
-                struct Type temp = $1->symbol.type;
-                struct Symbol temp_symbol = $2->arr[j]->symbol;
+                $$->symbol.type.modifier.clear();
+                
                 string txt = $2->arr[j]->symbol.name;
                 string name = "";
                 int count = 0;
@@ -1257,22 +1252,16 @@ LocalVariableDeclaration:
                 }
                 for(int i = 0; i < count ; i++ )
                 {
-                    temp.name += "[]";
+                    $$->symbol.type.name += "[]";
                 }
                 
-                temp_symbol.name = name;
-                temp_symbol.type = temp;
-                $$->symbol = temp_symbol;
+                $$->symbol.name = name;
 
-                //view_symbol(temp)
-                loc_insert(&$$->symboltable,temp_symbol);
+                if(loc_insert(curr, $$->symbol) == DECLARATION_ERROR)
+                {
+                    yyerror("\nDeclaration of " +$$->symbol.name + " already exists at line number " + to_string($$->symbol.line_num) +"\nSemantic Analysis failed !");
+                }
                 
-                //view_symbol($$->symboltable.entries[j]);
-
-
-                //$$->symbol.structuretable->field_type.push_back(temp);
-                //$$->symbol.structuretable->field_name.push_back(name);
-
 
             }
     }
@@ -1315,10 +1304,8 @@ StatementNoShortIf:
     }
 
 StatementWithoutTrailingSubstatement: 
-    Block {
+    Block{
         $$ = $1;
-        //$$->symboltable.children.push_back(&$1->symboltable);
-        //$1->symboltable
     }
     | EmptyStatement {
         $$ = NULL;
@@ -1395,134 +1382,75 @@ StatementExpression:
     }
 
 IfThenStatement: 
-    If LeftParanthesis Expression RightParanthesis Statement {
+    If Symbol_Table_Change LeftParanthesis Expression RightParanthesis Statement Symbol_Table_Back {
         struct node* memArr[2];
-        memArr[0] = $3;
-        memArr[1] = $5;
+        memArr[0] = $4;
+        memArr[1] = $6;
         $$ = makeInternalNode("IfThen", memArr, 2, 1);
-        if(&$5->symboltable == NULL){
-            cout << "What the fuck" <<endl <<endl;
-        }
-        $$->t = 2;
-        //$$->symboltable = $5->symboltable;
-        $$->symboltable.children.push_back(&$5->symboltable);
-        $5->symboltable.parent = &$$->symboltable;
     }
 
 IfThenElseStatement: 
-    If LeftParanthesis Expression RightParanthesis StatementNoShortIf Else Statement {
+    If Symbol_Table_Change LeftParanthesis Expression RightParanthesis StatementNoShortIf Else Statement Symbol_Table_Back{
+        
         struct node* memArr[3];
-        memArr[0] = $3;
-        memArr[1] = $5;
-        memArr[2] = $7;
-        if(&$5->symboltable == NULL){
-            cout << "What the fuck" <<endl <<endl;
-        }
+        memArr[0] = $4;
+        memArr[1] = $6;
+        memArr[2] = $8;
         $$ = makeInternalNode("IfElse", memArr, 3, 1);
-        $$->t = 2;
-        $$->symboltable.children.push_back(&$5->symboltable);
-        $$->symboltable.children.push_back(&$7->symboltable);
-        $5->symboltable.parent = &$$->symboltable;
-        $7->symboltable.parent = &$$->symboltable;
-        //cout << $$->symboltable.children.size() <<endl;
-        //view_symbol_table($5->symboltable);
-        //view_symbol_table($7->symboltable);
+        
     }
 
 IfThenElseStatementNoShortIf: 
-    If LeftParanthesis Expression RightParanthesis StatementNoShortIf Else StatementNoShortIf {
+    If Symbol_Table_Change LeftParanthesis Expression RightParanthesis StatementNoShortIf Else StatementNoShortIf Symbol_Table_Back {
+        
         struct node* memArr[3];
-        memArr[0] = $3;
-        memArr[1] = $5;
-        memArr[2] = $7;
-        if(&$5->symboltable == NULL){
-            cout << "What the fuck" <<endl <<endl;
-        }
+        memArr[0] = $4;
+        memArr[1] = $6;
+        memArr[2] = $8;
         $$ = makeInternalNode("IfElseIf", memArr, 3, 1);
-        $$->symboltable.children.push_back(&$5->symboltable);
-        $$->symboltable.children.push_back(&$7->symboltable);
-        $$->t = 2;
-        $5->symboltable.parent = &$$->symboltable;
-        $7->symboltable.parent = &$$->symboltable;
-        //cout << $$->symboltable.children.size() <<endl;
-        //view_symbol_table($5->symboltable);
-        //view_symbol_table($7->symboltable);
+        
     }
 
 WhileStatement: 
-    While LeftParanthesis Expression RightParanthesis Statement {
+    While Symbol_Table_Change LeftParanthesis Expression RightParanthesis Statement Symbol_Table_Back {
+        
         struct node* memArr[2];
-        memArr[0] = $3;
-        memArr[1] = $5;
+        memArr[0] = $4;
+        memArr[1] = $6;
         $$ = makeInternalNode("While", memArr, 2, 1);
-        $$->symboltable.children.push_back(&$5->symboltable);
-        $$->t = 2;
-        $5->symboltable.parent = &$$->symboltable;
+        
     }
 
 WhileStatementNoShortIf: 
-    While LeftParanthesis Expression RightParanthesis StatementNoShortIf {
+    While Symbol_Table_Change LeftParanthesis Expression RightParanthesis StatementNoShortIf Symbol_Table_Back {
         struct node* memArr[2];
-        memArr[0] = $3;
-        memArr[1] = $5;
+        memArr[0] = $4;
+        memArr[1] = $6;
         $$ = makeInternalNode("While", memArr, 2, 1);
-        $$->symboltable.children.push_back(&$5->symboltable);
-        $$->t = 2;
-        $5->symboltable.parent = &$$->symboltable;
     }
 
 ForStatement: 
-    For LeftParanthesis ForInit_opt Semicolon Expression_opt Semicolon ForUpdate_opt RightParanthesis Statement {
+    For Symbol_Table_Change LeftParanthesis ForInit_opt Semicolon Expression_opt Semicolon ForUpdate_opt RightParanthesis Statement Symbol_Table_Back{
+        
         struct node* memArr[4];
-        memArr[0] = $3;
-        memArr[1] = $5;
-        memArr[2] = $7;
-        memArr[3] = $9;
+        memArr[0] = $4;
+        memArr[1] = $6;
+        memArr[2] = $8;
+        memArr[3] = $10;
         $$ = makeInternalNode("For", memArr, 4, 1);
         $$->t = 2;
-        if($3!=NULL)
-        {
-            if($3->t == 1){
-                for(int i=0 ; i<$3->symboltable.entries.size(); i++)
-                {
-                    if(loc_insert(&$9->symboltable, $3->symboltable.entries[i]) == DECLARATION_ERROR)
-                    {
-                        yyerror("\nDeclaration of " + $3->symboltable.entries[i].name + " already exists at line number " + to_string($3->symboltable.entries[i].line_num) + "\nSemantic Analysis failed !");
-                    }
-                }
-                
-            }
-        }
-        $9->symboltable.parent = &$$->symboltable;
-        $$->symboltable.children.push_back(&$9->symboltable);
 
     }
 
 ForStatementNoShortIf: 
-    For LeftParanthesis ForInit_opt Semicolon Expression_opt Semicolon ForUpdate_opt RightParanthesis StatementNoShortIf {
-        struct node* memArr[4];
-        memArr[0] = $3;
-        memArr[1] = $5;
-        memArr[2] = $7;
-        memArr[3] = $9;
-        $$ = makeInternalNode("For", memArr, 4, 1);
-        $$->t = 2;
-               if($3!=NULL)
-        {
-            if($3->t == 1){
-                for(int i=0 ; i<$3->symboltable.entries.size(); i++)
-                {
-                    if( loc_insert(&$9->symboltable, $3->symboltable.entries[i]) == DECLARATION_ERROR)
-                    {
-                        yyerror("\nDeclaration of " + $3->symboltable.entries[i].name + " already exists at line number " + to_string($3->symboltable.entries[i].line_num) + "\nSemantic Analysis failed !");
-                    }
-                }
-                
-            }
-        }
-        $9->symboltable.parent = &$$->symboltable;
-        $$->symboltable.children.push_back(&$9->symboltable);
+    For Symbol_Table_Change LeftParanthesis ForInit_opt Semicolon Expression_opt Semicolon ForUpdate_opt RightParanthesis StatementNoShortIf Symbol_Table_Back{
         
+        struct node* memArr[4];
+        memArr[0] = $4;
+        memArr[1] = $6;
+        memArr[2] = $8;
+        memArr[3] = $10;
+        $$ = makeInternalNode("For", memArr, 4, 1);
     }
 
 ForInit_opt: { 
@@ -1532,9 +1460,6 @@ ForInit_opt: {
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("ForInit", memArr, 1, 1);
-        $$->isDeclaration = DECLARATION;
-        $$->symboltable = $1->symboltable;
-        $$->t = 1;
     }
 
 Expression_opt: { 
@@ -1566,7 +1491,6 @@ ForInit:
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("ForInit", memArr, 1, 1);
-        $$->symboltable = $1->symboltable;
         $$->isDeclaration = DECLARATION;
         $$->t=1;
     }
@@ -2232,16 +2156,11 @@ struct node* makeleaf(char nodeStr[100]){
     (leaf->symbol).structuretable = new struct StructureTable;
     strcpy(leaf->data, nodeStr);
     leaf->parentFlag = 1;
-    // for(int i = 0; i<N_NodeChild; i++){
-    //     leaf->arr.push_back(NULL);
-    // }
     leaf->isDeclaration = NON_DECLARAION;
     leaf->lineNumber = line_number;
     leaf->symbol.line_num = line_number;
     leaf->t = 0;
     leaf->arr.clear();
-    leaf->symboltable.parent = NULL;
-    leaf->symboltable.children.clear();
     // cout << nodeStr <<" exit leaf node\n";
 
     return leaf;
@@ -2280,8 +2199,6 @@ struct node* makeInternalNode(char rule[100], struct node* memArr[], int n, int 
     internalNode->symbol.line_num = line_number;
     internalNode->t = 0;
     internalNode->symbol.size= 0;
-    internalNode->symboltable.parent = NULL;
-    internalNode->symboltable.children.clear();
     // cout << rule <<" exit internal node\n";
 
     return internalNode;
@@ -2315,59 +2232,9 @@ void ast_print(struct node* root, long long int d, long long int n){
     }
 }
 
-// // digraph D {
-// //   nodeA [label="Node A"];
-// //   nodeB [label="Node B"];
-// //   nodeA -> nodeB;
-// // }
-// void neighbour_append(struct node *root, FILE *graph, int depth, int child_num)
-// {
-//     int i, leaf_flag = 0;
-//     for (i = 0; i < N_NodeChild; i++)
-//     {
-//         if (root->arr[i] != NULL)
-//         {   fprintf(graph,"\ti%d_%d_%d [label= \"%s\"]",root->nodenumber, depth, child_num, root->data);
-//             fprintf(graph, "\ti%d_%d_%d ->{ i%d_%d_0", root->nodenumber, depth, child_num, (root->arr[i])->nodenumber, depth + 1);
-//             leaf_flag = 1;
-//             break;
-//         }
-//     }
-//     if (!leaf_flag)
-//     {
-//         fprintf(graph,"\ti%d_%d_%d [label= \"%s\"]",root->nodenumber, depth, child_num, root->data);
-//         fprintf(graph, "\ti%d_%d_%d ->{}\n", root->nodenumber, depth, child_num);
-//         return;
-//     }
-
-//     for (int j = i+1; j < N_NodeChild; j++)
-//     {
-//         if (root->arr[j] != NULL)
-//         {
-//             fprintf(graph, " ,i%d_%d_%d", (root->arr[j])->nodenumber, depth + 1, j);
-//         }
-//     }
-//     fprintf(graph, "}\n");
-//     return;
-// }
-
-// void graph_maker(struct node* root,FILE* graph,int depth,int child_num){
-    
-//     if(root!=NULL){
-//         neighbour_append(root, graph, depth, child_num);
-//         for(int i = 0; i<N_NodeChild; i++){
-//             if(root->arr[i]!=NULL){
-//                 graph_maker(root->arr[i], graph,depth+1,i);
-//             }
-//         }
-
-//     }
-//     return;
-
-// }
-
 void generateGraph(struct node* root, FILE* graph, int nnode = 0){
     if(root == NULL){
-        cout << "Graph is empty !!\n\n";
+        //cout << "Graph is empty !!\n\n";
         return;
     }
 
@@ -2428,46 +2295,7 @@ void help()
     system("cat ../doc/Help.txt");
 }
 
-// /////////////////// Semantic Analysis ///////////////////
 
-// int semantic_analysis(struct node* root)
-// {
-//     if(root == NULL){
-//         return 0;
-//     }
-//     queue<struct node*> q;
-//     q.push(root);
-
-//     while(!q.empty()){
-//         struct node* head = q.front();
-//         q.pop();
-//         for(int i = 0; i<N_NodeChild; i++){
-//             if(head->arr[i]!=NULL)
-//                 q.push(head->arr[i]);
-//         }
-//         switch(head->isDeclaration){
-//             case DECLARATION:
-//                     cout << "This is a declaration: " <<head->data<<endl;
-//                 break;
-//             case INITIALIZATION:
-//                     cout << "This is a initialization: " <<head->data<<endl;
-                
-//                 break;
-            
-//             case NON_DECLARAION:
-//                     cout << "This is a non declaration: " <<head->data<<endl;
-
-//                 break;
-//         }
-
-//     }
-//     return 0;
-// }
-
-
-// int dummy(string name, struct SymbolTable * curr, struct GlobalSymbolTable* glob_insert){
-//     return 0;
-// }
 int main(int argc , char** argv)
 {   
     // Need to add path to inputfile and output file
@@ -2593,15 +2421,15 @@ int main(int argc , char** argv)
     }
 
     yyparse();
-    //ast_print(root, 0, z);
 
-    //cout <<output_file <<endl;
+    viewGlobal(glob_table);
+
+    //ast_print(root,0,0);
+
     FILE* graph = fopen(output_file,"w");
     fprintf(graph, "digraph AST{ \n");
-    // graph_maker(root, graph,0,0);
     generateGraph(root, graph);
     fprintf(graph, "} \n");
-    //semantic_analysis(root);
     fclose(graph);
     fclose(yyin);
 

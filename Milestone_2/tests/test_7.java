@@ -10,7 +10,7 @@ class Qsort
         int printInt(int n);
         public static int quicksort(int [][]x[], int first, int last){
                 int pivot,j,temp,i1,f,e,a[];
-                int arr[]={1,2,3};
+                //char arr;
                 if(first<last){
                         int arr2;
                         pivot=first;
@@ -21,6 +21,7 @@ class Qsort
                                 int while_x,yy,zz;
                                 while((x[i] <= x[pivot]) && (i < last)){
                                         int k;
+                                        int k2;
                                         i= i + 1;
                                 }
                                 while(x[j]>x[pivot]){
@@ -64,13 +65,10 @@ class Qsort
                 x[4] = 6;
                 x[2] = 0;
 
-                // for(i=0;i<size;i++){
-                        // System.out.println(l);
-                // }
                 quicksort(x,first,l);
 
                 for(int i=0;i<size;i++){
-                        int i;
+                        int j;
                         printInt(x[i]);
                 }
                 return 0;

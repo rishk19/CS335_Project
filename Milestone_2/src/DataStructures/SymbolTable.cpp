@@ -12,12 +12,14 @@ struct SymbolTable* loc_mktable(struct SymbolTable* table, string scope)
 
 int loc_insert (struct SymbolTable* table, struct Symbol symbol)
 {   
+    //view_symbol(symbol);
     struct Symbol* temp = loc_loopkup(table,symbol.name);
         if(temp!= NULL)
     {
         //cout << "Declaration already exists of " << symbol.name << " at line number " << symbol.line_num;
         return DECLARATION_ERROR;
     }
+    //view_symbol(symbol);
     table->name_hash[symbol.name] = table->entries.size();
     table->entries.push_back(symbol);
     return 0;

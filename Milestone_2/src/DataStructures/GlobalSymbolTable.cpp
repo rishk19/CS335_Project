@@ -1,7 +1,7 @@
 #include "Includes.hpp"
 
 using namespace std;
-int glob_insert(string scope, string methodName, struct SymbolTable* curr, struct GlobalSymbolTable* glob)
+int glob_insert(string scope, string methodName, struct Type type, struct SymbolTable* curr, struct GlobalSymbolTable* glob)
 {   
     if (glob->scope_hash.find(scope+"::"+methodName) !=  glob->scope_hash.end())
     {
@@ -9,11 +9,11 @@ int glob_insert(string scope, string methodName, struct SymbolTable* curr, struc
         return DECLARATION_ERROR;
     }
 
-    struct SymbolTable* LocalSymbolTable = loc_mktable(curr, scope);
     struct GlobalSymbol entry;
     entry.scope = scope;
-    entry.LocalSymbolTable = LocalSymbolTable;
+    entry.LocalSymbolTable = curr;
     entry.methodName = methodName;
+    entry.type = type;
 
     glob->scope_hash[scope+"::"+methodName] = glob->entries.size();
     glob->entries.push_back(entry);
@@ -55,6 +55,7 @@ void viewGlobal(struct GlobalSymbolTable* glob_table){
     for(int i = 0; i<glob_table->entries.size(); i++){
         cout <<glob_table->entries[i].scope << "::";
         cout <<glob_table->entries[i].methodName <<endl <<endl;
+        view_type(glob_table->entries[i].type);
         cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" <<endl;
         if(glob_table->entries[i].LocalSymbolTable != NULL)
         view_symbol_table_with_children_hierarchy(glob_table->entries[i].LocalSymbolTable);

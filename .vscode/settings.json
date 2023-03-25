@@ -2,6 +2,7 @@
     "files.associations": {
         "stdlib.h": "c",
         "string": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "symboltable.hpp": "c"
     }
 }

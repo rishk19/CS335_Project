@@ -34,17 +34,15 @@ void view_type(struct Type type)
     cout << "Type t : "<< type.t << endl;
     if(type.t==2){
         cout << "Return Type : " << type.return_type << endl;
-    
-
-    cout << "Type Parameters : ";
-    //cout << type.parameters.size();
-    
-    for (int i=0; i<type.parameters.size();i++)
-    {
-        cout << type.parameters_type[i] <<" -> " << type.parameters[i] <<",";
-        //cout << "Hi";
-    }
-    cout <<endl;
+        cout << "Type Parameters : ";
+        //cout << type.parameters.size();
+        
+        for (int i=0; i<type.parameters.size();i++)
+        {
+            cout << type.parameters_type[i] <<" -> " << type.parameters[i] <<",";
+            //cout << "Hi";
+        }
+        cout <<endl;
     
     }
     cout << endl;
@@ -52,3 +50,15 @@ void view_type(struct Type type)
 
 }
 
+
+void copy_type(struct Type* type_1, struct Type type_2)
+{
+    type_1->name = type_2.name;
+    cout <<type_2.name <<endl;
+    cout <<type_2.modifier.size() <<endl;
+    for(int i = 0; i < type_2.modifier.size(); i ++){
+        cout << "Hello!" <<endl;
+        //type_1->modifier.push_back(type_2.modifier[i]);
+    }
+
+}

@@ -1,6 +1,6 @@
 %{
     #include<stdio.h>
-    #include"string.h"
+    #include<string>
     #include "parser.tab.h"
 
     extern long long int line_number;
