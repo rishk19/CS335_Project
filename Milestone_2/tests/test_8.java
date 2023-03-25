@@ -1,5 +1,5 @@
 class operators_type_check{
-    int printInt(int n);
+    void printInt(int n);
 
     public static void main(){
           int i = 3;

@@ -859,7 +859,7 @@ MethodDeclarator:
         $$ = makeInternalNode($1, memArr,1, 0);
         string temp = string($1);
         $$->symbol.name = temp;
-        if($3 != NULL)
+        if($4 != NULL)
         {
             for(int i=0; i < $4->arr.size(); i++)
             {
@@ -903,7 +903,10 @@ FormalParameterList:
 FormalParameter: 
     Type VariableDeclaratorId {
         $$ = makeleaf(concatenate_string($1->data, concatenate_string(" ", $2->data)));
-        struct Type temp = $1->symbol.type;
+        struct Type temp;
+        temp.name = $1->symbol.type.name;
+        temp.t = $1->symbol.type.t;
+        //$$->symbol.type.name = $1->symbol.type.name;
         string txt = $2->symbol.name;
         string name = "";
         int count = 0;
@@ -1141,35 +1144,6 @@ Block:
 Symbol_Table_Change :
     { 
         curr = loc_mktable(curr,"local");
-        if(symb_insert == 1)
-        {   
-            //cout << func_params.type.parameters.size();
-            
-            for(int i = 0; i<func_params.type.parameters.size(); i++)
-            {   
-                struct Symbol temp;
-                temp.structuretable = new struct StructureTable;
-                
-                temp.name = func_params.type.parameters[i];
-
-                temp.type.name = func_params.type.parameters_type[i];
-                temp.type.t = 0;
-                //temp.type.modifier = func_params.type.modifier;
-                //temp.type.extendClass = func_params.type.extendClass;
-
-                temp.source_file = func_params.source_file;
-                temp.line_num = func_params.line_num;
-                temp.size = func_params.size;
-                temp.structuretable->field_name.clear();
-                temp.structuretable->field_type.clear();
-                //view_symbol(temp);
-                //temp.structuretable = func_params.structuretable;
-
-                loc_insert(curr, temp);
-            }
-            
-            symb_insert =0;
-        }
     }
 
 Symbol_Table_Back :
@@ -1206,6 +1180,7 @@ BlockStatement:
         struct node* memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("LocalVariableDeclarationStatement", memArr, 1, 1);
+        //cout << "LocalVariableDeclaration" <<endl;
     }
     | Statement {
         //$$ = $1;
@@ -1229,18 +1204,26 @@ LocalVariableDeclaration:
         memArr[1] = $2;
         $$ = makeInternalNode("Declaration", memArr, 2, 0);
         $$->isDeclaration = DECLARATION;
+        //cout << "Local Variable Declaration" <<endl;
         for(int j = 0 ; j< $2->arr.size(); j++)
             {
+                //cout << "Inside For Loop" <<endl;
                 $$->symbol.type.name = $1->symbol.type.name;
                 $$-> symbol.type.t = $1->symbol.type.t;
+                //cout << "Type assigned" <<endl;
                 //cout << $2->arr[j]->symbol.name <<endl;
-                $$->symbol= $2->arr[j]->symbol;
+                $$->symbol.name= $2->arr[j]->symbol.name;
+                //cout << "Symbol assigned" <<endl;
                 $$->symbol.size += $1->symbol.size;
+                $$->symbol.source_file = $2->arr[j]->symbol.source_file;
+                $$->symbol.offset = $2->arr[j]->symbol.offset;
+                $$->symbol.structuretable = $2->arr[j]->symbol.structuretable;
                 $$->symbol.type.modifier.clear();
                 
                 string txt = $2->arr[j]->symbol.name;
                 string name = "";
                 int count = 0;
+                //cout << txt.size() <<endl;
                 for(int i=0; i<txt.size(); i++)
                 {
                     if(txt[i] != '[' && count == 0){
@@ -1264,6 +1247,7 @@ LocalVariableDeclaration:
                 
 
             }
+        //cout << "Local Variable Declaration ended " <<endl;
     }
 
 Statement: 
@@ -2161,6 +2145,7 @@ struct node* makeleaf(char nodeStr[100]){
     leaf->symbol.line_num = line_number;
     leaf->t = 0;
     leaf->arr.clear();
+    leaf->symbol.type.modifier.clear();
     // cout << nodeStr <<" exit leaf node\n";
 
     return leaf;
@@ -2199,6 +2184,7 @@ struct node* makeInternalNode(char rule[100], struct node* memArr[], int n, int 
     internalNode->symbol.line_num = line_number;
     internalNode->t = 0;
     internalNode->symbol.size= 0;
+    internalNode->symbol.type.modifier.clear();
     // cout << rule <<" exit internal node\n";
 
     return internalNode;

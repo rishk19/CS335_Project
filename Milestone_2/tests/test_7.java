@@ -10,7 +10,7 @@ class Qsort
         int printInt(int n);
         public static int quicksort(int [][]x[], int first, int last){
                 int pivot,j,temp,i1,f,e,a[];
-                //char arr;
+                char arr;
                 if(first<last){
                         int arr2;
                         pivot=first;
