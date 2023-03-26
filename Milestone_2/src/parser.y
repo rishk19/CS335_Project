@@ -56,6 +56,7 @@ int semantic_error(string s);
 void help();
 int buildTAC(struct node* E[], int n, int flag);
 int buildVal(struct node* E);
+void dump(struct SymbolTable* symboltable, FILE* fp);
 // int dummy(string name, struct SymbolTable * curr, struct GlobalSymbolTable* glob_insert);
 long long int line_number=1;
 Value dummyVal;// do not delete needed for generating 3AC text
@@ -66,6 +67,7 @@ struct SymbolTable* glob_class_scope = curr;
 string class_name = "";
 int assign_flag = 0;
 string src_file = "";
+int err = 0;
 
 %}
 
@@ -177,7 +179,7 @@ Literal:
     }
     | CharacterLiteral {
         $$ = makeleaf($1);
-        $$->symbol.type.name = "character";
+        $$->symbol.type.name = "char";
         buildVal($$);
     }
     | StringLiteral {
@@ -746,6 +748,13 @@ FieldDeclaration:
                 {
                     semantic_error("Declaration of " +$$->symbol.name + " already exists at line number " + to_string(-x) + ".");
                 }
+
+                if($3->arr[j]->symbol.type.t == 4 ){
+                    if($3->arr[j]->symbol.type.name != $2->symbol.type.name){
+                        // Add code for casting $3->arr[j] to type of $2->type.name
+                    }
+                }
+
             }
         }
 
@@ -790,6 +799,7 @@ VariableDeclarators:
         E[0] = $$;
         E[1] = $1;
         buildTAC(E, 2, COPY_CODE);
+
     }
     | VariableDeclarators Comma VariableDeclarator {
         struct node * memArr[2];
@@ -807,10 +817,11 @@ VariableDeclarator:
     VariableDeclaratorId {
         struct node * memArr[1];
         memArr[0] = $1;
-        $$ = makeInternalNode($1->data, memArr, 1, 0);
+        $$ = makeInternalNode($1->data, memArr, 1, 1);
         $$->isDeclaration = DECLARATION;
         $$->t = 0;
         $$->symbol.name = $1->symbol.name;
+        $$->symbol.type.t = 0;
 
 
     }
@@ -829,6 +840,9 @@ VariableDeclarator:
         E[0] = $$;
         E[1] = $1;
         buildTAC(E, 2, COPY_CODE);
+
+        $$->symbol.type.t = 4;
+        $$->symbol.type.name = $3->symbol.type.name;
     }
 
 VariableDeclaratorId: 
@@ -1127,6 +1141,7 @@ ConstructorDeclaration:
         $$ = makeInternalNode($2->data, memArr, 4, 1);
         $$->isDeclaration = DECLARATION;
         $$->symbol = $2->symbol;
+        view_symbol($2->symbol);
         if($1 != NULL)
         {
             for(int i = 0; i<$1->arr.size(); i++)
@@ -1167,18 +1182,18 @@ ConstructorDeclarator:
         if($4 != NULL){
             for(int i=0; i< $4->symbol.type.parameters.size(); i++)
             {
+
                 $$->symbol.type.parameters.push_back($4->symbol.type.parameters[i]);
                 $$->symbol.type.parameters_type.push_back($4->symbol.type.parameters_type[i]);
-                struct node* E[2];
-        E[0] = $$;
-        E[1] = $4;
-        buildTAC(E, 2, COPY_CODE);
+            }
         
-    }
         }
         $$->symbol.line_num = line_number;
         //glob_insert(line_number,class_name,$$->symbol.name,$$->symbol.type,curr,glob_table);
-        
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $4;
+        buildTAC(E, 2, COPY_CODE);
         
     }
 
@@ -1990,6 +2005,40 @@ ClassInstanceCreationExpression:
         memArr[2] =$4;
         $$ = makeInternalNode("ClassInstance", memArr, 3, 1);
         $$->isDeclaration = DECLARATION;
+
+        struct GlobalSymbol * glob_entry = glob_lookup($2->symbol.name,$2->symbol.name,glob_table);
+
+        if(glob_entry == NULL){
+            buildVal($$);
+        }
+
+        else{
+            if($4 == NULL){
+                //cout << glob_entry->type.parameters_type.size() <<endl;
+                if(glob_entry->type.parameters_type.size() != 0){
+                    semantic_error("Constructor " + string($2->data) +  " invocation at line number " + to_string(line_number) + " has wrong number of parameters passed.");
+                }
+            }
+            else{
+                //cout << $3->arr.size() <<endl;
+                if($4->arr.size()!= glob_entry->type.parameters_type.size()){
+                    semantic_error("Constructor " + string($2->data) +  " invocation at line number " + to_string(line_number) + " has wrong number of parameters passed.");
+                }
+                else{
+                    //cout << "Hello good sir " << $3->arr.size() << endl;
+                    for (int i = 0; i< $4->arr.size(); i++)
+                    {   
+                        //view_symbol($3->arr[i]->symbol);
+                        if(glob_entry->type.parameters_type[i] != $4->arr[i]->symbol.type.name)
+                        {
+                            semantic_error("Constructor " + string($2->data) +  " invocation at line number " + to_string(line_number) + " has wrong type of parameter passed at position " + to_string(i+1) + "." );          
+                        }
+                    }
+                }
+            }
+
+        }
+
         buildVal($$);
 
     }
@@ -2076,6 +2125,8 @@ Dims:
 FieldAccess: 
     Primary Dot Identifier {
         $$ = makeleaf(concatenate_string($1->data,$3));
+        //string class_in = $1->symbol.type.name;
+
         buildVal($$);
 
     } 
@@ -2800,12 +2851,14 @@ Expression: AssignmentExpression {
 int yyerror(string s)
 {
     cout << "Error detected !" << s << " at [ line number: " << line_number << " ] after removing the comments.\nExiting...\n";
+    err = 1;
     return 0;
 }
 
 int semantic_error(string s)
 {
     cout << s <<endl <<endl;
+    err = 1;
     return 0;
 }
 
@@ -3074,6 +3127,38 @@ int buildTAC(struct node* E[], int n, int flag){
 }
 
 
+void dump(struct SymbolTable *symboltable, string fp)
+{
+    if(symboltable == NULL){
+        return;
+    }
+
+
+    else{
+        //string fp1 = fp + ".csv";
+        char fp1[100];
+        int i;
+        for(i =0 ; i< fp.size()-1; i++){
+            fp1[i] = fp[i];
+        }
+        fp[i+1] = '.';
+        fp[i+2] = 'c';
+        fp[i+3] = 's';
+        fp[i+4] = 'v';
+        FILE * file = fopen(fp1,"w");
+        fprintf(file,"name,source file,line number,size,offset,type name\n");
+        for(int i=0; i<symboltable->entries.size(); i++)
+        {
+            struct Symbol* sym = &symboltable->entries[i];
+            fprintf(file,"%s,%s,%s,%s,%s,%s\n",sym->name, sym->source_file, to_string(sym->line_num), to_string(sym->size), to_string(sym->offset), sym->type.name);
+        }
+        fclose(file);
+        for(int i=0; i<symboltable->children.size(); i++){
+            dump(symboltable->children[i],fp + "(" + to_string(i) + ")");
+        }
+    }
+}
+
 int main(int argc , char** argv)
 {   
     // Need to add path to inputfile and output file
@@ -3205,13 +3290,14 @@ int main(int argc , char** argv)
     }
 
     yyparse();
-
-    //viewGlobal(glob_table);
-
-    //ast_print(root,0,0);
-    int limit = root->val.code.size();
-    for(int iter = 0; iter < limit; iter++)
-        cout << root->val.code[iter]<<endl;
+    
+    if(err == 0){
+        // No syntax or semantic error
+        int limit = root->val.code.size();
+        for(int iter = 0; iter < limit; iter++)
+            cout << root->val.code[iter]<<endl; 
+    }
+    
     //// view_symbol_table(*glob_class_scope);
     //viewGlobal(glob_table);
     FILE* graph = fopen(output_file,"w");
@@ -3220,6 +3306,10 @@ int main(int argc , char** argv)
     fprintf(graph, "} \n");
     fclose(graph);
     fclose(yyin);
+
+    for (int i = 0; i<glob_class_scope->children.size(); i++){
+        //dump(glob_class_scope->children[i],glob_class_scope->entries[i].name);
+    }
 
     return 0;
 
