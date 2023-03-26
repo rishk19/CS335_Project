@@ -10,22 +10,19 @@ struct SymbolTable* loc_mktable(struct SymbolTable* table, string scope)
     return new_table;
 }
 
-int loc_insert (struct SymbolTable* table, struct Symbol symbol)
+long long int loc_insert (struct SymbolTable* table, struct Symbol symbol)
 {   
-    //view_symbol(symbol);
-    struct Symbol* temp = loc_loopkup(table,symbol.name);
+    struct Symbol* temp = loc_lookup(table,symbol.name);
         if(temp!= NULL)
     {
-        //cout << "Declaration already exists of " << symbol.name << " at line number " << symbol.line_num;
-        return DECLARATION_ERROR;
+        return -(temp->line_num);
     }
-    //view_symbol(symbol);
     table->name_hash[symbol.name] = table->entries.size();
     table->entries.push_back(symbol);
     return 0;
 }
 
-struct Symbol* loc_loopkup(struct SymbolTable* curr,string name)
+struct Symbol* loc_lookup(struct SymbolTable* curr,string name)
 {   
     if(curr->name_hash.find(name) != curr->name_hash.end()){
         return &(curr->entries[curr->name_hash[name]]);
@@ -42,10 +39,6 @@ void view_symbol(struct Symbol symbol)
     cout<< "Offset : "<<symbol.offset <<endl;
     cout<< endl;
     view_type(symbol.type);
-    if(symbol.structuretable != NULL)
-    {
-        view_structure_table(symbol.structuretable);
-    }
     cout << "--------------------------------------------" << endl;
 }
 
@@ -74,31 +67,23 @@ void view_symbol_table(struct SymbolTable symboltable)
         return;
     }
     cout << "The symbols of the symbol table are : \n\n";
-    //cout << "The number of entries in the symbol table are " << symboltable.entries.size() << "." << endl << endl;
     for(int i = 0; i< symboltable.entries.size(); i++)
     {
         view_symbol(symboltable.entries[i]);
     }
     cout << "#########################################################" <<endl;
-    //cout << "The symbol table has ended !\n\n";
 }
 
 void view_symbol_table_with_children_hierarchy(struct SymbolTable *symboltable )
 {
-    //cout << "Hello" <<endl;
-    //cout << "Child Hierarchy going on !" <<endl;
     if(symboltable == NULL)
     {
         return;
     }
     view_symbol_table(*symboltable);
-    //cout << symboltable->children.size() << endl <<endl;
     for (int i =0;i< symboltable->children.size();i++)
     {
         if(symboltable->children[i]!= NULL){
-            //view_symbol_table_with_children_hierarchy(symboltable->children[i]);
-            //cout << "Parent Hierarchy for testing" <<endl <<endl;
-            //view_symbol_table_with_parent_hierarchy(symboltable->children[i]);
             view_symbol_table_with_children_hierarchy(symboltable->children[i]);
         }
     }
@@ -107,7 +92,6 @@ void view_symbol_table_with_children_hierarchy(struct SymbolTable *symboltable )
 
 void view_symbol_table_with_parent_hierarchy(struct SymbolTable *symboltable )
 {
-    //cout << "Hello" <<endl;
     if(symboltable == NULL)
     {
         return;
@@ -117,7 +101,20 @@ void view_symbol_table_with_parent_hierarchy(struct SymbolTable *symboltable )
     if(symboltable->parent != NULL)
     {
         view_symbol_table_with_parent_hierarchy(symboltable->parent);
-    //cout << symboltable->children.size() << endl <<endl;
     }
     return;
+}
+
+struct Symbol* check_scope(struct SymbolTable* curr, string name)
+{
+    if(curr == NULL){
+        return NULL;
+    }
+    struct Symbol* sym = loc_lookup(curr, name);
+    if(sym == NULL){
+        return(check_scope(curr->parent,name));
+    }
+    else{
+        return sym;
+    }
 }

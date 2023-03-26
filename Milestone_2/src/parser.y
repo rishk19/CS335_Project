@@ -52,7 +52,7 @@ struct node{
 struct node* makeInternalNode(char* rule, struct node* memArr[], int n, int isParent);
 struct node* makeleaf(char* node);
 char* concatenate_string(char* s, char* s1);
-int semantic_analysis(struct node* root);
+int semantic_error(string s);
 void help();
 int buildTAC(struct node* E[], int n, int flag);
 int buildVal(struct node* E);
@@ -61,11 +61,11 @@ long long int line_number=1;
 Value dummyVal;// do not delete needed for generating 3AC text
 
 struct GlobalSymbolTable* glob_table = new struct GlobalSymbolTable;
-struct SymbolTable* curr = loc_mktable(NULL,"RR_GLOBAL_"); //parameters are parent-pointer,  local-table-name
-int class_num = 0;
-
-struct Symbol func_params;
-int symb_insert = 0;
+struct SymbolTable* curr = loc_mktable(NULL,"global_scope"); //parameters are parent-pointer,  local-table-name
+struct SymbolTable* glob_class_scope = curr;
+string class_name = "";
+int assign_flag = 0;
+string src_file = "";
 
 %}
 
@@ -146,6 +146,7 @@ int symb_insert = 0;
 %type<exp> AdditiveExpression ShiftExpression RelationalExpression EqualityExpression AndExpression 
 %type<exp> ExclusiveOrExpression InclusiveOrExpression ConditionalAndExpression ConditionalOrExpression ConditionalExpression 
 %type<exp> AssignmentExpression Assignment LeftHandSide AssignmentOperator Expression 
+%type<exp> Class_Name_Extractor
 
 %type<data> Exports Opens Requires Uses Module Permits Sealed Var Non_sealed Provides To With Open Record Transitive Yield Abstract Continue For New Switch Assert Default If Package Synchronized Boolean Do Goto Private This Break Double Implements Protected THROW Byte Else Import Public THROWS Case Enum Instanceof Return Transient Catch Extends Int Short Try Char Final Interface Static Void Class FINALLY Long Strictfp Volatile Const Float Native Super While
 %type<data> BooleanLiteral NullLiteral Identifier DecimalIntegerLiteral HexIntegerLiteral OctalIntegerLiteral FloatingPointIntegerLiteral FloatingPointLiteral BooleanIntegerLiteral CharacterLiteral TextBlock Operator Seperator StringLiteral
@@ -166,36 +167,45 @@ Literal:
     }
     | FloatingPointLiteral {
         $$ = makeleaf($1);
+        $$->symbol.type.name = "float";
         buildVal($$);
     }
     | BooleanLiteral {
         $$ = makeleaf($1);
+        $$->symbol.type.name = "boolean";
         buildVal($$);
     }
     | CharacterLiteral {
         $$ = makeleaf($1);
+        $$->symbol.type.name = "character";
         buildVal($$);
     }
     | StringLiteral {
         $$ = makeleaf($1);
+        $$->symbol.type.name = "string";
         buildVal($$);
     }
     | NullLiteral{
         $$ = makeleaf($1);
+        $$->symbol.type.name = "null";
         buildVal($$);
     }
 
 IntegerLiteral: 
     DecimalIntegerLiteral {
         $$ = makeleaf($1);
+        $$->symbol.type.name = "int";
+
         buildVal($$);
     }
     | HexIntegerLiteral {
         $$ = makeleaf($1);
+        $$->symbol.type.name = "int";
         buildVal($$);
     }
     | OctalIntegerLiteral {
         $$ = makeleaf($1);
+        $$->symbol.type.name = "int";
         buildVal($$);
     }
 
@@ -298,7 +308,6 @@ InterfaceType:
 ArrayType: 
     PrimitiveType LeftSquareBracket RightSquareBracket {
         $$ = makeleaf(concatenate_string($1->data,"[]"));
-        //cout << $1->data <<endl;
         $$->symbol.type.t = 1;
         string temp = string($1->data)+"[]";
         $$->symbol.type.name = temp;
@@ -328,8 +337,11 @@ Name:
 
 SimpleName: 
     Identifier {
-        $$ = makeleaf($1);
-        buildVal($$);
+        $$ = makeleaf($1);  
+        struct Symbol* lookup_entry = check_scope(curr,$1);      
+        if(lookup_entry != NULL){
+            $$->symbol = *lookup_entry;
+        }buildVal($$);
     }
 
 QualifiedName: 
@@ -501,40 +513,45 @@ Modifier:
         $$ = makeleaf($1);
     }
 
-ClassDeclaration: 
-    Modifiers_opt Class Identifier ClassExtend_opt Interfaces_opt ClassBody {
-        struct node * memArr[6];
-        memArr[0] = $1;
-        memArr[1] = makeleaf($2);
-        memArr[2] = makeleaf($3);
-        memArr[3] = $4;
-        memArr[4] = $5;
-        memArr[5] = $6;
-        $$ = makeInternalNode("ClassDeclaration", memArr, 6, 1);
-        
-        $$->isDeclaration = DECLARATION;
-        $$->t = 1;
-        if($1!=NULL)
-            for(int i = 0; i<$1->arr.size(); i++){
-                if($1->arr[i]!=NULL)
-                    $$->symbol.type.modifier.push_back(string($1->arr[i]->data));
-        }
-        $$->symbol.name = $3;
-        if($4!=NULL)
-            $$->symbol.type.extendClass = string($4->data);
-        
-        if($6 != NULL){
-            $$->symbol.size = $6->symbol.size;
-            $$->symbol.structuretable = $6->symbol.structuretable;
-        }
+Class_Name_Extractor : Modifiers_opt Class Identifier ClassExtend_opt Interfaces_opt{
+    class_name = string($3);
+    struct node * memArr[5];
+    memArr[0] = $1;
+    memArr[1] = makeleaf($2);
+    memArr[2] = makeleaf($3);
+    memArr[3] = $4;
+    memArr[4] = $5;
+    $$ = makeInternalNode("ClassDeclaration", memArr , 5, 1);
+    if($1!=NULL){
+        for(int i = 0; i<$1->arr.size(); i++){
+            if($1->arr[i]!=NULL)
+                $$->symbol.type.modifier.push_back(string($1->arr[i]->data));
+       }
+    }
+    $$->symbol.name = string($3);
+    if($4!=NULL)$$->symbol.type.extendClass = string($5->data);
+    $$->symbol.offset = 0;
+    $$->symbol.type.name = string($3);
+    $$->symbol.type.t = 1;        
+    $$->symbol.line_num = line_number;
+    long long int x  = loc_insert(curr,$$->symbol);
+    if(x < 0)
+    {
+        semantic_error("Declaration of class" +$$->symbol.name + " already exists at line number " + to_string(-x) + ".");
+    }
+}
 
-        $$->symbol.offset = 0;
-        $$->symbol.type.name = $3;
-        $$->symbol.type.t = 1;        
-        class_num +=1;
+
+ClassDeclaration: 
+    Class_Name_Extractor Symbol_Table_Change ClassBody Symbol_Table_Back{
+        
+        struct node * memArr[2];
+        memArr[0] = $1;
+        memArr[1] = $3;
+        $$ = makeInternalNode("ClassDeclaration", memArr, 2, 0);        
         struct node* E[2];
         E[0] = $$;
-        E[1] = $6;
+        E[1] = $3;
         buildTAC(E, 2, COPY_CODE);
     }
 
@@ -670,6 +687,10 @@ ClassBodyDeclaration:
 ClassMemberDeclaration: 
     FieldDeclaration {
         $$ = $1;
+        struct Symbol* class_entry = loc_lookup(glob_class_scope,class_name);
+        if(class_entry != NULL){
+            class_entry->size += $$->symbol.size;
+        }
     }
     | MethodDeclaration {
         $$ = $1;
@@ -715,10 +736,16 @@ FieldDeclaration:
                 {
                     $$->symbol.type.modifier.push_back($1->arr[i]->data);
                 }
+                
 
-                $$->symbol.structuretable->field_type.push_back($$->symbol.type);
-                $$->symbol.structuretable->field_name.push_back(name);
-
+                $$->symbol.name = name;
+                
+                long long int x  = loc_insert(curr,$$->symbol);
+        
+                if(x < 0)
+                {
+                    semantic_error("Declaration of " +$$->symbol.name + " already exists at line number " + to_string(-x) + ".");
+                }
             }
         }
 
@@ -744,8 +771,6 @@ FieldDeclaration:
                     temp.name += "[]";
                 }
 
-                $$->symbol.structuretable->field_type.push_back(temp);
-                $$->symbol.structuretable->field_name.push_back(name);
 
             }
         }
@@ -761,7 +786,6 @@ VariableDeclarators:
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode($1->data, memArr, 1, 0);
-        // $$->isDeclaration = DECLARATION;
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
@@ -772,7 +796,6 @@ VariableDeclarators:
         memArr[0] = $1;
         memArr[1] = $3;
         $$ = makeInternalNode($3->data, memArr, 2, 0);
-        // $$->isDeclaration = DECLARATION;
         struct node* E[3];
         E[0] = $$;
         E[1] = $1;
@@ -840,9 +863,12 @@ MethodDeclaration:
         $$ = makeInternalNode($1->data, memArr,2, 1);
         $$->symbol = $1->symbol;
         $$->isDeclaration = DECLARATION;
-        
-        //glob_insert("scope",$1->symbol.name,$1->symbol.type,curr,glob_table);
-        curr = curr->parent;
+
+        long long int x  = loc_insert(curr,$1->symbol);
+        if(x < 0)
+        {
+            semantic_error("Declaration of " +$1->symbol.name + " already exists at line number " + to_string(-x) + ".");
+        }
         struct node* E[3];
         E[0] = $$;
         E[1] = $1;
@@ -865,7 +891,6 @@ MethodHeader:
             for(int i=0; i< $1->arr.size();i ++)
             {
                 string temp = string($1->arr[i]->data);
-                //cout << temp <<endl;
                 $$->symbol.type.modifier.push_back(temp);
             }
         }
@@ -880,12 +905,8 @@ MethodHeader:
             $$->symbol.type.parameters_type.push_back($3->symbol.type.parameters_type[i]);
         }
 
-        //glob_insert("scope",$3->symbol.name,$$->symbol.type,curr,glob_table);
 
-        $$->symbol.structuretable->field_type.push_back($$->symbol.type);
-        $$->symbol.structuretable->field_name.push_back($$->symbol.name);
-
-        glob_insert(to_string(class_num),$$->symbol.name,$$->symbol.type,curr,glob_table);
+        glob_insert(line_number, class_name,$$->symbol.name,$$->symbol.type,curr,glob_table);
         /*
         func_params = $$->symbol;
         symb_insert = 1;
@@ -906,13 +927,10 @@ MethodHeader:
         $$ = makeInternalNode($3->data, memArr, 4, 0);
         if($1 != NULL)
         {   
-            //cout << $1->arr.size() <<endl <<endl;
             for(int i=0; i< $1->arr.size();i ++)
             {
                 string temp = string($1->arr[i]->data);
-                //cout << temp <<endl;
                 $$->symbol.type.modifier.push_back(temp);
-                //cout <<$$->symbol.type.modifier[i] <<endl <<endl;
             
             }
         }
@@ -926,12 +944,8 @@ MethodHeader:
             $$->symbol.type.parameters_type.push_back($3->symbol.type.parameters_type[i]);
         }
 
-        
-
-        $$->symbol.structuretable->field_type.push_back($$->symbol.type);
-        $$->symbol.structuretable->field_name.push_back($$->symbol.name);
-
-        /*
+        glob_insert(line_number,class_name,$$->symbol.name,$$->symbol.type,curr,glob_table);
+          /*
         func_params = $$->symbol;
         symb_insert = 1;
         */
@@ -1025,11 +1039,8 @@ FormalParameterList:
 FormalParameter: 
     Type VariableDeclaratorId {
         $$ = makeleaf(concatenate_string($1->data, concatenate_string(" ", $2->data)));
-        //cout << "Hello" <<endl;
-
         $$->symbol.type.name = $1->symbol.type.name;
         $$->symbol.type.t = $1->symbol.type.t;
-        //$$->symbol.type.name = $1->symbol.type.name;
         string txt = $2->symbol.name;
         string name = "";
         int count = 0;
@@ -1047,13 +1058,12 @@ FormalParameter:
             $$->symbol.type.name += "[]";
         }
 
-
-        //cout << name;
-        //cout << name<<endl;
-
         $$->symbol.name = name;
-        //$$->symbol.type.name = temp.name;
-        loc_insert(curr,$$->symbol);
+        long long int x  = loc_insert(curr,$$->symbol);
+        if(x < 0)
+        {
+            semantic_error("Declaration of " +$$->symbol.name + " already exists at line number " + to_string(-x) + "." );
+        }
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
@@ -1081,10 +1091,10 @@ ClassTypeList:
     }
 
 MethodBody: 
-    Block {
+    Block Symbol_Table_Back{
         $$ = $1;
     }
-    | Semicolon {
+    | Semicolon Symbol_Table_Back{
         $$ = NULL;
     }
     
@@ -1102,7 +1112,7 @@ StaticInitializer:
     }
 
 ConstructorDeclaration: 
-    Modifiers_opt ConstructorDeclarator Throws_opt ConstructorBody {
+    Modifiers_opt ConstructorDeclarator Throws_opt ConstructorBody Symbol_Table_Back {
         struct node* memArr[4];
         memArr[0] = $1;
         memArr[1] = $2;
@@ -1110,6 +1120,7 @@ ConstructorDeclaration:
         memArr[3] = $4;
         $$ = makeInternalNode($2->data, memArr, 4, 1);
         $$->isDeclaration = DECLARATION;
+        if($1 != NULL);
         struct node* E[3];
         E[0] = $$;
         E[1] = $1;
@@ -1118,13 +1129,24 @@ ConstructorDeclaration:
     }
 
 ConstructorDeclarator: 
-    SimpleName LeftParanthesis FormalParameterList_opt RightParanthesis {
+    SimpleName Symbol_Table_Change LeftParanthesis FormalParameterList_opt RightParanthesis {
+        
         struct node* memArr[1];
-        memArr[0] = $3;
+        memArr[0] = $4;
         $$ = makeInternalNode($1->data, memArr, 1, 0);
+        if(string($1->data) != class_name){
+            semantic_error("Constructor Declaration at line number " + to_string(line_number) +  " is not declared properly." );
+        }
+        $$->symbol.name = $1->data;
+        struct Symbol * class_scope_entry = loc_lookup(glob_class_scope,class_name);
+        if(class_scope_entry !=  NULL)
+        {
+            $$->symbol.type = class_scope_entry->type;
+        }
+        
         struct node* E[2];
         E[0] = $$;
-        E[1] = $3;
+        E[1] = $4;
         buildTAC(E, 2, COPY_CODE);
         
     }
@@ -1145,7 +1167,7 @@ ConstructorBody:
 ExplicitConstructorInvocation_opt : { 
     $$ = NULL; 
     }
-    | ExplicitConstructorInvocation {
+/*    | ExplicitConstructorInvocation {
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("ExplicitConstructorInvocation", memArr, 1, 1);
@@ -1175,7 +1197,7 @@ ExplicitConstructorInvocation:
         E[1] = $3;
         buildTAC(E, 2, COPY_CODE);
     }
-
+*/
 ArgumentList_opt: {
     $$ = NULL; 
     }
@@ -1320,7 +1342,6 @@ VariableInitializers:
 Block: 
     LeftCurlyBrace BlockStatements_opt RightCurlyBrace {    
         $$ = $2;
-        //cout << "After block !" << endl;
     }
 
 Symbol_Table_Change :
@@ -1371,18 +1392,15 @@ BlockStatements:
 
 BlockStatement: 
     LocalVariableDeclarationStatement {
-        //$$ = $1;
         struct node* memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("LocalVariableDeclarationStatement", memArr, 1, 1);
-        //cout << "LocalVariableDeclaration" <<endl;
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
         buildTAC(E, 2, COPY_CODE);
     }
     | Statement {
-        //$$ = $1;
         struct node* memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("Statement", memArr, 1, 1);
@@ -1411,26 +1429,19 @@ LocalVariableDeclaration:
         memArr[1] = $2;
         $$ = makeInternalNode("Declaration", memArr, 2, 0);
         $$->isDeclaration = DECLARATION;
-        //cout << "Local Variable Declaration" <<endl;
         for(int j = 0 ; j< $2->arr.size(); j++)
             {
-                //cout << "Inside For Loop" <<endl;
                 $$->symbol.type.name = $1->symbol.type.name;
                 $$-> symbol.type.t = $1->symbol.type.t;
-                //cout << "Type assigned" <<endl;
-                //cout << $2->arr[j]->symbol.name <<endl;
                 $$->symbol.name= $2->arr[j]->symbol.name;
-                //cout << "Symbol assigned" <<endl;
                 $$->symbol.size += $1->symbol.size;
                 $$->symbol.source_file = $2->arr[j]->symbol.source_file;
                 $$->symbol.offset = $2->arr[j]->symbol.offset;
-                $$->symbol.structuretable = $2->arr[j]->symbol.structuretable;
                 $$->symbol.type.modifier.clear();
                 
                 string txt = $2->arr[j]->symbol.name;
                 string name = "";
                 int count = 0;
-                //cout << txt.size() <<endl;
                 for(int i=0; i<txt.size(); i++)
                 {
                     if(txt[i] != '[' && count == 0){
@@ -1446,10 +1457,12 @@ LocalVariableDeclaration:
                 }
                 
                 $$->symbol.name = name;
+                
+                long long int x = loc_insert(curr, $$->symbol);
 
-                if(loc_insert(curr, $$->symbol) == DECLARATION_ERROR)
+                if(x<0)
                 {
-                    yyerror("\nDeclaration of " +$$->symbol.name + " already exists at line number " + to_string($$->symbol.line_num) +"\nSemantic Analysis failed !");
+                    semantic_error("Declaration of " +$$->symbol.name + " already exists at line number " + to_string(-x));
                 }
                 
 
@@ -1458,7 +1471,6 @@ LocalVariableDeclaration:
         E[0] = $$;
         E[1] = $2;
         buildTAC(E, 2, COPY_CODE);
-        //cout << "Local Variable Declaration ended " <<endl;
     }
 
 Statement: 
@@ -1752,7 +1764,6 @@ ForInit:
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("ForInit", memArr, 1, 1);
-        // $$->isDeclaration = DECLARATION;
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
@@ -2048,6 +2059,45 @@ MethodInvocation:
         struct node * memArr[1];
         memArr[0] = $3;
         $$ = makeInternalNode($1->data, memArr, 1, 1);
+
+        // Checking If function has been defined
+        struct GlobalSymbol * glob_entry = glob_lookup(class_name, $1->data, glob_table);
+        if(glob_entry ==  NULL){
+            semantic_error("Function " + string($1->data) + " at line number " + to_string(line_number) + " not declared." );
+            //cout << "Function at line number "<< line_number << " not declared" <<endl ;
+        }
+        else{
+            // Checking if Arguments are filled in properly
+            if($3 == NULL){
+                if(glob_entry->type.parameters_type.size() != 0){
+                    semantic_error("Function " + string($1->data) +  " invocation at line number " + to_string(line_number) + " has wrong number of parameters passed.");
+                }
+            }
+            else{
+                //cout << $3->arr.size() <<endl;
+                if($3->arr.size()!= glob_entry->type.parameters_type.size()){
+                    semantic_error("Function " + string($1->data) +  " invocation at line number " + to_string(line_number) + " has wrong number of parameters passed.");
+                }
+                else{
+                    //cout << "Hello good sir " << $3->arr.size() << endl;
+                    for (int i = 0; i< $3->arr.size(); i++)
+                    {   
+                        //view_symbol($3->arr[i]->symbol);
+                        if(glob_entry->type.parameters_type[i] != $3->arr[i]->symbol.type.name)
+                        {
+                            semantic_error("Function " + string($1->data) +  " invocation at line number " + to_string(line_number) + " has wrong type of parameter passed at position " + to_string(i+1) + "." );          
+                        }
+                    }
+                }
+            }
+
+
+            //cout << "Function at line number "<< line_number << " declared at line number " << glob_entry->line_num <<endl<<endl;
+        }
+
+        //Checking if ArgumentList_opt is valid
+
+
         struct node * E[2];
         E[0] = $$;
         E[1] = $3;
@@ -2077,14 +2127,78 @@ ArrayAccess:
         struct node * memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$ = makeInternalNode("ArrayAccess", memArr, 2, 0);
+        $$ = makeInternalNode("ArrayAccess", memArr, 2, 1);
+        $$->symbol = $1->symbol;
+
+        string txt = $$->symbol.type.name;
+        string name = "";
+        int count = 0;
+        for(int i=0; i<txt.size(); i++)
+        {
+            if(txt[i] != '[' && count == 0){
+                name += txt[i];
+            }
+            if(txt[i] == '['){
+                count += 1;
+            }
+        }
+
+
+        if(count == 0){
+            semantic_error("Array dimension mismatch at line number " + to_string(line_number) + ".");
+        }
+        else{
+            for(int i = 0; i < count-1 ; i++)
+            {
+                name += "[]";
+            }
+        }
+
+        $$->symbol.type.name = name;
+
+        if($3->symbol.type.name != "byte" && $3->symbol.type.name != "short" && $3->symbol.type.name != "int" && $3->symbol.type.name != "long"  )
+        {
+            semantic_error("Invalid array access at line number " + to_string(line_number) + " as the expression " + $3->symbol.name + " is not of type int.");
+        }
         buildVal($$);
     }
     | PrimaryNoNewArray LeftSquareBracket Expression RightSquareBracket {
         struct node * memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$ = makeInternalNode("ArrayAccess", memArr, 2, 0);
+        $$ = makeInternalNode("PrimaryNoNewArrayAccess", memArr, 2, 1);
+        $$->symbol = $1->symbol;
+
+        string txt = $$->symbol.type.name;
+        string name = "";
+        int count = 0;
+        for(int i=0; i<txt.size(); i++)
+        {
+            if(txt[i] != '[' && count == 0){
+                name += txt[i];
+            }
+            if(txt[i] == '['){
+                count += 1;
+            }
+        }
+
+        if(count == 0){
+            semantic_error("Array dimension mismatch at line number " + to_string(line_number) + ".");
+        }
+        else{
+            for(int i = 0; i < count-1 ; i++)
+            {
+                name += "[]";
+            }
+        }
+
+        $$->symbol.type.name = name;
+
+        // Checking if Expression is a Integer
+        if($3->symbol.type.name != "byte" && $3->symbol.type.name != "short" && $3->symbol.type.name != "int" && $3->symbol.type.name != "long"  )
+        {
+            semantic_error("Invalid array access at line number " + to_string(line_number) + " as the expression " + $3->symbol.name + " is not of type int.");
+        }
         buildVal($$);
     }
 
@@ -2570,6 +2684,7 @@ Assignment:
     memArr[0] = $1;
     memArr[1] = $3;
     $$ = makeInternalNode("=", memArr, 2, 1);
+
     struct node* E[2];
     E[0] = $1;
     E[1] = $3;
@@ -2582,12 +2697,27 @@ Assignment:
 LeftHandSide: 
     Name {
         $$ = $1;
+        struct Symbol * lookup_entry = check_scope(curr , string($1->data));
+        if(lookup_entry == NULL){
+            semantic_error("The identifier " + string($1->data) + " at line number " + to_string(line_number) +  " has not been declared in the scope." );
+        }
+        else{
+            $$->symbol.type = lookup_entry->type;
+        }
     }
     | FieldAccess {
         $$ = $1;
     }
     | ArrayAccess {
         $$ = $1;
+        struct Symbol * lookup_entry = check_scope(curr , string($1->symbol.name));
+        if(lookup_entry == NULL){
+            semantic_error("The identifier " + string($1->symbol.name) + " at line number " + to_string(line_number) +  " has not been declared in the scope." );
+        }
+        else{
+            //cout << "The identifier "  <<  $1->symbol.name <<" at line number " << line_number << " has been declared at line number "<< lookup_entry->line_num << endl <<endl;
+            $$->symbol.type = lookup_entry->type;
+        }
     }
 
 AssignmentOperator: 
@@ -2629,8 +2759,8 @@ AssignmentOperator:
     }
 
 Expression: AssignmentExpression {
-    $$ = $1;
-}
+        $$ = $1;
+    }
 
 
 %%
@@ -2638,8 +2768,14 @@ Expression: AssignmentExpression {
 
 int yyerror(string s)
 {
-    //printf("Error detected ! %s at [ line number: %lld ] after removing the comments.\nExiting...\n",s,line_number);
+    cout << "Error detected !" << s << " at [ line number: " << line_number << " ] after removing the comments.\nExiting...\n";
+    return 0;
+}
+
+int semantic_error(string s)
+{
     cout << s <<endl <<endl;
+    return 0;
 }
 
 
@@ -2655,10 +2791,7 @@ char* concatenate_string(char* s, char* s1)
         c[j] = s[j];
         j+=1;
     }
-    /*
-    c[j] = ' ';
-    j++;
-    */
+
     for (i = 0; s1[i] != '\0'; i++) {
         c[i+j] = s1[i];
      }
@@ -2670,10 +2803,7 @@ char* concatenate_string(char* s, char* s1)
 
 
 struct node* makeleaf(char nodeStr[100]){
-    //printf("%s\n",nodeStr);
-    // cout << nodeStr <<" make leaf node\n";
     struct node* leaf = new struct node;
-    (leaf->symbol).structuretable = new struct StructureTable;
     strcpy(leaf->data, nodeStr);
     leaf->parentFlag = 1;
     leaf->isDeclaration = NON_DECLARAION;
@@ -2682,22 +2812,15 @@ struct node* makeleaf(char nodeStr[100]){
     leaf->t = 0;
     leaf->arr.clear();
     leaf->symbol.type.modifier.clear();
-    //leaf->symbol.place = 0;
-    // cout << nodeStr <<" exit leaf node\n";
+    leaf->symbol.source_file = src_file;
 
     return leaf;
 }
 
 struct node* makeInternalNode(char rule[100], struct node* memArr[], int n, int isParent){
-    // cout << rule <<" make internal node\n";
     struct node* internalNode = new struct node;
-    (internalNode->symbol).structuretable = new struct StructureTable;
     strcpy(internalNode->data,rule);
     internalNode->arr.clear();
-
-    // for(int i = 0; i<N_NodeChild; i++){
-    //     internalNode->arr[i] = NULL;
-    // }
     int k = 0;
     for(int i = 0; i<n; i++){
         if(memArr[i]!=NULL){
@@ -2722,8 +2845,7 @@ struct node* makeInternalNode(char rule[100], struct node* memArr[], int n, int 
     internalNode->t = 0;
     internalNode->symbol.size= 0;
     internalNode->symbol.type.modifier.clear();
-    //internalNode->symbol.place = 0;
-    // cout << rule <<" exit internal node\n";
+    internalNode->symbol.source_file = src_file;
 
     return internalNode;
 
@@ -2735,11 +2857,7 @@ void ast_print(struct node* root, long long int d, long long int n){
     if(root == NULL){
         return;
     }
-
-    //printf("%s",string(root->data));
-    //cout <<root->arr.size() << "  ";
     cout << root->data;
-    //cout << "hghg";
     root->nodenumber = n;
     n++;
     printf("\n");
@@ -2758,7 +2876,6 @@ void ast_print(struct node* root, long long int d, long long int n){
 
 void generateGraph(struct node* root, FILE* graph, int nnode = 0){
     if(root == NULL){
-        //cout << "Graph is empty !!\n\n";
         return;
     }
 
@@ -2768,8 +2885,6 @@ void generateGraph(struct node* root, FILE* graph, int nnode = 0){
         struct node * head = q.front();
         q.pop();
         fprintf(graph,"Node%d [label =\"%s\"]\n",nnode, head->data);
-        //printf("Node%d [label =\"%s\"]\n",nnode, head->data);
-        //cout<<head->data <<endl;
         for(int i = 0; i<head->arr.size(); i++){
             if(head->arr[i]!=NULL)
                 q.push(head->arr[i]);
@@ -2784,14 +2899,12 @@ void generateGraph(struct node* root, FILE* graph, int nnode = 0){
         struct node * head = q.front();
         q.pop();
         fprintf(graph,"Node%d -> {",nnode);
-        //printf("Node%d -> {",nnode);
         int k = 0;
         int l = 0;
         for(; head!=NULL && l < head->arr.size(); l++){
             if(head->arr[l]!=NULL){
                 k++;
                 fprintf(graph,"Node%d",prevChild+0+1);
-                //printf("Node%d",prevChild+0+1);
                 q.push(head->arr[l]);
                 l++;
                 break;
@@ -2801,13 +2914,11 @@ void generateGraph(struct node* root, FILE* graph, int nnode = 0){
             if(head->arr[i]!=NULL){
                 k++;
                 fprintf(graph,",Node%d",prevChild+i+1);
-                //printf(",Node%d",prevChild+i+1);
                 q.push(head->arr[i]);
             }
             
         }
         fprintf(graph,"}\n");
-        //printf("}\n");
         prevChild += k;
         nnode++;
     }
@@ -3055,6 +3166,7 @@ int main(int argc , char** argv)
 
     /* Parsing Algorithm */
     yyin = fopen(input_file,"r");
+    src_file = string(input_file);
 
     if(yyin == NULL){
         printf("No such Input file found ! \n");
@@ -3066,9 +3178,10 @@ int main(int argc , char** argv)
     //viewGlobal(glob_table);
 
     //ast_print(root,0,0);
-    int limit = root->val.code.size()/2;
+    int limit = root->val.code.size();
     for(int iter = 0; iter < limit; iter++)
         cout << root->val.code[iter]<<endl;
+    // view_symbol_table(*glob_class_scope);
     FILE* graph = fopen(output_file,"w");
     fprintf(graph, "digraph AST{ \n");
     generateGraph(root, graph);

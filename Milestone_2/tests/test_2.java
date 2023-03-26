@@ -1,4 +1,5 @@
 class bubblesort {
+    long x;
     int printInt(int n);
     void sort(int arr[], int len) {
         int n1 = len;

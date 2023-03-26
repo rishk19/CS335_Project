@@ -1,7 +1,7 @@
 #include "Includes.hpp"
 
 using namespace std;
-int glob_insert(string scope, string methodName, struct Type type, struct SymbolTable* curr, struct GlobalSymbolTable* glob)
+int glob_insert(long long int line_num, string scope, string methodName, struct Type type, struct SymbolTable* curr, struct GlobalSymbolTable* glob)
 {   
     if (glob->scope_hash.find(scope+"::"+methodName) !=  glob->scope_hash.end())
     {
@@ -10,6 +10,7 @@ int glob_insert(string scope, string methodName, struct Type type, struct Symbol
     }
 
     struct GlobalSymbol entry;
+    entry.line_num = line_num;
     entry.scope = scope;
     entry.LocalSymbolTable = curr;
     entry.methodName = methodName;
@@ -28,18 +29,18 @@ struct GlobalSymbol* glob_lookup(string scope, string methodName, struct GlobalS
 
     return NULL;
 }
-
+/*
 void addGlobalEntry(struct Symbol symbol, struct GlobalSymbolTable* glob_table){
-    int n = symbol.structuretable->field_name.size();
+    //int n = symbol.structuretable->field_name.size();
     for(int i = 0; i<n; i++){
         if(symbol.structuretable->field_type[i].t==2){
             struct GlobalSymbol temp;
             temp.scope = symbol.name;
             temp.methodName = symbol.structuretable->field_name[i];
-        /*
+        
         if(glob_table->scope_hash.find(scope+"::"+methodName) !=  glob->scope_hash.end())
             return &(glob->entries[glob->scope_hash[scope+"::"+methodName]]);
-        */
+        
             temp.LocalSymbolTable = symbol.structuretable->method_map[temp.methodName];
             //temp.LocalSymbolTable = NULL;
 
@@ -48,6 +49,7 @@ void addGlobalEntry(struct Symbol symbol, struct GlobalSymbolTable* glob_table){
         }
     }
 }
+*/
 
 void viewGlobal(struct GlobalSymbolTable* glob_table){
 
