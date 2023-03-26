@@ -1,14 +1,13 @@
 #include "Includes.hpp"
 
 using namespace std;
-int glob_insert(long long int line_num, string scope, string methodName, struct Type type, struct SymbolTable* curr, struct GlobalSymbolTable* glob)
+long long int glob_insert(long long int line_num, string scope, string methodName, struct Type type, struct SymbolTable* curr, struct GlobalSymbolTable* glob)
 {   
-    if (glob->scope_hash.find(scope+"::"+methodName) !=  glob->scope_hash.end())
-    {
-        cout << "Declaration already exists of " << scope << " of derived type \n";
-        return DECLARATION_ERROR;
-    }
 
+    struct GlobalSymbol * glob_entry = glob_lookup(scope, methodName,glob);
+    if(glob_entry != NULL){
+        return -glob_entry->line_num;
+    }
     struct GlobalSymbol entry;
     entry.line_num = line_num;
     entry.scope = scope;
@@ -29,27 +28,6 @@ struct GlobalSymbol* glob_lookup(string scope, string methodName, struct GlobalS
 
     return NULL;
 }
-/*
-void addGlobalEntry(struct Symbol symbol, struct GlobalSymbolTable* glob_table){
-    //int n = symbol.structuretable->field_name.size();
-    for(int i = 0; i<n; i++){
-        if(symbol.structuretable->field_type[i].t==2){
-            struct GlobalSymbol temp;
-            temp.scope = symbol.name;
-            temp.methodName = symbol.structuretable->field_name[i];
-        
-        if(glob_table->scope_hash.find(scope+"::"+methodName) !=  glob->scope_hash.end())
-            return &(glob->entries[glob->scope_hash[scope+"::"+methodName]]);
-        
-            temp.LocalSymbolTable = symbol.structuretable->method_map[temp.methodName];
-            //temp.LocalSymbolTable = NULL;
-
-            glob_table->entries.push_back(temp);
-            glob_table->scope_hash[temp.scope+"::"+temp.methodName] = 1;
-        }
-    }
-}
-*/
 
 void viewGlobal(struct GlobalSymbolTable* glob_table){
 

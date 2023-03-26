@@ -906,7 +906,10 @@ MethodHeader:
         }
 
 
-        glob_insert(line_number, class_name,$$->symbol.name,$$->symbol.type,curr,glob_table);
+       long long int x = glob_insert(line_number, class_name,$$->symbol.name,$$->symbol.type,curr,glob_table);
+       if(x < 0){
+        semantic_error("Method declaration at line number " + to_string(line_number)+ " is invalid as constructor already with same name declared at line number " + to_string(-x) +".");
+       }
         /*
         func_params = $$->symbol;
         symb_insert = 1;
@@ -944,7 +947,10 @@ MethodHeader:
             $$->symbol.type.parameters_type.push_back($3->symbol.type.parameters_type[i]);
         }
 
-        glob_insert(line_number,class_name,$$->symbol.name,$$->symbol.type,curr,glob_table);
+        long long int x = glob_insert(line_number,class_name,$$->symbol.name,$$->symbol.type,curr,glob_table);
+        if(x < 0){
+            semantic_error("Method declaration at line number " + to_string(line_number)+ " is invalid as constructor already with same name declared at line number " + to_string(-x) +".");
+        }
           /*
         func_params = $$->symbol;
         symb_insert = 1;
@@ -1120,7 +1126,20 @@ ConstructorDeclaration:
         memArr[3] = $4;
         $$ = makeInternalNode($2->data, memArr, 4, 1);
         $$->isDeclaration = DECLARATION;
-        if($1 != NULL);
+        $$->symbol = $2->symbol;
+        if($1 != NULL)
+        {
+            for(int i = 0; i<$1->arr.size(); i++)
+            {
+                $$->symbol.type.modifier.push_back($1->arr[i]->data);
+            }
+            
+        }
+
+        long long int x = glob_insert(line_number,class_name,$$->symbol.name,$$->symbol.type,curr,glob_table);
+        if(x < 0){
+            semantic_error("Constructor declaration at line number " + to_string(line_number)+ " is invalid as constructor already defined at line number " + to_string(-x) +".");
+        }
         struct node* E[3];
         E[0] = $$;
         E[1] = $1;
@@ -1143,11 +1162,23 @@ ConstructorDeclarator:
         {
             $$->symbol.type = class_scope_entry->type;
         }
-        
-        struct node* E[2];
+        $$->symbol.type.t = 3;
+
+        if($4 != NULL){
+            for(int i=0; i< $4->symbol.type.parameters.size(); i++)
+            {
+                $$->symbol.type.parameters.push_back($4->symbol.type.parameters[i]);
+                $$->symbol.type.parameters_type.push_back($4->symbol.type.parameters_type[i]);
+                struct node* E[2];
         E[0] = $$;
         E[1] = $4;
         buildTAC(E, 2, COPY_CODE);
+        
+    }
+        }
+        $$->symbol.line_num = line_number;
+        //glob_insert(line_number,class_name,$$->symbol.name,$$->symbol.type,curr,glob_table);
+        
         
     }
 
@@ -3181,7 +3212,8 @@ int main(int argc , char** argv)
     int limit = root->val.code.size();
     for(int iter = 0; iter < limit; iter++)
         cout << root->val.code[iter]<<endl;
-    // view_symbol_table(*glob_class_scope);
+    //// view_symbol_table(*glob_class_scope);
+    //viewGlobal(glob_table);
     FILE* graph = fopen(output_file,"w");
     fprintf(graph, "digraph AST{ \n");
     generateGraph(root, graph);
