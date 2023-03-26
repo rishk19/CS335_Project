@@ -9,6 +9,7 @@
 #include "../src/DataStructures/GlobalSymbolTable.hpp"
 #include "../src/DataStructures/SymbolTable.hpp"
 #include "../src/DataStructures/Includes.hpp"
+#include "../src/DataStructures/Tac.hpp"
 
 using namespace std;
 
@@ -23,8 +24,18 @@ struct node *root = NULL;
 #define NON_DECLARAION 3
 #define N_NodeChild 100
 #define N_DataSize 1000
+#define COPY_CODE 128
+#define APPEND_CODE 129
+#define ASSIGN_CODE 130
+#define IF_CODE 131
+#define FOR_CODE 132
+#define WHILE_CODE 133
+#define UNARY_CODE 134
+#define BINARY_CODE 135
+#define METHOD_INVOCATION 136
 
 int ctr = 0;
+int newTempLabel = 0;
 
 struct node{
     char data[100];
@@ -35,6 +46,7 @@ struct node{
     int lineNumber;
     vector<node*> arr;
     Symbol symbol;
+    Value val;
 };
 
 struct node* makeInternalNode(char* rule, struct node* memArr[], int n, int isParent);
@@ -42,8 +54,11 @@ struct node* makeleaf(char* node);
 char* concatenate_string(char* s, char* s1);
 int semantic_analysis(struct node* root);
 void help();
+int buildTAC(struct node* E[], int n, int flag);
+int buildVal(struct node* E);
 // int dummy(string name, struct SymbolTable * curr, struct GlobalSymbolTable* glob_insert);
 long long int line_number=1;
+Value dummyVal;// do not delete needed for generating 3AC text
 
 struct GlobalSymbolTable* glob_table = new struct GlobalSymbolTable;
 struct SymbolTable* curr = loc_mktable(NULL,"RR_GLOBAL_"); //parameters are parent-pointer,  local-table-name
@@ -151,29 +166,37 @@ Literal:
     }
     | FloatingPointLiteral {
         $$ = makeleaf($1);
+        buildVal($$);
     }
     | BooleanLiteral {
         $$ = makeleaf($1);
+        buildVal($$);
     }
     | CharacterLiteral {
         $$ = makeleaf($1);
+        buildVal($$);
     }
     | StringLiteral {
         $$ = makeleaf($1);
+        buildVal($$);
     }
     | NullLiteral{
         $$ = makeleaf($1);
+        buildVal($$);
     }
 
 IntegerLiteral: 
     DecimalIntegerLiteral {
         $$ = makeleaf($1);
+        buildVal($$);
     }
     | HexIntegerLiteral {
         $$ = makeleaf($1);
+        buildVal($$);
     }
     | OctalIntegerLiteral {
         $$ = makeleaf($1);
+        buildVal($$);
     }
 
 Type: 
@@ -306,12 +329,13 @@ Name:
 SimpleName: 
     Identifier {
         $$ = makeleaf($1);
-        
+        buildVal($$);
     }
 
 QualifiedName: 
     Name Dot Identifier {
         $$ = makeleaf(concatenate_string($1->data,concatenate_string($2,$3)));
+        buildVal($$);
     }
 
 CompilationUnit: 
@@ -322,6 +346,10 @@ CompilationUnit:
         memArr[2] = $3;
         $$ = makeInternalNode("CompilationUnit", memArr, 3, 1);
         root = $$;
+        struct node*E[2];
+        E[0] = $$;
+        E[1] = $3;
+        buildTAC(E, 2, COPY_CODE);
     }
 
 ImportDeclarations_opt : 
@@ -355,6 +383,11 @@ TypeDeclarations_opt :
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("Declarations", memArr, 1, 0);
+        
+        struct node*E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);
     }
 
 TypeDeclarations: 
@@ -362,12 +395,23 @@ TypeDeclarations:
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode($1->data, memArr, 1, 0);
+        
+        struct node*E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);
     }
     | TypeDeclarations TypeDeclaration {
         struct node * memArr[2];
         memArr[0] = $1;
         memArr[1] = $2;
         $$ = makeInternalNode("IntermediateDeclaration", memArr, 2, 0);
+        
+        struct node*E[3];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $2;
+        buildTAC(E, 3, APPEND_CODE);
     }
 
 PackageDeclaration_opt : 
@@ -488,6 +532,10 @@ ClassDeclaration:
         $$->symbol.type.name = $3;
         $$->symbol.type.t = 1;        
         class_num +=1;
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $6;
+        buildTAC(E, 2, COPY_CODE);
     }
 
 Modifiers_opt : { 
@@ -543,6 +591,10 @@ InterfaceTypeList:
 ClassBody: 
     LeftCurlyBrace ClassBodyDeclarations_opt RightCurlyBrace {
         $$ = $2;
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $2;
+        buildTAC(E, 2, COPY_CODE);
     }
 
 ClassBodyDeclarations_opt : { 
@@ -574,6 +626,10 @@ ClassBodyDeclarations_opt : {
             }
         }
         */
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);
         
     }
 
@@ -582,6 +638,10 @@ ClassBodyDeclarations:
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("ClassBody", memArr, 1, 0);
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);
 
     }
     | ClassBodyDeclarations ClassBodyDeclaration {
@@ -589,6 +649,11 @@ ClassBodyDeclarations:
         memArr[0] = $1;
         memArr[1] = $2;
         $$ = makeInternalNode("IntermediateDeclaration", memArr, 2, 0);
+        struct node* E[3];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $2;
+        buildTAC(E, 3, APPEND_CODE);
     }
 
 ClassBodyDeclaration: 
@@ -684,6 +749,10 @@ FieldDeclaration:
 
             }
         }
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $3;
+        buildTAC(E, 2, COPY_CODE);        
 
     }
 
@@ -693,6 +762,10 @@ VariableDeclarators:
         memArr[0] = $1;
         $$ = makeInternalNode($1->data, memArr, 1, 0);
         // $$->isDeclaration = DECLARATION;
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);
     }
     | VariableDeclarators Comma VariableDeclarator {
         struct node * memArr[2];
@@ -700,6 +773,11 @@ VariableDeclarators:
         memArr[1] = $3;
         $$ = makeInternalNode($3->data, memArr, 2, 0);
         // $$->isDeclaration = DECLARATION;
+        struct node* E[3];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        buildTAC(E, 2, APPEND_CODE);
     }
 
 VariableDeclarator: 
@@ -721,6 +799,13 @@ VariableDeclarator:
         $$->isDeclaration = INITIALIZATION;
         $$->t = 0;
         $$->symbol.name = $1->symbol.name;
+        struct node* E[2];
+        E[0] = $1;
+        E[1] = $3;
+        buildTAC(E, 2, ASSIGN_CODE);
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);
     }
 
 VariableDeclaratorId: 
@@ -728,11 +813,13 @@ VariableDeclaratorId:
         $$ = makeleaf($1);
         string temp  = string($1);
         $$->symbol.name = temp;
+        buildVal($$);
     }
     | VariableDeclaratorId LeftSquareBracket RightSquareBracket {
         $$ = makeleaf(concatenate_string($1->data,"[]"));
         string temp = string($1->data) + "[]";
         $$->symbol.name = temp;
+        buildVal($$);
     }
 
 VariableInitializer:
@@ -756,6 +843,11 @@ MethodDeclaration:
         
         //glob_insert("scope",$1->symbol.name,$1->symbol.type,curr,glob_table);
         curr = curr->parent;
+        struct node* E[3];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $2;
+        buildTAC(E, 3, APPEND_CODE);
 
     }
 
@@ -798,6 +890,10 @@ MethodHeader:
         func_params = $$->symbol;
         symb_insert = 1;
         */
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $3;
+        buildTAC(E, 2, COPY_CODE);
         
     }
     | Modifiers_opt Void MethodDeclarator Throws_opt {
@@ -839,6 +935,10 @@ MethodHeader:
         func_params = $$->symbol;
         symb_insert = 1;
         */
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $3;
+        buildTAC(E, 2, COPY_CODE);
 
     }
 
@@ -868,7 +968,10 @@ MethodDeclarator:
                 $$->symbol.type.parameters_type.push_back($4->arr[i]->symbol.type.name);
             }
         }
-        
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $4;
+        buildTAC(E, 2, COPY_CODE);
     }
     | MethodDeclarator LeftSquareBracket RightSquareBracket {
         struct node * memArr[1];
@@ -876,6 +979,10 @@ MethodDeclarator:
         $$ = makeInternalNode(concatenate_string($1->data,"[]"), memArr, 1, 0);
         string temp = string($1->data)+ "[]";
         $$->symbol.name = temp;
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);
     }
 
 FormalParameterList_opt : {
@@ -885,6 +992,11 @@ FormalParameterList_opt : {
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("Parameters", memArr, 1, 1);
+        
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);
     }
 
 FormalParameterList: 
@@ -892,6 +1004,10 @@ FormalParameterList:
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("Parameter", memArr, 1, 0);
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);
         
     }
     | FormalParameterList Comma FormalParameter{
@@ -899,6 +1015,11 @@ FormalParameterList:
         memArr[0] = $1;
         memArr[1] = $3;
         $$ = makeInternalNode("Parameter", memArr, 2,0);
+        struct node* E[3];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        buildTAC(E, 3, APPEND_CODE);
     }
 
 FormalParameter: 
@@ -933,6 +1054,10 @@ FormalParameter:
         $$->symbol.name = name;
         //$$->symbol.type.name = temp.name;
         loc_insert(curr,$$->symbol);
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);        
     }
 
 Throws: 
@@ -969,6 +1094,11 @@ StaticInitializer:
         struct node* memArr[1];
         memArr[0] = $3;
         $$ = makeInternalNode("static", memArr, 1, 1);
+        
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $3;
+        buildTAC(E, 2, COPY_CODE);
     }
 
 ConstructorDeclaration: 
@@ -980,6 +1110,11 @@ ConstructorDeclaration:
         memArr[3] = $4;
         $$ = makeInternalNode($2->data, memArr, 4, 1);
         $$->isDeclaration = DECLARATION;
+        struct node* E[3];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $4;
+        buildTAC(E, 3, APPEND_CODE);
     }
 
 ConstructorDeclarator: 
@@ -987,6 +1122,11 @@ ConstructorDeclarator:
         struct node* memArr[1];
         memArr[0] = $3;
         $$ = makeInternalNode($1->data, memArr, 1, 0);
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $3;
+        buildTAC(E, 2, COPY_CODE);
+        
     }
 
 ConstructorBody: 
@@ -995,6 +1135,11 @@ ConstructorBody:
         memArr[0] = $2;
         memArr[1] = $3;
         $$ = makeInternalNode("ConstructorInvocation", memArr, 2, 1);
+        struct node* E[3];
+        E[0] = $$;
+        E[1] = $2;
+        E[2] = $3;
+        buildTAC(E, 3, APPEND_CODE);
     }
 
 ExplicitConstructorInvocation_opt : { 
@@ -1004,6 +1149,10 @@ ExplicitConstructorInvocation_opt : {
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("ExplicitConstructorInvocation", memArr, 1, 1);
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);
     }
 
 ExplicitConstructorInvocation: 
@@ -1011,11 +1160,20 @@ ExplicitConstructorInvocation:
         struct node* memArr[1];
         memArr[0] = $3;
         $$ = makeInternalNode("this", memArr, 1, 0);
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $3;
+        buildTAC(E, 2, COPY_CODE);
     }
     | Super LeftParanthesis ArgumentList_opt RightParanthesis Semicolon {
         struct node* memArr[1];
         memArr[0] = $3;
         $$ = makeInternalNode("super", memArr, 1, 0);
+
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $3;
+        buildTAC(E, 2, COPY_CODE);
     }
 
 ArgumentList_opt: {
@@ -1025,6 +1183,11 @@ ArgumentList_opt: {
         struct node * memArr[1];
         memArr[0] =$1;
         $$ = makeInternalNode("Arguments", memArr, 1, 0);
+
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);        
     }
 
 InterfaceDeclaration: 
@@ -1119,6 +1282,10 @@ VariableInitializers_opt: {
         struct node* memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("VariableInitializers", memArr, 1, 1);
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);  
     }
 
 Comma_opt : {
@@ -1133,12 +1300,21 @@ VariableInitializers:
        struct node* memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode($1->data, memArr, 1, 0);
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);  
     }
     | VariableInitializers Comma VariableInitializer {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
         $$ = makeInternalNode("Initializer", memArr, 2, 0);
+        struct node* E[3];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        buildTAC(E, 3, APPEND_CODE);  
     }
 
 Block: 
@@ -1164,6 +1340,10 @@ BlockStatements_opt : {
         struct node* memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("statements", memArr, 1, 1);
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);  
     }
 
 BlockStatements: 
@@ -1171,12 +1351,21 @@ BlockStatements:
         struct node* memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("Blocks", memArr, 1, 0);
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE); 
     }
     | BlockStatements BlockStatement {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $2;
         $$ = makeInternalNode("Block", memArr, 2, 0);
+        struct node* E[3];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $2;
+        buildTAC(E, 3, APPEND_CODE);  
         
     }
 
@@ -1187,12 +1376,20 @@ BlockStatement:
         memArr[0] = $1;
         $$ = makeInternalNode("LocalVariableDeclarationStatement", memArr, 1, 1);
         //cout << "LocalVariableDeclaration" <<endl;
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);
     }
     | Statement {
         //$$ = $1;
         struct node* memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("Statement", memArr, 1, 1);
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);
 
     }
 
@@ -1201,6 +1398,10 @@ LocalVariableDeclarationStatement:
         struct node* memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode($1->data, memArr, 1, 0);
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);
     }
 
 LocalVariableDeclaration: 
@@ -1253,6 +1454,10 @@ LocalVariableDeclaration:
                 
 
             }
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $2;
+        buildTAC(E, 2, COPY_CODE);
         //cout << "Local Variable Declaration ended " <<endl;
     }
 
@@ -1333,6 +1538,12 @@ LabeledStatement:
         memArr[0] = makeleaf($1);
         memArr[1] = $3;
         $$ = makeInternalNode("LabeledStatements", memArr, 2, 0);
+        struct node* E[3];
+        E[0] = $$;
+        E[1] = makeleaf($1);
+        buildVal(E[1]);
+        E[2] = $3;
+        buildTAC(E, 3, APPEND_CODE);
     }
 
 LabeledStatementNoShortIf: 
@@ -1341,6 +1552,12 @@ LabeledStatementNoShortIf:
         memArr[0] = makeleaf($1);
         memArr[1] = $3;
         $$ = makeInternalNode("IfThen", memArr, 2, 0);
+        struct node* E[3];
+        E[0] = $$;
+        E[1] = makeleaf($1);
+        buildVal(E[1]);
+        E[2] = $3;
+        buildTAC(E, 3, APPEND_CODE);
     }
 
 ExpressionStatement: 
@@ -1377,6 +1594,11 @@ IfThenStatement:
         memArr[0] = $4;
         memArr[1] = $6;
         $$ = makeInternalNode("IfThen", memArr, 2, 1);
+        struct node* E[3];
+        E[0] = $$;
+        E[1] = $4;
+        E[2] = $6;
+        buildTAC(E,3,IF_CODE);
     }
 
 IfThenElseStatement: 
@@ -1387,6 +1609,13 @@ IfThenElseStatement:
         memArr[1] = $6;
         memArr[2] = $8;
         $$ = makeInternalNode("IfElse", memArr, 3, 1);
+
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $4;
+        E[2] = $6;
+        E[3] = $8;
+        buildTAC(E,4,IF_CODE);
         
     }
 
@@ -1398,6 +1627,13 @@ IfThenElseStatementNoShortIf:
         memArr[1] = $6;
         memArr[2] = $8;
         $$ = makeInternalNode("IfElseIf", memArr, 3, 1);
+
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $4;
+        E[2] = $6;
+        E[3] = $8;
+        buildTAC(E,4,IF_CODE);
         
     }
 
@@ -1408,6 +1644,12 @@ WhileStatement:
         memArr[0] = $4;
         memArr[1] = $6;
         $$ = makeInternalNode("While", memArr, 2, 1);
+
+        struct node* E[3];
+        E[0] = $$;
+        E[1] = $4;
+        E[2] = $6;
+        buildTAC(E,3,WHILE_CODE);
         
     }
 
@@ -1417,6 +1659,12 @@ WhileStatementNoShortIf:
         memArr[0] = $4;
         memArr[1] = $6;
         $$ = makeInternalNode("While", memArr, 2, 1);
+
+        struct node* E[3];
+        E[0] = $$;
+        E[1] = $4;
+        E[2] = $6;
+        buildTAC(E,3,WHILE_CODE);
     }
 
 ForStatement: 
@@ -1430,6 +1678,14 @@ ForStatement:
         $$ = makeInternalNode("For", memArr, 4, 1);
         $$->t = 2;
 
+        struct node* E[5];
+        E[0] = $$;
+        E[1] = $4;
+        E[2] = $6;
+        E[3] = $8;
+        E[4] = $10;
+        buildTAC(E,5,FOR_CODE);
+
     }
 
 ForStatementNoShortIf: 
@@ -1441,6 +1697,14 @@ ForStatementNoShortIf:
         memArr[2] = $8;
         memArr[3] = $10;
         $$ = makeInternalNode("For", memArr, 4, 1);
+
+        struct node* E[5];
+        E[0] = $$;
+        E[1] = $4;
+        E[2] = $6;
+        E[3] = $8;
+        E[4] = $10;
+        buildTAC(E,5,FOR_CODE);
     }
 
 ForInit_opt: { 
@@ -1450,6 +1714,11 @@ ForInit_opt: {
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("ForInit", memArr, 1, 1);
+
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);
     }
 
 Expression_opt: { 
@@ -1459,6 +1728,10 @@ Expression_opt: {
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("Expression", memArr, 1, 1);
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);
     }
 
 ForUpdate_opt: { 
@@ -1468,6 +1741,10 @@ ForUpdate_opt: {
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("ForUpdate", memArr, 1, 1);
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);
     }
 
 ForInit: 
@@ -1476,6 +1753,10 @@ ForInit:
         memArr[0] = $1;
         $$ = makeInternalNode("ForInit", memArr, 1, 1);
         // $$->isDeclaration = DECLARATION;
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);
     }
     | LocalVariableDeclaration {
         struct node * memArr[1];
@@ -1483,6 +1764,10 @@ ForInit:
         $$ = makeInternalNode("ForInit", memArr, 1, 1);
         $$->isDeclaration = DECLARATION;
         $$->t=1;
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);
     }
 
 ForUpdate: 
@@ -1490,6 +1775,10 @@ ForUpdate:
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("ForUpdate", memArr, 1, 1);
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);
     }
 
 StatementExpressionList: 
@@ -1497,12 +1786,21 @@ StatementExpressionList:
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("StatementExpression", memArr, 1, 0);
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);
     }
     | StatementExpressionList Comma StatementExpression {
         struct node * memArr[2];
         memArr[0] =$1;
         memArr[1] =$3;
         $$ = makeInternalNode("StatementExpression", memArr, 2, 0);
+        struct node* E[3];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        buildTAC(E, 3, APPEND_CODE);
     }
 
 BreakStatement:
@@ -1510,6 +1808,7 @@ BreakStatement:
         struct node * memArr[1];
         memArr[0] =$2;
         $$ = makeInternalNode("break", memArr, 1, 1);
+        buildVal($$);
     }
 
 Identifier_opt: 
@@ -1517,6 +1816,7 @@ Identifier_opt:
         $$ = NULL;
     }| Identifier {
         $$ = makeleaf($1);
+        buildVal($$);
     }
 
 ContinueStatement: 
@@ -1524,6 +1824,8 @@ ContinueStatement:
         struct node * memArr[1];
         memArr[0] =$2;
         $$ = makeInternalNode("continue", memArr, 1, 1);
+        buildVal($$);
+
     }
 
 ReturnStatement: 
@@ -1531,6 +1833,13 @@ ReturnStatement:
         struct node * memArr[1];
         memArr[0] =$2;
         $$ = makeInternalNode("return", memArr, 1, 1);
+        buildVal(makeleaf($1));
+        struct node* E[3];
+        E[0] = $$;
+        E[1] = makeleaf($1);
+        buildVal(E[1]);
+        E[2] = $2;
+        buildTAC(E, 3, APPEND_CODE);
     }
 
 ThrowStatement: 
@@ -1639,6 +1948,8 @@ ClassInstanceCreationExpression:
         memArr[2] =$4;
         $$ = makeInternalNode("ClassInstance", memArr, 3, 1);
         $$->isDeclaration = DECLARATION;
+        buildVal($$);
+
     }
 
 ArgumentList: 
@@ -1646,12 +1957,21 @@ ArgumentList:
         struct node * memArr[1];
         memArr[0] =$1;
         $$ = makeInternalNode("ArgumentList", memArr, 1, 0);
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $1;
+        buildTAC(E, 2, COPY_CODE);
     }
     | ArgumentList Comma Expression {
         struct node * memArr[2];
         memArr[0] =$1;
         memArr[1] =$3;
         $$ = makeInternalNode("ArgumentList", memArr, 2, 0);
+        struct node* E[3];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        buildTAC(E, 3, APPEND_CODE);
     }
 
 ArrayCreationExpression: 
@@ -1663,6 +1983,7 @@ ArrayCreationExpression:
         memArr[3] =$4;
         $$ = makeInternalNode("ArrayCreation", memArr, 4, 0);
         $$->isDeclaration = DECLARATION;
+        buildVal($$);
     }
     | New ClassOrInterfaceType DimExprs Dims_opt {
         struct node * memArr[4];
@@ -1672,6 +1993,7 @@ ArrayCreationExpression:
         memArr[3] =$4;
         $$ = makeInternalNode("ArrayCreation", memArr, 4, 0);
         $$->isDeclaration = DECLARATION;
+        buildVal($$);
     }
 
 Dims_opt: { 
@@ -1712,9 +2034,13 @@ Dims:
 FieldAccess: 
     Primary Dot Identifier {
         $$ = makeleaf(concatenate_string($1->data,$3));
+        buildVal($$);
+
     } 
     | Super Dot Identifier {
         $$ = makeleaf(concatenate_string($1,$3));
+        buildVal($$);
+
     }
 
 MethodInvocation: 
@@ -1722,16 +2048,28 @@ MethodInvocation:
         struct node * memArr[1];
         memArr[0] = $3;
         $$ = makeInternalNode($1->data, memArr, 1, 1);
+        struct node * E[2];
+        E[0] = $$;
+        E[1] = $3;
+        buildTAC(E, 2, METHOD_INVOCATION);
     } 
     | Primary Dot Identifier LeftParanthesis ArgumentList_opt RightParanthesis {
         struct node * memArr[1];
         memArr[0] = $5;
         $$ = makeInternalNode(concatenate_string($1->data,concatenate_string(" ",$3)), memArr, 1, 1);
+        struct node * E[2];
+        E[0] = $$;
+        E[1] = $5;
+        buildTAC(E, 2, METHOD_INVOCATION);
     }
     | Super Dot Identifier LeftParanthesis ArgumentList_opt RightParanthesis {
         struct node * memArr[1];
         memArr[0] = $5;
         $$ = makeInternalNode(concatenate_string($1,concatenate_string(" ",$3)), memArr, 1, 1);
+        struct node * E[2];
+        E[0] = $$;
+        E[1] = $5;
+        buildTAC(E, 2, METHOD_INVOCATION);
     }
 
 ArrayAccess: 
@@ -1740,12 +2078,14 @@ ArrayAccess:
         memArr[0] = $1;
         memArr[1] = $3;
         $$ = makeInternalNode("ArrayAccess", memArr, 2, 0);
+        buildVal($$);
     }
     | PrimaryNoNewArray LeftSquareBracket Expression RightSquareBracket {
         struct node * memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
         $$ = makeInternalNode("ArrayAccess", memArr, 2, 0);
+        buildVal($$);
     }
 
 PostfixExpression: 
@@ -1767,6 +2107,12 @@ PostIncrementExpression:
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("++", memArr, 1, 1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $1;
+        E[3] = makeleaf("+");
+        buildTAC(E,4,BINARY_CODE);
     } 
 
 PostDecrementExpression: 
@@ -1774,6 +2120,12 @@ PostDecrementExpression:
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("--", memArr, 1, 1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $1;
+        E[3] = makeleaf("-");
+        buildTAC(E,4,BINARY_CODE);
     } 
 
 UnaryExpression:
@@ -1787,11 +2139,22 @@ UnaryExpression:
         struct node * memArr[1];
         memArr[0] = $2;
         $$ = makeInternalNode("+", memArr, 1, 1);
+        struct node* E[3];
+        E[0] = $$;
+        E[1] = $2;
+        E[2] = makeleaf($1);
+        buildTAC(E,3,UNARY_CODE);
+
     }
     | Substraction UnaryExpression {
         struct node * memArr[1];
         memArr[0] = $2;
         $$ = makeInternalNode("-", memArr, 1, 1);
+        struct node* E[3];
+        E[0] = $$;
+        E[1] = $2;
+        E[2] = makeleaf($1);
+        buildTAC(E,3,UNARY_CODE);
     }
     | UnaryExpressionNotPlusMinus {
         $$ = $1;
@@ -1803,6 +2166,12 @@ PreIncrementExpression:
         memArr[0] = makeleaf($1);
         memArr[1] = $2;
         $$ = makeInternalNode("++", memArr, 2, 1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $2;
+        E[2] = $2;
+        E[3] = makeleaf("+");
+        buildTAC(E,4,BINARY_CODE);
     } 
 
 PreDecrementExpression: 
@@ -1811,6 +2180,12 @@ PreDecrementExpression:
         memArr[0] = makeleaf($1);
         memArr[1] = $2;
         $$ = makeInternalNode("--", memArr, 2, 1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $2;
+        E[2] = $2;
+        E[3] = makeleaf("-");
+        buildTAC(E,4,BINARY_CODE);
     } 
 
 UnaryExpressionNotPlusMinus: 
@@ -1821,11 +2196,21 @@ UnaryExpressionNotPlusMinus:
         struct node * memArr[1];
         memArr[0] = $2;
         $$ = makeInternalNode("~", memArr, 1, 1);
+        struct node* E[3];
+        E[0] = $$;
+        E[1] = $2;
+        E[2] = makeleaf($1);
+        buildTAC(E,3,UNARY_CODE);
     } 
     | NotOperator UnaryExpression {
          struct node * memArr[1];
         memArr[0] = $2;
         $$ = makeInternalNode("!", memArr, 1, 1);
+        struct node* E[3];
+        E[0] = $$;
+        E[1] = $2;
+        E[2] = makeleaf($1);
+        buildTAC(E,3,UNARY_CODE);
     } 
     | CastExpression {
         $$ = $1;
@@ -1837,18 +2222,30 @@ CastExpression:
         memArr[0] = $5;
         char * str = concatenate_string($2->data, $3->data);
         $$ = makeInternalNode(str, memArr, 1, 1);
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $5;
+        buildTAC(E,2,COPY_CODE);
     }
     | LeftParanthesis Expression RightParanthesis UnaryExpressionNotPlusMinus {
         struct  node * memArr[2];
         memArr[0] = $2;
         memArr[1] = $4;
         $$ = makeInternalNode("CastExpression", memArr, 2, 1);
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $4;
+        buildTAC(E,2,COPY_CODE);
     }
     | LeftParanthesis Name Dims RightParanthesis UnaryExpressionNotPlusMinus {
         struct node * memArr[1];
         memArr[0] = $5;
         char * str = concatenate_string($2->data, $3->data);
         $$ = makeInternalNode(str, memArr, 1, 1);
+        struct node* E[2];
+        E[0] = $$;
+        E[1] = $5;
+        buildTAC(E,2,COPY_CODE);
     }
 
 MultiplicativeExpression: 
@@ -1859,19 +2256,37 @@ MultiplicativeExpression:
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode("*", memArr, 2, 1); 
+        $$  = makeInternalNode("*", memArr, 2, 1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        E[3] = makeleaf($2);
+        buildTAC(E,4,BINARY_CODE);
     } 
     | MultiplicativeExpression Divide UnaryExpression {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode("/", memArr, 2, 1); 
+        $$  = makeInternalNode("/", memArr, 2, 1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        E[3] = makeleaf($2);
+        buildTAC(E,4,BINARY_CODE);
     } 
     | MultiplicativeExpression Modulo UnaryExpression {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode("Modulo", memArr, 2, 1); 
+        $$  = makeInternalNode("Modulo", memArr, 2, 1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        E[3] = makeleaf($2);
+        buildTAC(E,4,BINARY_CODE);
     }
 
 AdditiveExpression: 
@@ -1882,13 +2297,25 @@ AdditiveExpression:
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode("+", memArr, 2, 1); 
+        $$  = makeInternalNode("+", memArr, 2, 1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        E[3] = makeleaf($2);
+        buildTAC(E,4,BINARY_CODE);
     }
     | AdditiveExpression Substraction MultiplicativeExpression {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode("-", memArr, 2, 1); 
+        $$  = makeInternalNode("-", memArr, 2, 1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        E[3] = makeleaf($2);
+        buildTAC(E,4,BINARY_CODE);
     }
 
 ShiftExpression: 
@@ -1899,19 +2326,37 @@ ShiftExpression:
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode("<<", memArr, 2, 1); 
+        $$  = makeInternalNode("<<", memArr, 2, 1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        E[3] = makeleaf($2);
+        buildTAC(E,4,BINARY_CODE);
     }
     | ShiftExpression RightShift AdditiveExpression {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode(">>", memArr, 2, 1); 
+        $$  = makeInternalNode(">>", memArr, 2, 1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        E[3] = makeleaf($2);
+        buildTAC(E,4,BINARY_CODE);
     }
     | ShiftExpression TripleGreaterThan AdditiveExpression {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode(">>>", memArr, 2, 1); 
+        $$  = makeInternalNode(">>>", memArr, 2, 1);
+       struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        E[3] = makeleaf($2);
+        buildTAC(E,4,BINARY_CODE);
     }
 
 RelationalExpression: 
@@ -1923,30 +2368,60 @@ RelationalExpression:
         memArr[0] = $1;
         memArr[1] = $3;
         $$  = makeInternalNode(">", memArr, 2, 1); 
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        E[3] = makeleaf($2);
+        buildTAC(E,4,BINARY_CODE);
     } 
     | RelationalExpression GreaterThan ShiftExpression {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode("<", memArr, 2, 1); 
+        $$  = makeInternalNode("<", memArr, 2, 1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        E[3] = makeleaf($2);
+        buildTAC(E,4,BINARY_CODE);
     }
     | RelationalExpression LessThanEqualTo ShiftExpression {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode("<=", memArr, 2, 1); 
+        $$  = makeInternalNode("<=", memArr, 2, 1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        E[3] = makeleaf($2);
+        buildTAC(E,4,BINARY_CODE);
     }
     | RelationalExpression GreaterThanEqualTo ShiftExpression {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode(">=", memArr, 2, 1); 
+        $$  = makeInternalNode(">=", memArr, 2, 1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        E[3] = makeleaf($2);
+        buildTAC(E,4,BINARY_CODE);
     } 
     | RelationalExpression Instanceof ReferenceType {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode("Instanceof", memArr, 2, 1); 
+        $$  = makeInternalNode("Instanceof", memArr, 2, 1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        E[3] = makeleaf($2);
+        buildTAC(E,4,BINARY_CODE);
     }
 
 EqualityExpression: 
@@ -1957,13 +2432,25 @@ EqualityExpression:
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode("==", memArr, 2, 1); 
+        $$  = makeInternalNode("==", memArr, 2, 1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        E[3] = makeleaf($2);
+        buildTAC(E,4,BINARY_CODE);
     } 
     | EqualityExpression NotEqualTo RelationalExpression {
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode("!=", memArr, 2, 1); 
+        $$  = makeInternalNode("!=", memArr, 2, 1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        E[3] = makeleaf($2);
+        buildTAC(E,4,BINARY_CODE);
     }
 
 AndExpression: 
@@ -1974,7 +2461,13 @@ AndExpression:
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode("&", memArr, 2 ,1); 
+        $$  = makeInternalNode("&", memArr, 2 ,1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        E[3] = makeleaf($2);
+        buildTAC(E,4,BINARY_CODE);
     }
 
 ExclusiveOrExpression:
@@ -1985,7 +2478,13 @@ ExclusiveOrExpression:
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode("xor", memArr, 2 ,1); 
+        $$  = makeInternalNode("xor", memArr, 2 ,1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        E[3] = makeleaf($2);
+        buildTAC(E,4,BINARY_CODE);
     }
 
 InclusiveOrExpression:
@@ -1996,7 +2495,13 @@ InclusiveOrExpression:
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode("|", memArr, 2, 1); 
+        $$  = makeInternalNode("|", memArr, 2, 1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        E[3] = makeleaf($2);
+        buildTAC(E,4,BINARY_CODE);
     }
 
 ConditionalAndExpression:
@@ -2007,7 +2512,13 @@ ConditionalAndExpression:
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode("&&", memArr, 2, 1); 
+        $$  = makeInternalNode("&&", memArr, 2, 1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        E[3] = makeleaf($2);
+        buildTAC(E,4,BINARY_CODE);
     }
 
 ConditionalOrExpression: 
@@ -2018,7 +2529,13 @@ ConditionalOrExpression:
         struct node* memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
-        $$  = makeInternalNode("||", memArr, 2, 1); 
+        $$  = makeInternalNode("||", memArr, 2, 1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        E[3] = makeleaf($2);
+        buildTAC(E,4,BINARY_CODE);
     }
 
 ConditionalExpression: 
@@ -2030,7 +2547,13 @@ ConditionalExpression:
         memArr[0] = $1;
         memArr[1] = $3;
         memArr[2] = $5;
-        $$  = makeInternalNode("TernaryOperator", memArr, 3, 1); 
+        $$  = makeInternalNode("TernaryOperator", memArr, 3, 1);
+        struct node* E[4];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+        E[3] = $5;
+        buildTAC(E, 4, IF_CODE);
     }
 
 AssignmentExpression: 
@@ -2047,6 +2570,13 @@ Assignment:
     memArr[0] = $1;
     memArr[1] = $3;
     $$ = makeInternalNode("=", memArr, 2, 1);
+    struct node* E[2];
+    E[0] = $1;
+    E[1] = $3;
+    buildTAC(E, 2, ASSIGN_CODE);
+    E[0] = $$;
+    E[1] = $1;
+    buildTAC(E, 2, ASSIGN_CODE);
 }
 
 LeftHandSide: 
@@ -2289,6 +2819,118 @@ void help()
     system("cat ../doc/Help.txt");
 }
 
+int buildVal(struct node* E){
+    if(E==NULL)
+        return -1;
+    E->val.place = string(E->data);
+    E->val.code.clear();
+    E->val.label.clear();
+
+    return 0;
+}
+
+int buildTAC(struct node* E[], int n, int flag){
+    
+    string temp; 
+    string L1;
+    string L2;
+
+    switch(flag){
+        case COPY_CODE:
+            if(n == 2 && E[1]!=NULL)
+                copyValue(E[0]->val, E[1]->val);
+            
+            break;
+
+        case APPEND_CODE:
+
+            for(int i = 1; i < n; i++){
+                if(E[i]!=NULL){
+                    appendCode(E[0]->val, E[i]->val);
+                }
+            }
+
+            break;
+
+        case ASSIGN_CODE:
+            
+            if(n == 2){
+                temp = makeNewTemp(newTempLabel);
+                newTempLabel = newTempLabel + 1;
+                genAssignCode(E[0]->val, ((E[1]!=NULL)? E[1]->val : dummyVal), temp);
+            }
+
+        case BINARY_CODE:
+            
+            if(n == 4){
+                temp = makeNewTemp(newTempLabel);
+                newTempLabel = newTempLabel + 1;
+                genBinaryOperatorCode(E[0]->val, E[1]->val, E[2]->val, temp, string(E[3]->data));
+            }
+            break;
+        
+        case UNARY_CODE:
+                
+            if(n == 3){
+                temp = makeNewTemp(newTempLabel);
+                newTempLabel = newTempLabel + 1;
+                genUnaryOperatorCode(E[0]->val, E[1]->val, temp, string(E[2]->data));
+            }
+            break;
+        
+        case IF_CODE:
+
+            if(n == 4 || n == 3){
+                L1 = makeNewLabel(newTempLabel);
+                newTempLabel = newTempLabel + 1;
+                L2 = makeNewLabel(newTempLabel);
+                newTempLabel = newTempLabel + 1; 
+                genIfElseCode(E[0]->val , ((E[1]!=NULL) ? E[1]->val : dummyVal) , ((E[2]!=NULL) ? E[2]->val : dummyVal) , ((E[3]!=NULL) ? E[3]->val : dummyVal), L1 , L2 );
+            }
+            break;
+
+        case WHILE_CODE:
+            
+            if(n == 3){
+                L1 = makeNewLabel(newTempLabel);
+                newTempLabel = newTempLabel + 1;
+                L2 = makeNewLabel(newTempLabel);
+                newTempLabel = newTempLabel + 1;
+                genWhileCode(E[0]->val, ((E[1]!=NULL) ? E[1]->val : dummyVal) , ((E[2]!=NULL) ? E[2]->val : dummyVal), L1, L2);
+            }
+            
+            break;
+
+        case FOR_CODE:
+            
+            if(n == 5){
+                L1 = makeNewLabel(newTempLabel);
+                newTempLabel = newTempLabel + 1;
+                L2 = makeNewLabel(newTempLabel);
+                newTempLabel = newTempLabel + 1;
+                genForCode(E[0]->val , ((E[1]!=NULL) ? E[1]->val : dummyVal) , ((E[2]!=NULL) ? E[2]->val : dummyVal) , ((E[3]!=NULL) ? E[3]->val : dummyVal), ((E[4]!=NULL) ? E[4]->val : dummyVal), L1 , L2 );
+            }
+         
+         break;
+
+         case METHOD_INVOCATION:
+            if(n==2){
+                temp = makeNewTemp(newTempLabel);
+                newTempLabel = newTempLabel + 1;
+                genMethodInvocationCode(((E[0]!=NULL)?E[0]->val:dummyVal), ((E[0]!=NULL)?E[0]->val:dummyVal), string(((E[0]!=NULL)?E[0]->data:"method")), temp);
+            }
+        
+        break;
+
+        default :
+            cout << "No flag Matching...\nCode not pushed...\n";
+            return -1;
+    }
+
+    return 0;
+
+}
+
 
 int main(int argc , char** argv)
 {   
@@ -2305,6 +2947,11 @@ int main(int argc , char** argv)
     ssize_t read;
     int help_flag = 0;
 
+    //dummy val initialization used to generate 3AC code for null elements
+    dummyVal.place = "";
+    dummyVal.code.clear();
+    dummyVal.label = "";
+    
     fp = fopen("temp.txt","w");
     int i;
     for(i=1; i<argc; i++){
@@ -2419,7 +3066,9 @@ int main(int argc , char** argv)
     //viewGlobal(glob_table);
 
     //ast_print(root,0,0);
-
+    int limit = root->val.code.size()/2;
+    for(int iter = 0; iter < limit; iter++)
+        cout << root->val.code[iter]<<endl;
     FILE* graph = fopen(output_file,"w");
     fprintf(graph, "digraph AST{ \n");
     generateGraph(root, graph);

@@ -3,7 +3,7 @@ parse:
 	mkdir bin
 	flex -o bin/lex.yy.c src/tokenizer.l
 	bison -d -t -o bin/parser.tab.cc src/parser.y 
-	g++ src/DataStructures/GlobalSymbolTable.cpp src/DataStructures/SymbolTable.cpp src/DataStructures/Type.cpp bin/lex.yy.c bin/parser.tab.cc -o bin/parser
+	g++ src/DataStructures/Tac.cpp src/DataStructures/GlobalSymbolTable.cpp src/DataStructures/SymbolTable.cpp src/DataStructures/Type.cpp bin/lex.yy.c bin/parser.tab.cc -o bin/parser
 	mkdir output
 	clear
 
