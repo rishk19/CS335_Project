@@ -583,29 +583,7 @@ ClassBodyDeclarations_opt : {
     | ClassBodyDeclarations {
         struct node * memArr[1];
         memArr[0] = $1;
-        //cout << "Class Declarations Reached !" <<endl;
         $$ = makeInternalNode("ClassBody", memArr, 1, 1);
-        /*
-        for (int i =0; i < $1->arr.size(); i++){
-            $$->symbol.size += $1->arr[i]->symbol.size;
-            //cout << $1->arr[i]->symbol.type.modifier.size()<<endl;
-            for (int j = 0; j < $1->arr[i]->symbol.structuretable->field_name.size(); j++)
-            {   
-                //cout << "Scrumptous" <<endl;
-                ($$->symbol.structuretable)->field_type.push_back($1->arr[i]->symbol.structuretable->field_type[j]);
-                ($$->symbol.structuretable)->field_name.push_back($1->arr[i]->symbol.structuretable->field_name[j]);
-                if($1->arr[i]->symbol.type.t ==2)
-                {
-                    //cout << "Function Declaration of " << $1->arr[i]->symbol.name <<endl;
-                    //view_symbol_table_with_children_hierarchy(&$1->arr[i]->symboltable);
-                    $$->symbol.structuretable->method_map[$1->arr[i]->symbol.name] = &$1->arr[i]->symboltable;
-                    //cout << "Ungabunga" <<endl <<endl;
-
-                }
-                
-            }
-        }
-        */
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
@@ -885,10 +863,6 @@ MethodHeader:
        if(x < 0){
         semantic_error("Method declaration at line number " + to_string(line_number)+ " is invalid as constructor already with same name declared at line number " + to_string(-x) +".");
        }
-        /*
-        func_params = $$->symbol;
-        symb_insert = 1;
-        */
         struct node* E[2];
         E[0] = $$;
         E[1] = $3;
@@ -926,10 +900,6 @@ MethodHeader:
         if(x < 0){
             semantic_error("Method declaration at line number " + to_string(line_number)+ " is invalid as constructor already with same name declared at line number " + to_string(-x) +".");
         }
-          /*
-        func_params = $$->symbol;
-        symb_insert = 1;
-        */
         struct node* E[2];
         E[0] = $$;
         E[1] = $3;
@@ -2855,7 +2825,7 @@ int main(int argc , char** argv)
     }
     
     //// view_symbol_table(*glob_class_scope);
-    viewGlobal(glob_table);
+    //viewGlobal(glob_table);
     FILE* graph = fopen(output_file,"w");
     fprintf(graph, "digraph AST{ \n");
     generateGraph(root, graph);
