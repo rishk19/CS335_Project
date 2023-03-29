@@ -1,4 +1,4 @@
-#include "Includes.hpp"
+#include "../Includes.hpp"
 
 using namespace std;
 struct SymbolTable* loc_mktable(struct SymbolTable* table, string scope)

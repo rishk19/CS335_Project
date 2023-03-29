@@ -1,4 +1,5 @@
-#include "Includes.hpp"
+#include "../Includes.hpp"
+#include "Type.hpp"
 
 using namespace std;
 

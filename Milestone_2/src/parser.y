@@ -5,11 +5,7 @@
 #include <stdio.h>
 #include <vector>
 #include <bits/stdc++.h>
-#include "../src/DataStructures/Type.hpp"
-#include "../src/DataStructures/GlobalSymbolTable.hpp"
-#include "../src/DataStructures/SymbolTable.hpp"
-#include "../src/DataStructures/Includes.hpp"
-#include "../src/DataStructures/Tac.hpp"
+#include "../src/Includes.hpp"
 
 using namespace std;
 
@@ -19,47 +15,12 @@ extern int yyparse();
 extern FILE *yyin;
 struct node *root = NULL;
 
-#define DECLARATION 1
-#define INITIALIZATION 2
-#define NON_DECLARAION 3
-#define N_NodeChild 100
-#define N_DataSize 1000
-#define COPY_CODE 128
-#define APPEND_CODE 129
-#define ASSIGN_CODE 130
-#define IF_CODE 131
-#define FOR_CODE 132
-#define WHILE_CODE 133
-#define UNARY_CODE 134
-#define BINARY_CODE 135
-#define METHOD_INVOCATION 136
-
-int ctr = 0;
-int newTempLabel = 0;
-
-struct node{
-    char data[100];
-    long long int nodenumber;
-    int parentFlag;
-    int isDeclaration;
-    int t;
-    int lineNumber;
-    vector<node*> arr;
-    Symbol symbol;
-    Value val;
-};
-
-struct node* makeInternalNode(char* rule, struct node* memArr[], int n, int isParent);
-struct node* makeleaf(char* node);
-char* concatenate_string(char* s, char* s1);
 int semantic_error(string s);
 void help();
-int buildTAC(struct node* E[], int n, int flag);
-int buildVal(struct node* E);
-void dump(struct SymbolTable* symboltable, FILE* fp);
-// int dummy(string name, struct SymbolTable * curr, struct GlobalSymbolTable* glob_insert);
 long long int line_number=1;
-Value dummyVal;// do not delete needed for generating 3AC text
+
+int newTempLabel = 0;
+Value dummyVal; // do not delete needed for generating 3AC text
 
 struct GlobalSymbolTable* glob_table = new struct GlobalSymbolTable;
 struct SymbolTable* curr = loc_mktable(NULL,"global_scope"); //parameters are parent-pointer,  local-table-name
@@ -130,7 +91,7 @@ int err = 0;
 %type<exp> VariableInitializer MethodDeclaration MethodHeader Throws_opt  MethodDeclarator 
 %type<exp> FormalParameterList_opt  FormalParameterList FormalParameter Throws ClassTypeList 
 %type<exp> MethodBody StaticInitializer ConstructorDeclaration ConstructorDeclarator ConstructorBody 
-%type<exp> ExplicitConstructorInvocation_opt  ExplicitConstructorInvocation ArgumentList_opt InterfaceDeclaration ExtendsInterfaces_opt  
+%type<exp> ExplicitConstructorInvocation_opt ArgumentList_opt InterfaceDeclaration ExtendsInterfaces_opt  
 %type<exp> ExtendsInterfaces InterfaceBody InterfaceMemberDeclarations_opt InterfaceMemberDeclarations InterfaceMemberDeclaration 
 %type<exp> ConstantDeclaration AbstractMethodDeclaration ArrayInitializer VariableInitializers_opt Comma_opt  
 %type<exp> VariableInitializers Block BlockStatements_opt  BlockStatements BlockStatement 
@@ -2862,423 +2823,18 @@ int semantic_error(string s)
     return 0;
 }
 
-
-
-char* concatenate_string(char* s, char* s1)
-{
-    char* c = new char[100];
-    int i;
-    
-    int j = 0;
-
-    while(s[j]!= '\0'){
-        c[j] = s[j];
-        j+=1;
-    }
-
-    for (i = 0; s1[i] != '\0'; i++) {
-        c[i+j] = s1[i];
-     }
- 
-    c[i + j] = '\0';
- 
-    return c;
-}
-
-
-struct node* makeleaf(char nodeStr[100]){
-    struct node* leaf = new struct node;
-    strcpy(leaf->data, nodeStr);
-    leaf->parentFlag = 1;
-    leaf->isDeclaration = NON_DECLARAION;
-    leaf->lineNumber = line_number;
-    leaf->symbol.line_num = line_number;
-    leaf->t = 0;
-    leaf->arr.clear();
-    leaf->symbol.type.modifier.clear();
-    leaf->symbol.source_file = src_file;
-
-    return leaf;
-}
-
-struct node* makeInternalNode(char rule[100], struct node* memArr[], int n, int isParent){
-    struct node* internalNode = new struct node;
-    strcpy(internalNode->data,rule);
-    internalNode->arr.clear();
-    int k = 0;
-    for(int i = 0; i<n; i++){
-        if(memArr[i]!=NULL){
-            if(memArr[i]->parentFlag == 0){
-                for(int j = 0; j<memArr[i]->arr.size(); j++){
-                    if(memArr[i]->arr[j]!=NULL){
-                        internalNode->arr.push_back(memArr[i]->arr[j]);
-                        k++;
-                    }
-                }
-            }
-            else{
-                internalNode->arr.push_back(memArr[i]);
-                k++;
-            }
-        }
-    }
-    internalNode->parentFlag = isParent;
-    internalNode->isDeclaration = NON_DECLARAION;
-    internalNode->lineNumber = line_number;
-    internalNode->symbol.line_num = line_number;
-    internalNode->t = 0;
-    internalNode->symbol.size= 0;
-    internalNode->symbol.type.modifier.clear();
-    internalNode->symbol.source_file = src_file;
-
-    return internalNode;
-
-}
-
-
-void ast_print(struct node* root, long long int d, long long int n){
-
-    if(root == NULL){
-        return;
-    }
-    cout << root->data;
-    root->nodenumber = n;
-    n++;
-    printf("\n");
-
-    for(long long int i=0;i<root->arr.size();i++){
-        if(root->arr[i]!= NULL){
-            for(long long int j = 0 ; j<=d; j++)
-            {
-                printf("     ");
-            }
-            printf("|----->");
-            ast_print(root->arr[i],d+1, n);
-        }
-    }
-}
-
-void generateGraph(struct node* root, FILE* graph, int nnode = 0){
-    if(root == NULL){
-        return;
-    }
-
-    queue<node*> q;
-    q.push(root);
-    while(!q.empty()){
-        struct node * head = q.front();
-        q.pop();
-        fprintf(graph,"Node%d [label =\"%s\"]\n",nnode, head->data);
-        for(int i = 0; i<head->arr.size(); i++){
-            if(head->arr[i]!=NULL)
-                q.push(head->arr[i]);
-        }
-        nnode++;
-    }
-
-    nnode = 0;
-    int prevChild = 0;
-    q.push(root);
-    while(!q.empty()){
-        struct node * head = q.front();
-        q.pop();
-        fprintf(graph,"Node%d -> {",nnode);
-        int k = 0;
-        int l = 0;
-        for(; head!=NULL && l < head->arr.size(); l++){
-            if(head->arr[l]!=NULL){
-                k++;
-                fprintf(graph,"Node%d",prevChild+0+1);
-                q.push(head->arr[l]);
-                l++;
-                break;
-            }
-        }
-        for(int i = l; head!=NULL && i<head->arr.size(); i++){
-            if(head->arr[i]!=NULL){
-                k++;
-                fprintf(graph,",Node%d",prevChild+i+1);
-                q.push(head->arr[i]);
-            }
-            
-        }
-        fprintf(graph,"}\n");
-        prevChild += k;
-        nnode++;
-    }
-
-}
-void help()
-{
-    system("clear");
-    system("cat ../doc/Help.txt");
-}
-
-int buildVal(struct node* E){
-    if(E==NULL)
-        return -1;
-    E->val.place = string(E->data);
-    E->val.code.clear();
-    E->val.label.clear();
-
-    return 0;
-}
-
-int buildTAC(struct node* E[], int n, int flag){
-    
-    string temp; 
-    string L1;
-    string L2;
-
-    switch(flag){
-        case COPY_CODE:
-            if(n == 2 && E[1]!=NULL)
-                copyValue(E[0]->val, E[1]->val);
-            
-            break;
-
-        case APPEND_CODE:
-
-            for(int i = 1; i < n; i++){
-                if(E[i]!=NULL){
-                    appendCode(E[0]->val, E[i]->val);
-                }
-            }
-
-            break;
-
-        case ASSIGN_CODE:
-            
-            if(n == 2){
-                temp = makeNewTemp(newTempLabel);
-                newTempLabel = newTempLabel + 1;
-                genAssignCode(E[0]->val, ((E[1]!=NULL)? E[1]->val : dummyVal), temp);
-            }
-
-        case BINARY_CODE:
-            
-            if(n == 4){
-                temp = makeNewTemp(newTempLabel);
-                newTempLabel = newTempLabel + 1;
-                genBinaryOperatorCode(E[0]->val, E[1]->val, E[2]->val, temp, string(E[3]->data));
-            }
-            break;
-        
-        case UNARY_CODE:
-                
-            if(n == 3){
-                temp = makeNewTemp(newTempLabel);
-                newTempLabel = newTempLabel + 1;
-                genUnaryOperatorCode(E[0]->val, E[1]->val, temp, string(E[2]->data));
-            }
-            break;
-        
-        case IF_CODE:
-
-            if(n == 4 || n == 3){
-                L1 = makeNewLabel(newTempLabel);
-                newTempLabel = newTempLabel + 1;
-                L2 = makeNewLabel(newTempLabel);
-                newTempLabel = newTempLabel + 1; 
-                genIfElseCode(E[0]->val , ((E[1]!=NULL) ? E[1]->val : dummyVal) , ((E[2]!=NULL) ? E[2]->val : dummyVal) , ((E[3]!=NULL) ? E[3]->val : dummyVal), L1 , L2 );
-            }
-            break;
-
-        case WHILE_CODE:
-            
-            if(n == 3){
-                L1 = makeNewLabel(newTempLabel);
-                newTempLabel = newTempLabel + 1;
-                L2 = makeNewLabel(newTempLabel);
-                newTempLabel = newTempLabel + 1;
-                genWhileCode(E[0]->val, ((E[1]!=NULL) ? E[1]->val : dummyVal) , ((E[2]!=NULL) ? E[2]->val : dummyVal), L1, L2);
-            }
-            
-            break;
-
-        case FOR_CODE:
-            
-            if(n == 5){
-                L1 = makeNewLabel(newTempLabel);
-                newTempLabel = newTempLabel + 1;
-                L2 = makeNewLabel(newTempLabel);
-                newTempLabel = newTempLabel + 1;
-                genForCode(E[0]->val , ((E[1]!=NULL) ? E[1]->val : dummyVal) , ((E[2]!=NULL) ? E[2]->val : dummyVal) , ((E[3]!=NULL) ? E[3]->val : dummyVal), ((E[4]!=NULL) ? E[4]->val : dummyVal), L1 , L2 );
-            }
-         
-         break;
-
-         case METHOD_INVOCATION:
-            if(n==2){
-                temp = makeNewTemp(newTempLabel);
-                newTempLabel = newTempLabel + 1;
-                genMethodInvocationCode(((E[0]!=NULL)?E[0]->val:dummyVal), ((E[0]!=NULL)?E[0]->val:dummyVal), string(((E[0]!=NULL)?E[0]->data:"method")), temp);
-            }
-        
-        break;
-
-        default :
-            cout << "No flag Matching...\nCode not pushed...\n";
-            return -1;
-    }
-
-    return 0;
-
-}
-
-
-void dump(struct SymbolTable *symboltable, string fp)
-{
-    if(symboltable == NULL){
-        return;
-    }
-
-
-    else{
-        //string fp1 = fp + ".csv";
-        char fp1[100];
-        int i;
-        for(i =0 ; i< fp.size()-1; i++){
-            fp1[i] = fp[i];
-        }
-        fp[i+1] = '.';
-        fp[i+2] = 'c';
-        fp[i+3] = 's';
-        fp[i+4] = 'v';
-        FILE * file = fopen(fp1,"w");
-        fprintf(file,"name,source file,line number,size,offset,type name\n");
-        for(int i=0; i<symboltable->entries.size(); i++)
-        {
-            struct Symbol* sym = &symboltable->entries[i];
-            fprintf(file,"%s,%s,%s,%s,%s,%s\n",sym->name, sym->source_file, to_string(sym->line_num), to_string(sym->size), to_string(sym->offset), sym->type.name);
-        }
-        fclose(file);
-        for(int i=0; i<symboltable->children.size(); i++){
-            dump(symboltable->children[i],fp + "(" + to_string(i) + ")");
-        }
-    }
-}
-
 int main(int argc , char** argv)
 {   
     // Need to add path to inputfile and output file
     #ifdef YYDEBUG
         yydebug = 0;
     #endif
-    int z = 0;
-    FILE* fp;
-    char * line = NULL;
+
     char * input_file = NULL;
     char * output_file = NULL;
-    size_t len = 0;
-    ssize_t read;
     int help_flag = 0;
 
-    //dummy val initialization used to generate 3AC code for null elements
-    dummyVal.place = "";
-    dummyVal.code.clear();
-    dummyVal.label = "";
-    
-    fp = fopen("temp.txt","w");
-    int i;
-    for(i=1; i<argc; i++){
-        fprintf(fp,"%s ",argv[i]);
-    }
-    fclose(fp);
-
-
-
-    /* Help Mode */
-    system("grep -o '[-][-]help' temp.txt > help.txt");
-
-    fp = fopen("help.txt","r");
-
-    if((read = getline(&output_file, &len, fp)) != -1) {
-        if(read > 0){
-            help_flag = 1;
-        }
-    }
-
-    fclose(fp);
-    system("rm help.txt");
-
-    if(help_flag){
-        help();
-        return 0;
-    }
-
-    /* Verbose Mode */
-
-    system("grep -o '[-][-]verbose' temp.txt > verbose.txt");
-
-    fp = fopen("verbose.txt","r");
-
-    if((read = getline(&output_file, &len, fp)) != -1) {
-        if(read > 0){
-            #ifdef YYDEBUG
-                yydebug =  1;
-            #endif
-        }
-    }
-
-    fclose(fp);
-    system("rm verbose.txt");
-
-    /* Finding Input File */
-
-    system("grep -o '[-][-]input[ ]*=[ ]*[a-zA-Z0-9._/]*' temp.txt > output1.txt");
-
-
-
-    fp = fopen("output1.txt","r");
-    if((read = getline(&input_file, &len, fp)) != -1) {
-        if(read > 0){
-            while(input_file[0]!= '='){
-                input_file += 1;
-            }
-            input_file +=1;
-            while(input_file[0] == ' '){
-                input_file +=1;
-            }
-            int k = 0;
-            while(input_file[k]!='\n')k++;
-            input_file[k]='\0';
-        }
-        else{
-            printf("No input file specified.\n");
-            return 0;
-        }
-    }
-    system("rm output1.txt");
-
-    /* Finding Output File */
-
-    system("grep -o '[-][-]output[ ]*=[ ]*[a-zA-Z0-9._/]*' temp.txt > output2.txt");
-
-    fp = fopen("output2.txt","r");
-    if((read = getline(&output_file, &len, fp)) != -1) {
-        if(read > 0){
-            while(output_file[0]!= '='){
-                output_file += 1;
-            }
-            output_file +=1;
-            while(output_file[0] == ' '){
-                output_file +=1;
-            }
-            int k = 0;
-            while(output_file[k]!='\n')k++;
-            output_file[k]='\0';
-
-        }
-        else{
-            printf("No output file specified.\n");
-            return 0;
-        }
-    }
-
-
-    system("rm output2.txt");
-    system("rm temp.txt");
+    flag_extractor(argc, argv, &input_file, &output_file,&help_flag);
 
     /* Parsing Algorithm */
     yyin = fopen(input_file,"r");
@@ -3299,17 +2855,13 @@ int main(int argc , char** argv)
     }
     
     //// view_symbol_table(*glob_class_scope);
-    //viewGlobal(glob_table);
+    viewGlobal(glob_table);
     FILE* graph = fopen(output_file,"w");
     fprintf(graph, "digraph AST{ \n");
     generateGraph(root, graph);
     fprintf(graph, "} \n");
     fclose(graph);
     fclose(yyin);
-
-    for (int i = 0; i<glob_class_scope->children.size(); i++){
-        //dump(glob_class_scope->children[i],glob_class_scope->entries[i].name);
-    }
 
     return 0;
 

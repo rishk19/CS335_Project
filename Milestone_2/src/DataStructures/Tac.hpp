@@ -34,4 +34,10 @@ int genBinaryOperatorCode(Value &S, Value &E1, Value &E2, string temp, string op
 int genUnaryOperatorCode(Value &S, Value &E, string temp, string op);
 int genMethodInvocationCode(Value &S, Value &E, string methodName, string temp);
 
+int buildTAC(struct node* E[], int n, int flag);
+int buildVal(struct node* E);
+
+extern int newTempLabel;
+extern Value dummyVal;
+
 #endif

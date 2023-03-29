@@ -1,5 +1,5 @@
-#include "Tac.hpp"
 #include <bits/stdc++.h>
+#include "../Includes.hpp"
 
 using namespace std;
 
@@ -207,6 +207,118 @@ int genMethodInvocationCode(Value &S, Value &E, string methodName, string temp){
     s_code.append(to_string(n));
     s_code.append(" ");
     s_code.append(temp);
+
+    return 0;
+
+}
+
+int buildVal(struct node* E){
+    if(E==NULL)
+        return -1;
+    E->val.place = string(E->data);
+    E->val.code.clear();
+    E->val.label.clear();
+
+    return 0;
+}
+
+int buildTAC(struct node* E[], int n, int flag){
+    
+    string temp; 
+    string L1;
+    string L2;
+
+    switch(flag){
+        case COPY_CODE:
+            if(n == 2 && E[1]!=NULL)
+                copyValue(E[0]->val, E[1]->val);
+            
+            break;
+
+        case APPEND_CODE:
+
+            for(int i = 1; i < n; i++){
+                if(E[i]!=NULL){
+                    appendCode(E[0]->val, E[i]->val);
+                }
+            }
+
+            break;
+
+        case ASSIGN_CODE:
+            
+            if(n == 2){
+                temp = makeNewTemp(newTempLabel);
+                newTempLabel = newTempLabel + 1;
+                genAssignCode(E[0]->val, ((E[1]!=NULL)? E[1]->val : dummyVal), temp);
+            }
+
+        case BINARY_CODE:
+            
+            if(n == 4){
+                temp = makeNewTemp(newTempLabel);
+                newTempLabel = newTempLabel + 1;
+                genBinaryOperatorCode(E[0]->val, E[1]->val, E[2]->val, temp, string(E[3]->data));
+            }
+            break;
+        
+        case UNARY_CODE:
+                
+            if(n == 3){
+                temp = makeNewTemp(newTempLabel);
+                newTempLabel = newTempLabel + 1;
+                genUnaryOperatorCode(E[0]->val, E[1]->val, temp, string(E[2]->data));
+            }
+            break;
+        
+        case IF_CODE:
+
+            if(n == 4 || n == 3){
+                L1 = makeNewLabel(newTempLabel);
+                newTempLabel = newTempLabel + 1;
+                L2 = makeNewLabel(newTempLabel);
+                newTempLabel = newTempLabel + 1; 
+                genIfElseCode(E[0]->val , ((E[1]!=NULL) ? E[1]->val : dummyVal) , ((E[2]!=NULL) ? E[2]->val : dummyVal) , ((E[3]!=NULL) ? E[3]->val : dummyVal), L1 , L2 );
+            }
+            break;
+
+        case WHILE_CODE:
+            
+            if(n == 3){
+                L1 = makeNewLabel(newTempLabel);
+                newTempLabel = newTempLabel + 1;
+                L2 = makeNewLabel(newTempLabel);
+                newTempLabel = newTempLabel + 1;
+                genWhileCode(E[0]->val, ((E[1]!=NULL) ? E[1]->val : dummyVal) , ((E[2]!=NULL) ? E[2]->val : dummyVal), L1, L2);
+            }
+            
+            break;
+
+        case FOR_CODE:
+            
+            if(n == 5){
+                L1 = makeNewLabel(newTempLabel);
+                newTempLabel = newTempLabel + 1;
+                L2 = makeNewLabel(newTempLabel);
+                newTempLabel = newTempLabel + 1;
+                genForCode(E[0]->val , ((E[1]!=NULL) ? E[1]->val : dummyVal) , ((E[2]!=NULL) ? E[2]->val : dummyVal) , ((E[3]!=NULL) ? E[3]->val : dummyVal), ((E[4]!=NULL) ? E[4]->val : dummyVal), L1 , L2 );
+            }
+         
+         break;
+
+         case METHOD_INVOCATION:
+            if(n==2){
+                temp = makeNewTemp(newTempLabel);
+                newTempLabel = newTempLabel + 1;
+                genMethodInvocationCode(((E[0]!=NULL)?E[0]->val:dummyVal), ((E[0]!=NULL)?E[0]->val:dummyVal), string(((E[0]!=NULL)?E[0]->data:"method")), temp);
+            }
+        
+        break;
+
+        default :
+            cout << "No flag Matching...\nCode not pushed...\n";
+            return -1;
+    }
 
     return 0;
 

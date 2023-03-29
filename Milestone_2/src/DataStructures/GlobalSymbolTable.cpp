@@ -1,4 +1,4 @@
-#include "Includes.hpp"
+#include "../Includes.hpp"
 
 using namespace std;
 long long int glob_insert(long long int line_num, string scope, string methodName, struct Type type, struct SymbolTable* curr, struct GlobalSymbolTable* glob)
