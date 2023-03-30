@@ -18,7 +18,7 @@ parse:
 	mkdir output
 	clear
 
-parser: Type.o SymbolTable.o GlobalSymbolTable.o Tac.o Graph_maker.o Node.o Main.o Tokenizer.o Flag_extraction.o TypeChecking.o
+parser: Type.o SymbolTable.o GlobalSymbolTable.o Tac.o Graph_maker.o Node.o Tokenizer.o Flag_extraction.o TypeChecking.o Main.o
 	g++ bin/Type.o bin/SymbolTable.o bin/GlobalSymbolTable.o bin/Tac.o bin/Graph_maker.o bin/Node.o bin/Main.o bin/Tokenizer.o bin/Flag_extraction.o bin/TypeChecking.o -o bin/parser
 
 Type.o: src/DataStructures/Type.cpp src/DataStructures/Type.hpp src/Includes.hpp

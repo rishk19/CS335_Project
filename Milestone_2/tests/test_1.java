@@ -2,35 +2,38 @@ class short_circuit{
    int printInt(int n);
 
    public static void main(){
+       float x = 9.0;
        int i=1;
-
-       if(i==1 || 1/0)
+       long j = 1;
+       int arr[] = new int[5];
+       int charr[] = new int[10];
+       arr[j+1] = 1;
+       
+       if(arr == charr)
        {
+         int b = 0;
           printInt(10);
        }
+       i = i+b;
+      
+       if(10 << 10);
 
-       if((i==0 && i==2) || i!=1)
+       if(true | 1)
+       {
+         printInt(10);
+       }
+
+       if((i == 0 && i == 18 ) || true)
        {
           printInt(15);
        }
-   }
-}
 
-class short_circuit2{
-   int printInt(int n);
-
-   public static void main(){
-       int i=1;
-
-       if(i==1 || 1/0)
+       if(j < arr)
        {
-          printInt(10);
+         printInt(5);
        }
-
-       if((i==0 && i==2) || i!=1)
-       {
-          printInt(15);
-       }
+       
+       
    }
 }
 

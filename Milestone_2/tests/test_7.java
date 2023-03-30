@@ -3,11 +3,11 @@ class Qsort
         char d = 'd',e;
         static {
                 int xyzz = 1;
-                float ghd = 9.00;
+                float ghd = 9;
         }
 
         int printInt(int n);
-        public static int quicksort(int [][]x[], int first, int last){
+        public static int quicksort(int x[], int first, int last){
                 int pivot,i,temp,i1,f,e,a[];
                 char arr;
                 int j;
@@ -31,8 +31,8 @@ class Qsort
                                 }
                                 if(i<j){
                                         //int x;
-                                        temp=x[i];
-                                        x[i]=x[j];
+                                        temp=x[i-1];
+                                        x[i-1]=x[j+1];
                                         x[j]=temp;
                                 }
                         }

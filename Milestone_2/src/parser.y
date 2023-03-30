@@ -33,7 +33,7 @@ int err = 0;
 %}
 
 %token Exports Opens Requires Uses Module Permits Sealed Var Non_sealed Provides To With Open Record Transitive Yield Abstract Continue For New Switch Assert Default If Package Synchronized Boolean Do Goto Private This Break Double Implements Protected THROW Byte Else Import Public THROWS Case Enum Instanceof Return Transient Catch Extends Int Short Try Char Final Interface Static Void Class FINALLY Long Strictfp Volatile Const Float Native Super While
-%token BooleanLiteral NullLiteral Identifier DecimalIntegerLiteral HexIntegerLiteral OctalIntegerLiteral FloatingPointIntegerLiteral FloatingPointLiteral BooleanIntegerLiteral CharacterLiteral TextBlock Operator Seperator StringLiteral
+%token BooleanLiteral NullLiteral Identifier DecimalIntegerLiteral HexIntegerLiteral OctalIntegerLiteral HexDecimalFloatingPointLiteral FloatingPointLiteral BooleanIntegerLiteral CharacterLiteral TextBlock Operator Seperator StringLiteral
 %token Comma LeftCurlyBrace RightCurlyBrace Semicolon Dot LeftParanthesis RightParanthesis TripleDot LeftSquareBracket RightSquareBracket AtRate Scope
 %token EqualTo NotOperator Tilde QuestionMark Colon RightArrow EqualToEqualTo GreaterThanEqualTo LessThanEqualTo NotEqualTo AndOperator OrOperator PlusPlus MinusMinus Addition Substraction Product Divide BitwiseAnd BitwiseOr CircumFlex Modulo LeftShit RightShift TripleGreaterThan AdditionEqualTo SubstractionEqualTo ProductEqualTo DivideEqualTo BitWiseAndEqualTo BitWiseOrEqualTo CircumFlexEqualTo ModuloEqualTo LeftShitEqualTo RightShiftEqualTo TripleGreaterThanEqualTo GreaterThan LessThan
 %token __EMPTY__
@@ -112,7 +112,7 @@ int err = 0;
 %type<exp> Class_Name_Extractor
 
 %type<data> Exports Opens Requires Uses Module Permits Sealed Var Non_sealed Provides To With Open Record Transitive Yield Abstract Continue For New Switch Assert Default If Package Synchronized Boolean Do Goto Private This Break Double Implements Protected THROW Byte Else Import Public THROWS Case Enum Instanceof Return Transient Catch Extends Int Short Try Char Final Interface Static Void Class FINALLY Long Strictfp Volatile Const Float Native Super While
-%type<data> BooleanLiteral NullLiteral Identifier DecimalIntegerLiteral HexIntegerLiteral OctalIntegerLiteral FloatingPointIntegerLiteral FloatingPointLiteral BooleanIntegerLiteral CharacterLiteral TextBlock Operator Seperator StringLiteral
+%type<data> BooleanLiteral NullLiteral Identifier DecimalIntegerLiteral HexIntegerLiteral OctalIntegerLiteral HexDecimalFloatingPointLiteral FloatingPointLiteral BooleanIntegerLiteral CharacterLiteral TextBlock Operator Seperator StringLiteral
 %type<data> Comma LeftCurlyBrace RightCurlyBrace Semicolon Dot LeftParanthesis RightParanthesis TripleDot LeftSquareBracket RightSquareBracket AtRate Scope
 %type<data> EqualTo NotOperator Tilde QuestionMark Colon RightArrow EqualToEqualTo GreaterThanEqualTo LessThanEqualTo NotEqualTo AndOperator OrOperator PlusPlus MinusMinus Addition Substraction Product Divide BitwiseAnd BitwiseOr CircumFlex Modulo LeftShit RightShift TripleGreaterThan AdditionEqualTo SubstractionEqualTo ProductEqualTo DivideEqualTo BitWiseAndEqualTo BitWiseOrEqualTo CircumFlexEqualTo ModuloEqualTo LeftShitEqualTo RightShiftEqualTo TripleGreaterThanEqualTo GreaterThan LessThan
 %type<data> __EMPTY__
@@ -131,27 +131,27 @@ Literal:
     | FloatingPointLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "float";
-        buildVal($$);
+        //buildVal($$);
     }
     | BooleanLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "boolean";
-        buildVal($$);
+        //buildVal($$);
     }
     | CharacterLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "char";
-        buildVal($$);
+        //buildVal($$);
     }
     | StringLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "string";
-        buildVal($$);
+        //buildVal($$);
     }
     | NullLiteral{
         $$ = makeleaf($1);
         $$->symbol.type.name = "null";
-        buildVal($$);
+        //buildVal($$);
     }
 
 IntegerLiteral: 
@@ -159,17 +159,17 @@ IntegerLiteral:
         $$ = makeleaf($1);
         $$->symbol.type.name = "int";
 
-        buildVal($$);
+        //buildVal($$);
     }
     | HexIntegerLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "int";
-        buildVal($$);
+        //buildVal($$);
     }
     | OctalIntegerLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "int";
-        buildVal($$);
+        //buildVal($$);
     }
 
 Type: 
@@ -304,13 +304,13 @@ SimpleName:
         struct Symbol* lookup_entry = check_scope(curr,$1);      
         if(lookup_entry != NULL){
             $$->symbol = *lookup_entry;
-        }buildVal($$);
+        }//buildVal($$);
     }
 
 QualifiedName: 
     Name Dot Identifier {
         $$ = makeleaf(concatenate_string($1->data,concatenate_string($2,$3)));
-        buildVal($$);
+        //buildVal($$);
     }
 
 CompilationUnit: 
@@ -324,7 +324,7 @@ CompilationUnit:
         struct node*E[2];
         E[0] = $$;
         E[1] = $3;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
 
 ImportDeclarations_opt : 
@@ -362,7 +362,7 @@ TypeDeclarations_opt :
         struct node*E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
 
 TypeDeclarations: 
@@ -374,7 +374,7 @@ TypeDeclarations:
         struct node*E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
     | TypeDeclarations TypeDeclaration {
         struct node * memArr[2];
@@ -386,7 +386,7 @@ TypeDeclarations:
         E[0] = $$;
         E[1] = $1;
         E[2] = $2;
-        buildTAC(E, 3, APPEND_CODE);
+        //buildTAC(E, 3, APPEND_CODE);
     }
 
 PackageDeclaration_opt : 
@@ -515,7 +515,7 @@ ClassDeclaration:
         struct node* E[2];
         E[0] = $$;
         E[1] = $3;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
 
 Modifiers_opt : { 
@@ -574,7 +574,7 @@ ClassBody:
         struct node* E[2];
         E[0] = $$;
         E[1] = $2;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
 
 ClassBodyDeclarations_opt : { 
@@ -587,7 +587,7 @@ ClassBodyDeclarations_opt : {
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
         
     }
 
@@ -599,7 +599,7 @@ ClassBodyDeclarations:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
 
     }
     | ClassBodyDeclarations ClassBodyDeclaration {
@@ -611,7 +611,7 @@ ClassBodyDeclarations:
         E[0] = $$;
         E[1] = $1;
         E[2] = $2;
-        buildTAC(E, 3, APPEND_CODE);
+        //buildTAC(E, 3, APPEND_CODE);
     }
 
 ClassBodyDeclaration: 
@@ -688,10 +688,23 @@ FieldDeclaration:
                     semantic_error("Declaration of " +$$->symbol.name + " already exists at line number " + to_string(-x) + ".");
                 }
 
+            
                 if($3->arr[j]->symbol.type.t == 4 ){
-                    if($3->arr[j]->symbol.type.name != $2->symbol.type.name){
-                        // Add code for casting $3->arr[j] to type of $2->type.name
-                    }
+
+                        if($2->symbol.type.name == $3->arr[j]->symbol.type.name)
+                        {
+                            //$$->symbol.type.name = $1->symbol.type.name;
+                        }
+                        else{
+                            if(isTypeCompatible($1->symbol.type.name, $3->symbol.type.name))
+                            {
+                                //$$->symbol.type.name = $1->symbol.type.name;
+                            }
+                            else{
+                                semantic_error("Bad initialization at line number " +  to_string(line_number) + ".");
+                            }
+                        }
+
                 }
 
             }
@@ -719,13 +732,31 @@ FieldDeclaration:
                     temp.name += "[]";
                 }
 
+                if($3->arr[j]->symbol.type.t == 4 ){
+
+                        if($2->symbol.type.name == $3->arr[j]->symbol.type.name)
+                        {
+                            //$$->symbol.type.name = $1->symbol.type.name;
+                        }
+                        else{
+                            if(isTypeCompatible($1->symbol.type.name, $3->symbol.type.name))
+                            {
+                                //$$->symbol.type.name = $1->symbol.type.name;
+                            }
+                            else{
+                                semantic_error("Bad initialization at line number " +  to_string(line_number) + ".");
+                            }
+                        }
+
+                }
+
 
             }
         }
         struct node* E[2];
         E[0] = $$;
         E[1] = $3;
-        buildTAC(E, 2, COPY_CODE);        
+        //buildTAC(E, 2, COPY_CODE);        
 
     }
 
@@ -737,7 +768,7 @@ VariableDeclarators:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
 
     }
     | VariableDeclarators Comma VariableDeclarator {
@@ -749,7 +780,7 @@ VariableDeclarators:
         E[0] = $$;
         E[1] = $1;
         E[2] = $3;
-        buildTAC(E, 2, APPEND_CODE);
+        //buildTAC(E, 2, APPEND_CODE);
     }
 
 VariableDeclarator: 
@@ -775,10 +806,10 @@ VariableDeclarator:
         struct node* E[2];
         E[0] = $1;
         E[1] = $3;
-        buildTAC(E, 2, ASSIGN_CODE);
+        //buildTAC(E, 2, ASSIGN_CODE);
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
 
         $$->symbol.type.t = 4;
         $$->symbol.type.name = $3->symbol.type.name;
@@ -789,13 +820,13 @@ VariableDeclaratorId:
         $$ = makeleaf($1);
         string temp  = string($1);
         $$->symbol.name = temp;
-        buildVal($$);
+        //buildVal($$);
     }
     | VariableDeclaratorId LeftSquareBracket RightSquareBracket {
         $$ = makeleaf(concatenate_string($1->data,"[]"));
         string temp = string($1->data) + "[]";
         $$->symbol.name = temp;
-        buildVal($$);
+        //buildVal($$);
     }
 
 VariableInitializer:
@@ -826,7 +857,7 @@ MethodDeclaration:
         E[0] = $$;
         E[1] = $1;
         E[2] = $2;
-        buildTAC(E, 3, APPEND_CODE);
+        //buildTAC(E, 3, APPEND_CODE);
 
     }
 
@@ -866,7 +897,7 @@ MethodHeader:
         struct node* E[2];
         E[0] = $$;
         E[1] = $3;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
         
     }
     | Modifiers_opt Void MethodDeclarator Throws_opt {
@@ -903,7 +934,7 @@ MethodHeader:
         struct node* E[2];
         E[0] = $$;
         E[1] = $3;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
 
     }
 
@@ -936,7 +967,7 @@ MethodDeclarator:
         struct node* E[2];
         E[0] = $$;
         E[1] = $4;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
     | MethodDeclarator LeftSquareBracket RightSquareBracket {
         struct node * memArr[1];
@@ -947,7 +978,7 @@ MethodDeclarator:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
 
 FormalParameterList_opt : {
@@ -961,7 +992,7 @@ FormalParameterList_opt : {
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
 
 FormalParameterList: 
@@ -972,7 +1003,7 @@ FormalParameterList:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
         
     }
     | FormalParameterList Comma FormalParameter{
@@ -984,7 +1015,7 @@ FormalParameterList:
         E[0] = $$;
         E[1] = $1;
         E[2] = $3;
-        buildTAC(E, 3, APPEND_CODE);
+        //buildTAC(E, 3, APPEND_CODE);
     }
 
 FormalParameter: 
@@ -1018,7 +1049,7 @@ FormalParameter:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);        
+        //buildTAC(E, 2, COPY_CODE);        
     }
 
 Throws: 
@@ -1059,7 +1090,7 @@ StaticInitializer:
         struct node* E[2];
         E[0] = $$;
         E[1] = $3;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
 
 ConstructorDeclaration: 
@@ -1090,7 +1121,7 @@ ConstructorDeclaration:
         E[0] = $$;
         E[1] = $1;
         E[2] = $4;
-        buildTAC(E, 3, APPEND_CODE);
+        //buildTAC(E, 3, APPEND_CODE);
     }
 
 ConstructorDeclarator: 
@@ -1124,7 +1155,7 @@ ConstructorDeclarator:
         struct node* E[2];
         E[0] = $$;
         E[1] = $4;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
         
     }
 
@@ -1138,7 +1169,7 @@ ConstructorBody:
         E[0] = $$;
         E[1] = $2;
         E[2] = $3;
-        buildTAC(E, 3, APPEND_CODE);
+        //buildTAC(E, 3, APPEND_CODE);
     }
 
 ExplicitConstructorInvocation_opt : { 
@@ -1151,7 +1182,7 @@ ExplicitConstructorInvocation_opt : {
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
 
 ExplicitConstructorInvocation: 
@@ -1162,7 +1193,7 @@ ExplicitConstructorInvocation:
         struct node* E[2];
         E[0] = $$;
         E[1] = $3;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
     | Super LeftParanthesis ArgumentList_opt RightParanthesis Semicolon {
         struct node* memArr[1];
@@ -1172,7 +1203,7 @@ ExplicitConstructorInvocation:
         struct node* E[2];
         E[0] = $$;
         E[1] = $3;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
 */
 ArgumentList_opt: {
@@ -1186,7 +1217,7 @@ ArgumentList_opt: {
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);        
+        //buildTAC(E, 2, COPY_CODE);        
     }
 
 InterfaceDeclaration: 
@@ -1284,7 +1315,7 @@ VariableInitializers_opt: {
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);  
+        //buildTAC(E, 2, COPY_CODE);  
     }
 
 Comma_opt : {
@@ -1302,7 +1333,7 @@ VariableInitializers:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);  
+        //buildTAC(E, 2, COPY_CODE);  
     }
     | VariableInitializers Comma VariableInitializer {
         struct node* memArr[2];
@@ -1313,7 +1344,7 @@ VariableInitializers:
         E[0] = $$;
         E[1] = $1;
         E[2] = $3;
-        buildTAC(E, 3, APPEND_CODE);  
+        //buildTAC(E, 3, APPEND_CODE);  
     }
 
 Block: 
@@ -1329,6 +1360,7 @@ Symbol_Table_Change :
 Symbol_Table_Back :
     {
         curr = curr->parent;
+        //cout << "Symbol Table Changed" <<endl;
     }
 
 BlockStatements_opt : {
@@ -1341,7 +1373,7 @@ BlockStatements_opt : {
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);  
+        //buildTAC(E, 2, COPY_CODE);  
     }
 
 BlockStatements: 
@@ -1352,7 +1384,7 @@ BlockStatements:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE); 
+        //buildTAC(E, 2, COPY_CODE); 
     }
     | BlockStatements BlockStatement {
         struct node* memArr[2];
@@ -1363,7 +1395,7 @@ BlockStatements:
         E[0] = $$;
         E[1] = $1;
         E[2] = $2;
-        buildTAC(E, 3, APPEND_CODE);  
+        //buildTAC(E, 3, APPEND_CODE);  
         
     }
 
@@ -1375,7 +1407,7 @@ BlockStatement:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
     | Statement {
         struct node* memArr[1];
@@ -1384,7 +1416,7 @@ BlockStatement:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
 
     }
 
@@ -1396,7 +1428,7 @@ LocalVariableDeclarationStatement:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
 
 LocalVariableDeclaration: 
@@ -1447,7 +1479,7 @@ LocalVariableDeclaration:
         struct node* E[2];
         E[0] = $$;
         E[1] = $2;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
 
 Statement: 
@@ -1530,9 +1562,9 @@ LabeledStatement:
         struct node* E[3];
         E[0] = $$;
         E[1] = makeleaf($1);
-        buildVal(E[1]);
+        //buildVal(E[1]);
         E[2] = $3;
-        buildTAC(E, 3, APPEND_CODE);
+        //buildTAC(E, 3, APPEND_CODE);
     }
 
 LabeledStatementNoShortIf: 
@@ -1544,9 +1576,9 @@ LabeledStatementNoShortIf:
         struct node* E[3];
         E[0] = $$;
         E[1] = makeleaf($1);
-        buildVal(E[1]);
+        //buildVal(E[1]);
         E[2] = $3;
-        buildTAC(E, 3, APPEND_CODE);
+        //buildTAC(E, 3, APPEND_CODE);
     }
 
 ExpressionStatement: 
@@ -1587,7 +1619,7 @@ IfThenStatement:
         E[0] = $$;
         E[1] = $4;
         E[2] = $6;
-        buildTAC(E,3,IF_CODE);
+        //buildTAC(E,3,IF_CODE);
     }
 
 IfThenElseStatement: 
@@ -1604,7 +1636,7 @@ IfThenElseStatement:
         E[1] = $4;
         E[2] = $6;
         E[3] = $8;
-        buildTAC(E,4,IF_CODE);
+        //buildTAC(E,4,IF_CODE);
         
     }
 
@@ -1622,7 +1654,7 @@ IfThenElseStatementNoShortIf:
         E[1] = $4;
         E[2] = $6;
         E[3] = $8;
-        buildTAC(E,4,IF_CODE);
+        //buildTAC(E,4,IF_CODE);
         
     }
 
@@ -1638,7 +1670,7 @@ WhileStatement:
         E[0] = $$;
         E[1] = $4;
         E[2] = $6;
-        buildTAC(E,3,WHILE_CODE);
+        //buildTAC(E,3,WHILE_CODE);
         
     }
 
@@ -1653,7 +1685,7 @@ WhileStatementNoShortIf:
         E[0] = $$;
         E[1] = $4;
         E[2] = $6;
-        buildTAC(E,3,WHILE_CODE);
+        //buildTAC(E,3,WHILE_CODE);
     }
 
 ForStatement: 
@@ -1673,7 +1705,7 @@ ForStatement:
         E[2] = $6;
         E[3] = $8;
         E[4] = $10;
-        buildTAC(E,5,FOR_CODE);
+        //buildTAC(E,5,FOR_CODE);
 
     }
 
@@ -1693,7 +1725,7 @@ ForStatementNoShortIf:
         E[2] = $6;
         E[3] = $8;
         E[4] = $10;
-        buildTAC(E,5,FOR_CODE);
+        //buildTAC(E,5,FOR_CODE);
     }
 
 ForInit_opt: { 
@@ -1707,7 +1739,7 @@ ForInit_opt: {
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
 
 Expression_opt: { 
@@ -1720,7 +1752,7 @@ Expression_opt: {
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
 
 ForUpdate_opt: { 
@@ -1733,7 +1765,7 @@ ForUpdate_opt: {
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
 
 ForInit: 
@@ -1744,7 +1776,7 @@ ForInit:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
     | LocalVariableDeclaration {
         struct node * memArr[1];
@@ -1755,7 +1787,7 @@ ForInit:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
 
 ForUpdate: 
@@ -1766,7 +1798,7 @@ ForUpdate:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
 
 StatementExpressionList: 
@@ -1777,7 +1809,7 @@ StatementExpressionList:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
     | StatementExpressionList Comma StatementExpression {
         struct node * memArr[2];
@@ -1788,7 +1820,7 @@ StatementExpressionList:
         E[0] = $$;
         E[1] = $1;
         E[2] = $3;
-        buildTAC(E, 3, APPEND_CODE);
+        //buildTAC(E, 3, APPEND_CODE);
     }
 
 BreakStatement:
@@ -1796,7 +1828,7 @@ BreakStatement:
         struct node * memArr[1];
         memArr[0] =$2;
         $$ = makeInternalNode("break", memArr, 1, 1);
-        buildVal($$);
+        //buildVal($$);
     }
 
 Identifier_opt: 
@@ -1804,7 +1836,7 @@ Identifier_opt:
         $$ = NULL;
     }| Identifier {
         $$ = makeleaf($1);
-        buildVal($$);
+        //buildVal($$);
     }
 
 ContinueStatement: 
@@ -1812,7 +1844,7 @@ ContinueStatement:
         struct node * memArr[1];
         memArr[0] =$2;
         $$ = makeInternalNode("continue", memArr, 1, 1);
-        buildVal($$);
+        //buildVal($$);
 
     }
 
@@ -1821,13 +1853,13 @@ ReturnStatement:
         struct node * memArr[1];
         memArr[0] =$2;
         $$ = makeInternalNode("return", memArr, 1, 1);
-        buildVal(makeleaf($1));
+        //buildVal(makeleaf($1));
         struct node* E[3];
         E[0] = $$;
         E[1] = makeleaf($1);
-        buildVal(E[1]);
+        //buildVal(E[1]);
         E[2] = $2;
-        buildTAC(E, 3, APPEND_CODE);
+        //buildTAC(E, 3, APPEND_CODE);
     }
 
 ThrowStatement: 
@@ -1940,7 +1972,7 @@ ClassInstanceCreationExpression:
         struct GlobalSymbol * glob_entry = glob_lookup($2->symbol.name,$2->symbol.name,glob_table);
 
         if(glob_entry == NULL){
-            buildVal($$);
+            //buildVal($$);
         }
 
         else{
@@ -1970,7 +2002,7 @@ ClassInstanceCreationExpression:
 
         }
 
-        buildVal($$);
+        //buildVal($$);
 
     }
 
@@ -1982,7 +2014,7 @@ ArgumentList:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);
+        //buildTAC(E, 2, COPY_CODE);
     }
     | ArgumentList Comma Expression {
         struct node * memArr[2];
@@ -1993,7 +2025,7 @@ ArgumentList:
         E[0] = $$;
         E[1] = $1;
         E[2] = $3;
-        buildTAC(E, 3, APPEND_CODE);
+        //buildTAC(E, 3, APPEND_CODE);
     }
 
 ArrayCreationExpression: 
@@ -2005,7 +2037,7 @@ ArrayCreationExpression:
         memArr[3] =$4;
         $$ = makeInternalNode("ArrayCreation", memArr, 4, 0);
         $$->isDeclaration = DECLARATION;
-        buildVal($$);
+        //buildVal($$);
     }
     | New ClassOrInterfaceType DimExprs Dims_opt {
         struct node * memArr[4];
@@ -2015,7 +2047,7 @@ ArrayCreationExpression:
         memArr[3] =$4;
         $$ = makeInternalNode("ArrayCreation", memArr, 4, 0);
         $$->isDeclaration = DECLARATION;
-        buildVal($$);
+        //buildVal($$);
     }
 
 Dims_opt: { 
@@ -2058,12 +2090,12 @@ FieldAccess:
         $$ = makeleaf(concatenate_string($1->data,$3));
         //string class_in = $1->symbol.type.name;
 
-        buildVal($$);
+        //buildVal($$);
 
     } 
     | Super Dot Identifier {
         $$ = makeleaf(concatenate_string($1,$3));
-        buildVal($$);
+        //buildVal($$);
 
     }
 
@@ -2114,7 +2146,7 @@ MethodInvocation:
         struct node * E[2];
         E[0] = $$;
         E[1] = $3;
-        buildTAC(E, 2, METHOD_INVOCATION);
+        //buildTAC(E, 2, METHOD_INVOCATION);
     } 
     | Primary Dot Identifier LeftParanthesis ArgumentList_opt RightParanthesis {
         struct node * memArr[1];
@@ -2123,7 +2155,7 @@ MethodInvocation:
         struct node * E[2];
         E[0] = $$;
         E[1] = $5;
-        buildTAC(E, 2, METHOD_INVOCATION);
+        //buildTAC(E, 2, METHOD_INVOCATION);
     }
     | Super Dot Identifier LeftParanthesis ArgumentList_opt RightParanthesis {
         struct node * memArr[1];
@@ -2132,7 +2164,7 @@ MethodInvocation:
         struct node * E[2];
         E[0] = $$;
         E[1] = $5;
-        buildTAC(E, 2, METHOD_INVOCATION);
+        //buildTAC(E, 2, METHOD_INVOCATION);
     }
 
 ArrayAccess: 
@@ -2168,12 +2200,13 @@ ArrayAccess:
         }
 
         $$->symbol.type.name = name;
+        //cout << $$->symbol.type.name << endl;
 
-        if($3->symbol.type.name != "byte" && $3->symbol.type.name != "short" && $3->symbol.type.name != "int" && $3->symbol.type.name != "long"  )
+        if($3->symbol.type.name != "byte" && $3->symbol.type.name != "short" && $3->symbol.type.name != "int" && $3->symbol.type.name != "char"  )
         {
-            semantic_error("Invalid array access at line number " + to_string(line_number) + " as the expression " + $3->symbol.name + " is not of type int.");
+            semantic_error("Invalid array access at line number " + to_string(line_number) + " as the expression is of type " + $3->symbol.type.name);
         }
-        buildVal($$);
+        //buildVal($$);
     }
     | PrimaryNoNewArray LeftSquareBracket Expression RightSquareBracket {
         struct node * memArr[2];
@@ -2208,11 +2241,11 @@ ArrayAccess:
         $$->symbol.type.name = name;
 
         // Checking if Expression is a Integer
-        if($3->symbol.type.name != "byte" && $3->symbol.type.name != "short" && $3->symbol.type.name != "int" && $3->symbol.type.name != "long"  )
+        if($3->symbol.type.name != "byte" && $3->symbol.type.name != "short" && $3->symbol.type.name != "int" && $3->symbol.type.name != "char"  )
         {
-            semantic_error("Invalid array access at line number " + to_string(line_number) + " as the expression " + $3->symbol.name + " is not of type int.");
+            semantic_error("Invalid array access at line number " + to_string(line_number) + " as the expression is of type " + $3->symbol.type.name);
         }
-        buildVal($$);
+        //buildVal($$);
     }
 
 PostfixExpression: 
@@ -2221,6 +2254,13 @@ PostfixExpression:
     }
     | Name {
         $$ = $1;
+        struct Symbol * lookup_entry = check_scope(curr , string($1->data));
+        if(lookup_entry == NULL){
+            semantic_error("The identifier " + string($1->data) + " at line number " + to_string(line_number) +  " has not been declared in the scope." );
+        }
+        else{
+            $$->symbol.type = lookup_entry->type;
+        }
     }
     | PostIncrementExpression {
         $$ = $1;
@@ -2239,7 +2279,16 @@ PostIncrementExpression:
         E[1] = $1;
         E[2] = $1;
         E[3] = makeleaf("+");
-        buildTAC(E,4,BINARY_CODE);
+
+        if(isPrimitiveType($1->symbol.type.name) && $1->symbol.type.name != "boolean")
+        {
+            $$->symbol.type.name = $1->symbol.type.name;
+        }
+        else{
+            semantic_error("Bad operand types ["  + $1->symbol.type.name + "] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+        }
+
+        //buildTAC(E,4,BINARY_CODE);
     } 
 
 PostDecrementExpression: 
@@ -2252,7 +2301,16 @@ PostDecrementExpression:
         E[1] = $1;
         E[2] = $1;
         E[3] = makeleaf("-");
-        buildTAC(E,4,BINARY_CODE);
+
+        if(isPrimitiveType($1->symbol.type.name) && $1->symbol.type.name != "boolean")
+        {
+            $$->symbol.type.name = $1->symbol.type.name;
+        }
+        else{
+            semantic_error("Bad operand types ["  + $1->symbol.type.name + "] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+        }
+
+        //buildTAC(E,4,BINARY_CODE);
     } 
 
 UnaryExpression:
@@ -2270,7 +2328,16 @@ UnaryExpression:
         E[0] = $$;
         E[1] = $2;
         E[2] = makeleaf($1);
-        buildTAC(E,3,UNARY_CODE);
+
+        if(isPrimitiveType($2->symbol.type.name) && $2->symbol.type.name != "boolean")
+        {
+            $$->symbol.type.name = $2->symbol.type.name;
+        }
+        else{
+            semantic_error("Bad operand types ["  + $2->symbol.type.name + "] for operator " + string($1) + " at line number " +  to_string(line_number) + ".");
+        }
+
+        //buildTAC(E,3,UNARY_CODE);
 
     }
     | Substraction UnaryExpression {
@@ -2281,7 +2348,16 @@ UnaryExpression:
         E[0] = $$;
         E[1] = $2;
         E[2] = makeleaf($1);
-        buildTAC(E,3,UNARY_CODE);
+    
+        if(isPrimitiveType($2->symbol.type.name) && $2->symbol.type.name != "boolean")
+        {
+            $$->symbol.type.name = $2->symbol.type.name;
+        }
+        else{
+            semantic_error("Bad operand types ["  + $2->symbol.type.name + "] for operator " + string($1) + " at line number " +  to_string(line_number) + ".");
+        }
+
+        //buildTAC(E,3,UNARY_CODE);
     }
     | UnaryExpressionNotPlusMinus {
         $$ = $1;
@@ -2298,7 +2374,15 @@ PreIncrementExpression:
         E[1] = $2;
         E[2] = $2;
         E[3] = makeleaf("+");
-        buildTAC(E,4,BINARY_CODE);
+
+        if(isPrimitiveType($2->symbol.type.name) && $2->symbol.type.name != "boolean")
+        {
+            $$->symbol.type.name = $2->symbol.type.name;
+        }
+        else{
+            semantic_error("Bad operand types ["  + $2->symbol.type.name + "] for operator " + string($1) + " at line number " +  to_string(line_number) + ".");
+        }
+        //buildTAC(E,4,BINARY_CODE);
     } 
 
 PreDecrementExpression: 
@@ -2312,7 +2396,16 @@ PreDecrementExpression:
         E[1] = $2;
         E[2] = $2;
         E[3] = makeleaf("-");
-        buildTAC(E,4,BINARY_CODE);
+
+        if(isPrimitiveType($2->symbol.type.name) && $2->symbol.type.name != "boolean")
+        {
+            $$->symbol.type.name = $2->symbol.type.name;
+        }
+        else{
+            semantic_error("Bad operand types ["  + $2->symbol.type.name + "] for operator " + string($1) + " at line number " +  to_string(line_number) + ".");
+        }
+
+        //buildTAC(E,4,BINARY_CODE);
     } 
 
 UnaryExpressionNotPlusMinus: 
@@ -2327,7 +2420,14 @@ UnaryExpressionNotPlusMinus:
         E[0] = $$;
         E[1] = $2;
         E[2] = makeleaf($1);
-        buildTAC(E,3,UNARY_CODE);
+        if(isIntegralType($2->symbol.type.name))
+        {
+            $$->symbol.type.name = $2->symbol.type.name;
+        }
+        else{
+            semantic_error("Bad operand types ["  + $2->symbol.type.name + "] for operator " + string($1) + " at line number " +  to_string(line_number) + ".");
+        }
+        //buildTAC(E,3,UNARY_CODE);
     } 
     | NotOperator UnaryExpression {
          struct node * memArr[1];
@@ -2337,7 +2437,15 @@ UnaryExpressionNotPlusMinus:
         E[0] = $$;
         E[1] = $2;
         E[2] = makeleaf($1);
-        buildTAC(E,3,UNARY_CODE);
+
+        if($2->symbol.type.name == "boolean")
+        {
+            $$->symbol.type.name = "boolean";
+        }
+        else{
+            semantic_error("Bad operand types ["  + $2->symbol.type.name + "] for operator " + string($1) + " at line number " +  to_string(line_number) + ".");
+        }
+        //buildTAC(E,3,UNARY_CODE);
     } 
     | CastExpression {
         $$ = $1;
@@ -2352,7 +2460,7 @@ CastExpression:
         struct node* E[2];
         E[0] = $$;
         E[1] = $5;
-        buildTAC(E,2,COPY_CODE);
+        //buildTAC(E,2,COPY_CODE);
     }
     | LeftParanthesis Expression RightParanthesis UnaryExpressionNotPlusMinus {
         struct  node * memArr[2];
@@ -2362,7 +2470,7 @@ CastExpression:
         struct node* E[2];
         E[0] = $$;
         E[1] = $4;
-        buildTAC(E,2,COPY_CODE);
+        //buildTAC(E,2,COPY_CODE);
     }
     | LeftParanthesis Name Dims RightParanthesis UnaryExpressionNotPlusMinus {
         struct node * memArr[1];
@@ -2372,7 +2480,7 @@ CastExpression:
         struct node* E[2];
         E[0] = $$;
         E[1] = $5;
-        buildTAC(E,2,COPY_CODE);
+        //buildTAC(E,2,COPY_CODE);
     }
 
 MultiplicativeExpression: 
@@ -2389,7 +2497,24 @@ MultiplicativeExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        buildTAC(E,4,BINARY_CODE);
+
+        if($1->symbol.type.name != "boolean" && $3->symbol.type.name != "boolean")
+        {
+            if(isTypeCompatible($1->symbol.type.name, $3->symbol.type.name))
+            {
+                $$->symbol.type.name = max_type($1->symbol.type.name, $3->symbol.type.name);
+                
+            }
+            else{
+                semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+            }
+        }
+        else{
+            semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+        }
+
+
+        //buildTAC(E,4,BINARY_CODE);
     } 
     | MultiplicativeExpression Divide UnaryExpression {
         struct node* memArr[2];
@@ -2401,7 +2526,24 @@ MultiplicativeExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        buildTAC(E,4,BINARY_CODE);
+
+        if($1->symbol.type.name != "boolean" && $3->symbol.type.name != "boolean")
+        {
+            if(isTypeCompatible($1->symbol.type.name, $3->symbol.type.name))
+            {
+                $$->symbol.type.name = max_type($1->symbol.type.name, $3->symbol.type.name);
+                
+            }
+            else{
+                semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+            }
+        }
+        else{
+            semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+        }
+
+
+        //buildTAC(E,4,BINARY_CODE);
     } 
     | MultiplicativeExpression Modulo UnaryExpression {
         struct node* memArr[2];
@@ -2413,7 +2555,24 @@ MultiplicativeExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        buildTAC(E,4,BINARY_CODE);
+
+        if($1->symbol.type.name != "boolean" && $3->symbol.type.name != "boolean")
+        {
+            if(isTypeCompatible($1->symbol.type.name, $3->symbol.type.name))
+            {
+                $$->symbol.type.name = max_type($1->symbol.type.name, $3->symbol.type.name);
+                
+            }
+            else{
+                semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+            }
+        }
+        else{
+            semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+        }
+
+
+        //buildTAC(E,4,BINARY_CODE);
     }
 
 AdditiveExpression: 
@@ -2430,7 +2589,23 @@ AdditiveExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        buildTAC(E,4,BINARY_CODE);
+
+        if($1->symbol.type.name != "boolean" && $3->symbol.type.name != "boolean")
+        {
+            if(isTypeCompatible($1->symbol.type.name, $3->symbol.type.name))
+            {
+                $$->symbol.type.name = max_type($1->symbol.type.name, $3->symbol.type.name);
+                
+            }
+            else{
+                semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+            }
+        }
+        else{
+            semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+        }
+
+        //buildTAC(E,4,BINARY_CODE);
     }
     | AdditiveExpression Substraction MultiplicativeExpression {
         struct node* memArr[2];
@@ -2442,7 +2617,23 @@ AdditiveExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        buildTAC(E,4,BINARY_CODE);
+
+        if($1->symbol.type.name != "boolean" && $3->symbol.type.name != "boolean")
+        {
+            if(isTypeCompatible($1->symbol.type.name, $3->symbol.type.name))
+            {
+                $$->symbol.type.name = max_type($1->symbol.type.name, $3->symbol.type.name);
+                
+            }
+            else{
+                semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+            }
+        }
+        else{
+            semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+        }
+
+        //buildTAC(E,4,BINARY_CODE);
     }
 
 ShiftExpression: 
@@ -2459,7 +2650,18 @@ ShiftExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        buildTAC(E,4,BINARY_CODE);
+
+        //cout << $1->symbol.type.name <<endl;
+        if(isIntegralType($1->symbol.type.name)&& isIntegralType($3->symbol.type.name))
+        {
+            $$->symbol.type.name = max_type($1->symbol.type.name, $3->symbol.type.name);
+        }
+        else{
+            semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+        }
+
+
+        //buildTAC(E,4,BINARY_CODE);
     }
     | ShiftExpression RightShift AdditiveExpression {
         struct node* memArr[2];
@@ -2471,7 +2673,16 @@ ShiftExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        buildTAC(E,4,BINARY_CODE);
+
+        if(isIntegralType($1->symbol.type.name)&& isIntegralType($3->symbol.type.name))
+        {
+            $$->symbol.type.name = max_type($1->symbol.type.name, $3->symbol.type.name);
+        }
+        else{
+            semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+        }
+
+        //buildTAC(E,4,BINARY_CODE);
     }
     | ShiftExpression TripleGreaterThan AdditiveExpression {
         struct node* memArr[2];
@@ -2483,7 +2694,16 @@ ShiftExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        buildTAC(E,4,BINARY_CODE);
+
+        if(isIntegralType($1->symbol.type.name)&& isIntegralType($3->symbol.type.name))
+        {
+            $$->symbol.type.name = max_type($1->symbol.type.name, $3->symbol.type.name);
+        }
+        else{
+            semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+        }
+
+        //buildTAC(E,4,BINARY_CODE);
     }
 
 RelationalExpression: 
@@ -2500,7 +2720,23 @@ RelationalExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        buildTAC(E,4,BINARY_CODE);
+        if($1->symbol.type.name != "boolean" && $3->symbol.type.name != "boolean")
+        {
+            if(isTypeCompatible($1->symbol.type.name, $3->symbol.type.name))
+            {
+                $$->symbol.type.name = "boolean";
+                //cout << $1->symbol.type.name <<endl;
+                //cout << $3->symbol.type.name <<endl;
+                
+            }
+            else{
+                semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+            }
+        }
+        else{
+            semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+        }
+        //buildTAC(E,4,BINARY_CODE);
     } 
     | RelationalExpression GreaterThan ShiftExpression {
         struct node* memArr[2];
@@ -2512,7 +2748,24 @@ RelationalExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        buildTAC(E,4,BINARY_CODE);
+
+        if($1->symbol.type.name != "boolean" && $3->symbol.type.name != "boolean")
+        {
+            if(isTypeCompatible($1->symbol.type.name, $3->symbol.type.name))
+            {
+                $$->symbol.type.name = "boolean";
+                //cout << $1->symbol.type.name <<endl;
+                //cout << $3->symbol.type.name <<endl;
+                
+            }
+            else{
+                semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+            }
+        }
+        else{
+            semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+        }
+        //buildTAC(E,4,BINARY_CODE);
     }
     | RelationalExpression LessThanEqualTo ShiftExpression {
         struct node* memArr[2];
@@ -2524,7 +2777,24 @@ RelationalExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        buildTAC(E,4,BINARY_CODE);
+
+        if($1->symbol.type.name != "boolean" && $3->symbol.type.name != "boolean")
+        {
+            if(isTypeCompatible($1->symbol.type.name, $3->symbol.type.name))
+            {
+                $$->symbol.type.name = "boolean";
+                //cout << $1->symbol.type.name <<endl;
+                //cout << $3->symbol.type.name <<endl;
+                
+            }
+            else{
+                semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+            }
+        }
+        else{
+            semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+        }
+        //buildTAC(E,4,BINARY_CODE);
     }
     | RelationalExpression GreaterThanEqualTo ShiftExpression {
         struct node* memArr[2];
@@ -2536,7 +2806,24 @@ RelationalExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        buildTAC(E,4,BINARY_CODE);
+
+        if($1->symbol.type.name != "boolean" && $3->symbol.type.name != "boolean")
+        {
+            if(isTypeCompatible($1->symbol.type.name, $3->symbol.type.name))
+            {
+                $$->symbol.type.name = "boolean";
+                //cout << $1->symbol.type.name <<endl;
+                //cout << $3->symbol.type.name <<endl;
+                
+            }
+            else{
+                semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+            }
+        }
+        else{
+            semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+        }
+        //buildTAC(E,4,BINARY_CODE);
     } 
     | RelationalExpression Instanceof ReferenceType {
         struct node* memArr[2];
@@ -2548,7 +2835,7 @@ RelationalExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        buildTAC(E,4,BINARY_CODE);
+        //buildTAC(E,4,BINARY_CODE);
     }
 
 EqualityExpression: 
@@ -2565,7 +2852,22 @@ EqualityExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        buildTAC(E,4,BINARY_CODE);
+        //buildTAC(E,4,BINARY_CODE);
+        
+        if(isTypeCompatible($1->symbol.type.name,$3->symbol.type.name))
+        {
+            $$->symbol.type.name = "boolean";
+        }
+        else
+        {
+            if($1->symbol.type.name == $3->symbol.type.name)
+            {
+                $$->symbol.type.name = "boolean";
+            }
+            else{
+                semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+            }
+        }
     } 
     | EqualityExpression NotEqualTo RelationalExpression {
         struct node* memArr[2];
@@ -2577,7 +2879,22 @@ EqualityExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        buildTAC(E,4,BINARY_CODE);
+        //buildTAC(E,4,BINARY_CODE);
+
+        if(isTypeCompatible($1->symbol.type.name,$3->symbol.type.name))
+        {
+            $$->symbol.type.name = "boolean";
+        }
+        else
+        {
+            if($1->symbol.type.name == $3->symbol.type.name)
+            {
+                $$->symbol.type.name = "boolean";
+            }
+            else{
+                semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+            }
+        }
     }
 
 AndExpression: 
@@ -2589,12 +2906,22 @@ AndExpression:
         memArr[0] = $1;
         memArr[1] = $3;
         $$  = makeInternalNode("&", memArr, 2 ,1);
+
+        if(isTypeCompatible($1->symbol.type.name,$3->symbol.type.name))
+        {
+            $$->symbol.type.name = "boolean";
+        }
+        else
+        {
+            semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+        }
+
         struct node* E[4];
         E[0] = $$;
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        buildTAC(E,4,BINARY_CODE);
+        //buildTAC(E,4,BINARY_CODE);
     }
 
 ExclusiveOrExpression:
@@ -2606,12 +2933,23 @@ ExclusiveOrExpression:
         memArr[0] = $1;
         memArr[1] = $3;
         $$  = makeInternalNode("xor", memArr, 2 ,1);
+
+        if(isTypeCompatible($1->symbol.type.name,$3->symbol.type.name))
+        {
+            $$->symbol.type.name = "boolean";
+        }
+        else
+        {
+            semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+        }
+
+
         struct node* E[4];
         E[0] = $$;
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        buildTAC(E,4,BINARY_CODE);
+        //buildTAC(E,4,BINARY_CODE);
     }
 
 InclusiveOrExpression:
@@ -2623,12 +2961,23 @@ InclusiveOrExpression:
         memArr[0] = $1;
         memArr[1] = $3;
         $$  = makeInternalNode("|", memArr, 2, 1);
+
+        if(isTypeCompatible($1->symbol.type.name,$3->symbol.type.name))
+        {   
+            //cout << "Hello Type compatible" <<endl;
+            $$->symbol.type.name = "boolean";
+        }
+        else
+        {
+            semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+        }
+
         struct node* E[4];
         E[0] = $$;
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        buildTAC(E,4,BINARY_CODE);
+        //buildTAC(E,4,BINARY_CODE);
     }
 
 ConditionalAndExpression:
@@ -2640,12 +2989,22 @@ ConditionalAndExpression:
         memArr[0] = $1;
         memArr[1] = $3;
         $$  = makeInternalNode("&&", memArr, 2, 1);
+
+        if($1->symbol.type.name == "boolean" && $3->symbol.type.name == "boolean")
+        {
+            $$->symbol.type.name = "boolean";
+        }
+        else
+        {
+            semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+        }
+
         struct node* E[4];
         E[0] = $$;
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        buildTAC(E,4,BINARY_CODE);
+        //buildTAC(E,4,BINARY_CODE);
     }
 
 ConditionalOrExpression: 
@@ -2657,12 +3016,24 @@ ConditionalOrExpression:
         memArr[0] = $1;
         memArr[1] = $3;
         $$  = makeInternalNode("||", memArr, 2, 1);
+
+        if($1->symbol.type.name == "boolean" && $3->symbol.type.name == "boolean")
+        {
+            $$->symbol.type.name = "boolean";
+        }
+        else
+        {
+            semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
+        }
+
         struct node* E[4];
         E[0] = $$;
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        buildTAC(E,4,BINARY_CODE);
+        //buildTAC(E,4,BINARY_CODE);
+
+
     }
 
 ConditionalExpression: 
@@ -2680,7 +3051,7 @@ ConditionalExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = $5;
-        buildTAC(E, 4, IF_CODE);
+        //buildTAC(E, 4, IF_CODE);
     }
 
 AssignmentExpression: 
@@ -2698,13 +3069,30 @@ Assignment:
     memArr[1] = $3;
     $$ = makeInternalNode("=", memArr, 2, 1);
 
+    if($1->symbol.type.name == $3->symbol.type.name)
+    {
+        $$->symbol.type.name = $1->symbol.type.name;
+    }
+    else{
+        if(isTypeCompatible($1->symbol.type.name, $3->symbol.type.name))
+        {
+            $$->symbol.type.name = $1->symbol.type.name;
+        }
+        else{
+            semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name + "] for operator " + string($2->symbol.name) + " at line number " +  to_string(line_number) + ".");
+        }
+    }
+
     struct node* E[2];
     E[0] = $1;
     E[1] = $3;
-    buildTAC(E, 2, ASSIGN_CODE);
+    //buildTAC(E, 2, ASSIGN_CODE);
     E[0] = $$;
     E[1] = $1;
-    buildTAC(E, 2, ASSIGN_CODE);
+    //buildTAC(E, 2, ASSIGN_CODE);
+
+    
+
 }
 
 LeftHandSide: 
@@ -2729,46 +3117,60 @@ LeftHandSide:
         }
         else{
             //cout << "The identifier "  <<  $1->symbol.name <<" at line number " << line_number << " has been declared at line number "<< lookup_entry->line_num << endl <<endl;
-            $$->symbol.type = lookup_entry->type;
+            //$$->symbol.type = lookup_entry->type;
         }
+        $$->symbol.type.name = $1->symbol.type.name;
+        cout << $$->symbol.type.name <<endl;
     }
 
 AssignmentOperator: 
     EqualTo {
         $$ = makeleaf($1);
+        $$->symbol.name = string($1);
     }
     | ProductEqualTo {
         $$ = makeleaf($1);
+        $$->symbol.name = string($1);
     }
     | DivideEqualTo {
         $$ = makeleaf($1);
+        $$->symbol.name = string($1);
     }
     | ModuloEqualTo  {
         $$ = makeleaf($1);
+        $$->symbol.name = string($1);
     }
     | AdditionEqualTo {
         $$ = makeleaf($1);
+        $$->symbol.name = string($1);
     }
     | SubstractionEqualTo  {
         $$ = makeleaf($1);
+        $$->symbol.name = string($1);
     }
     | LeftShitEqualTo  {
         $$ = makeleaf($1);
+        $$->symbol.name = string($1);
     }
     | RightShiftEqualTo  {
         $$ = makeleaf($1);
+        $$->symbol.name = string($1);
     }
     | TripleGreaterThanEqualTo  {
         $$ = makeleaf($1);
+        $$->symbol.name = string($1);
     }
     | BitWiseAndEqualTo  {
         $$ = makeleaf($1);
+        $$->symbol.name = string($1);
     }
     | CircumFlexEqualTo  {
         $$ = makeleaf($1);
+        $$->symbol.name = string($1);
     }
     | BitWiseOrEqualTo {
         $$ = makeleaf($1);
+        $$->symbol.name = string($1);
     }
 
 Expression: AssignmentExpression {
@@ -2816,6 +3218,7 @@ int main(int argc , char** argv)
     }
 
     yyparse();
+    
     
     if(err == 0){
         // No syntax or semantic error

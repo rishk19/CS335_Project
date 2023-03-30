@@ -6,7 +6,7 @@ public class Stopwatch
 
     public static final long NANOS_PER_SEC = 1000000000;
 
-        int System,nanoTime();
+        int System,nanoTime;
         public long nanoTime(){}
         public void start(){
                 startTime = System.nanoTime();

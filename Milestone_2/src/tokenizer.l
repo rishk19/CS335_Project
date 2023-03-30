@@ -2,17 +2,24 @@
     #include<stdio.h>
     #include<string>
     #include "parser.tab.hh"
+    #include <bits/stdc++.h>
 
     extern long long int line_number;
+    using namespace std;
+
 %}
 
 %option noyywrap
 
 %%
 
-"//"+.* {}
+"//"+.* {
+    //cout << yytext <<endl;
+    }
 
-"/*"+([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*(\*)*+"*/" {}
+"/*"+([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*(\*)*+"*/" { 
+    //cout<< yytext << endl;
+}
 
 true|false {
     sscanf(yytext,"%s", yylval.data);
@@ -229,29 +236,29 @@ while {
     return (Identifier);
 }
 
-[0-9_]*\.?[0-9_]+ {
+[0-9_]+ {
     sscanf(yytext,"%s", yylval.data);
     return (DecimalIntegerLiteral);
 }
 
-(0x|0X)[0-9a-fA-F_]*\.?[0-9a-fA-F_]+ {
+(0x|0X)[0-9a-fA-F_]+ {
     sscanf(yytext,"%s", yylval.data);
     return (HexIntegerLiteral);
 }
 
-0[0-7_]*\.?[0-7_]+([eE][-+]?[0-7_]+)? {sscanf(yytext,"%s", yylval.data);
-            return (OctalIntegerLiteral);}
+0[0-7_]+([eE][-+]?[0-7_]+)? {sscanf(yytext,"%s", yylval.data);
+    return (OctalIntegerLiteral);}
 
 [0-9_]*\.?[0-9_]+([eE][-+]?[0-9_]+)?(f?|F?|d?|D?) {
     sscanf(yytext,"%s", yylval.data);
-    return (FloatingPointIntegerLiteral);
+    return (FloatingPointLiteral);
 }
 (0x|0X)[0-9a-fA-F_]*\.?[0-9a-fA-F_]+([eE|pP][-+]?[0-9a-fA-F_]+)?(f?|F?|d?|D?) {
     sscanf(yytext,"%s", yylval.data);
-    return (FloatingPointLiteral);
+    return (HexDecimalFloatingPointLiteral);
 }
 
-(0b|0B)[0-1_]*\.?[0-1_]+([eE][-+]?[0-1_]+)? {
+(0b|0B)[0-1_]+([eE][-+]?[0-1_]+)? {
     sscanf(yytext,"%s", yylval.data);
     return (BooleanIntegerLiteral);
 }

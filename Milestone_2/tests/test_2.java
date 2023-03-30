@@ -2,7 +2,7 @@ class bubblesort {
     long x;
     int printInt(int n);
     void sort(int arr[], int len) {
-        int n1 = len;
+        int n = len;
         int temp, i, j;
         for(i=0; i < n; i++){
             for(j=1; j < (n-i); j++){

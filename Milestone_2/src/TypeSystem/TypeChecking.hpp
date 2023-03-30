@@ -3,10 +3,11 @@
 #include "../Includes.hpp"
 using namespace std;
 
-string max(string, string);
+string max_type(string, string);
 int isTypeCompatible(string, string);
 // struct Symbol widen(struct Symbol, string t, string w);
 // narrow();
-
+int isPrimitiveType(string);
+int isIntegralType(string);
 
 #endif
