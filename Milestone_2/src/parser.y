@@ -787,7 +787,7 @@ VariableDeclarator:
     VariableDeclaratorId {
         struct node * memArr[1];
         memArr[0] = $1;
-        $$ = makeInternalNode($1->data, memArr, 1, 1);
+        $$ = makeInternalNode($1->data, memArr, 1, 0);
         $$->isDeclaration = DECLARATION;
         $$->t = 0;
         $$->symbol.name = $1->symbol.name;
@@ -811,6 +811,7 @@ VariableDeclarator:
         E[1] = $1;
         //buildTAC(E, 2, COPY_CODE);
 
+        // $$->symbol.type.name holds the type of variable initializer
         $$->symbol.type.t = 4;
         $$->symbol.type.name = $3->symbol.type.name;
     }
@@ -1473,6 +1474,19 @@ LocalVariableDeclaration:
                 {
                     semantic_error("Declaration of " +$$->symbol.name + " already exists at line number " + to_string(-x));
                 }
+
+                //Type Checking if initialization
+                if($2->arr[j]->symbol.type.t == 4){
+                    if($1->symbol.type.name == $2->arr[j]->symbol.type.name);
+                    else{
+                        if($2->arr[j]->arr[1]->symbol.type.t != 5){
+                            if(isTypeCompatible($1->symbol.type.name, $2->arr[j]->arr[1]->symbol.type.name));
+                            else{
+                                semantic_error("Bad initialization types ["  + $1->symbol.type.name + ", " + $2->arr[j]->symbol.type.name + "] at line number " +  to_string(line_number) + ".");
+                            }
+                        }
+                    }
+                }
                 
 
             }
@@ -2035,8 +2049,9 @@ ArrayCreationExpression:
         memArr[1] =$2;
         memArr[2] =$3;
         memArr[3] =$4;
-        $$ = makeInternalNode("ArrayCreation", memArr, 4, 0);
+        $$ = makeInternalNode("ArrayCreation", memArr, 4, 1);
         $$->isDeclaration = DECLARATION;
+        $$->symbol.type.t = 5;
         //buildVal($$);
     }
     | New ClassOrInterfaceType DimExprs Dims_opt {
@@ -3120,7 +3135,7 @@ LeftHandSide:
             //$$->symbol.type = lookup_entry->type;
         }
         $$->symbol.type.name = $1->symbol.type.name;
-        cout << $$->symbol.type.name <<endl;
+        //cout << $$->symbol.type.name <<endl;
     }
 
 AssignmentOperator: 
