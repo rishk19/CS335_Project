@@ -56,7 +56,7 @@ class Qsort
         }
         public private static void main(int delta){
                 //int x[] = new int[5];
-                int x[][];
+                int x[];
                 int size = 5;
                 int first = 0;
                 int l = size - 1;
@@ -72,7 +72,7 @@ class Qsort
 
                 for(byte i=0;i<size;i++){
                         int j;
-                        printInt(x[i][i]);
+                        printInt(x[i]);
                 }
                 return 0;
         }

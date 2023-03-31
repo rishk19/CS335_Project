@@ -19,6 +19,14 @@
 
 "/*"+([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*(\*)*+"*/" { 
     //cout<< yytext << endl;
+    int i = 0;
+    while(yytext[i] != '\0')
+    {
+        if(yytext[i] == '\n'){
+            line_number ++;
+        }
+        i++;
+    }
 }
 
 true|false {

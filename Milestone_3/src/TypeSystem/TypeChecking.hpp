@@ -5,9 +5,8 @@ using namespace std;
 
 string max_type(string, string);
 int isTypeCompatible(string, string);
-// struct Symbol widen(struct Symbol, string t, string w);
-// narrow();
 int isPrimitiveType(string);
 int isIntegralType(string);
+int isNumericType(string);
 
 #endif

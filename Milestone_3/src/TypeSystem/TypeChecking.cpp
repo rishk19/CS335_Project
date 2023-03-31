@@ -45,10 +45,6 @@ int isTypeCompatible(string type_1, string type_2){
     return 1;
 }
 
-//  widen(struct Symbol*, string w){
-//     if()
-// }
-
 int isPrimitiveType(string type_1)
 {
     if(type_1 == "double" || type_1=="float" || type_1=="long" || type_1=="int" || type_1=="short" || type_1=="char" || type_1=="byte" || type_1=="boolean")
@@ -61,6 +57,15 @@ int isPrimitiveType(string type_1)
 int isIntegralType(string type_1)
 {
     if(type_1=="long" || type_1=="int" || type_1=="short" || type_1=="char" || type_1=="byte")
+    {
+        return 1;
+    }
+    return 0;
+}
+
+int isNumericType(string type_1)
+{
+    if(type_1 == "double" || type_1=="float" || type_1=="long" || type_1=="int" || type_1=="short" || type_1=="char" || type_1=="byte")
     {
         return 1;
     }

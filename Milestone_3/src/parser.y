@@ -111,6 +111,7 @@ int err = 0;
 %type<exp> AssignmentExpression Assignment LeftHandSide AssignmentOperator Expression 
 %type<exp> Class_Name_Extractor
 
+
 %type<data> Exports Opens Requires Uses Module Permits Sealed Var Non_sealed Provides To With Open Record Transitive Yield Abstract Continue For New Switch Assert Default If Package Synchronized Boolean Do Goto Private This Break Double Implements Protected THROW Byte Else Import Public THROWS Case Enum Instanceof Return Transient Catch Extends Int Short Try Char Final Interface Static Void Class FINALLY Long Strictfp Volatile Const Float Native Super While
 %type<data> BooleanLiteral NullLiteral Identifier DecimalIntegerLiteral HexIntegerLiteral OctalIntegerLiteral HexDecimalFloatingPointLiteral FloatingPointLiteral BooleanIntegerLiteral CharacterLiteral TextBlock Operator Seperator StringLiteral
 %type<data> Comma LeftCurlyBrace RightCurlyBrace Semicolon Dot LeftParanthesis RightParanthesis TripleDot LeftSquareBracket RightSquareBracket AtRate Scope
@@ -131,26 +132,32 @@ Literal:
     | FloatingPointLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "float";
+        $$->symbol.size = 4;
         //buildVal($$);
     }
     | BooleanLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "boolean";
+        $$->symbol.size = 1;
+
         //buildVal($$);
     }
     | CharacterLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "char";
+        $$->symbol.size = 2;
         //buildVal($$);
     }
     | StringLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "string";
+        $$->symbol.size = 8;
         //buildVal($$);
     }
     | NullLiteral{
         $$ = makeleaf($1);
         $$->symbol.type.name = "null";
+        $$->symbol.size = 8;
         //buildVal($$);
     }
 
@@ -158,17 +165,20 @@ IntegerLiteral:
     DecimalIntegerLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "int";
+        $$->symbol.size = 4;
 
         //buildVal($$);
     }
     | HexIntegerLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "int";
+        $$->symbol.size = 4;
         //buildVal($$);
     }
     | OctalIntegerLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "int";
+        $$->symbol.size = 4;
         //buildVal($$);
     }
 
@@ -632,6 +642,7 @@ ClassMemberDeclaration:
         if(class_entry != NULL){
             class_entry->size += $$->symbol.size;
         }
+
     }
     | MethodDeclaration {
         $$ = $1;
@@ -655,14 +666,13 @@ FieldDeclaration:
             {
                 $$->symbol.size += $2->symbol.size;
                 $$->symbol.type = $2->symbol.type;
-                //struct Type temp = $2->symbol.type;
                 string txt = $3->arr[j]->symbol.name;
                 string name = "";
                 int count = 0;
                 for(int i=0; i<txt.size(); i++)
                 {
                     if(txt[i] != '[' && count == 0){
-                        name += txt[i];
+                        name.push_back(txt[i]);
                     }
                     else if(txt[i] == '['){
                         count += 1;
@@ -680,48 +690,62 @@ FieldDeclaration:
                 
 
                 $$->symbol.name = name;
-                
-                long long int x  = loc_insert(curr,$$->symbol);
-        
-                if(x < 0)
-                {
-                    semantic_error("Declaration of " +$$->symbol.name + " already exists at line number " + to_string(-x) + ".");
-                }
 
-            
-                if($3->arr[j]->symbol.type.t == 4 ){
+                if($3->arr[j]->t == 4 ){
 
-                        if($2->symbol.type.name == $3->arr[j]->symbol.type.name)
+                        if($$->symbol.type.name == $3->arr[j]->symbol.type.name)
                         {
                             //$$->symbol.type.name = $1->symbol.type.name;
+                            $$->symbol.type = $3->arr[j]->symbol.type;
+                            $$->symbol.size = $3->arr[j]->symbol.size;
+                            long long int x  = loc_insert(curr,$$->symbol);
+                            if(x < 0)
+                            {
+                                semantic_error("Declaration of " +$$->symbol.name + " already exists at line number " + to_string(-x) + ".");
+                            }
                         }
                         else{
-                            if(isTypeCompatible($1->symbol.type.name, $3->symbol.type.name))
+                            if(isTypeCompatible($$->symbol.type.name, $3->arr[j]->symbol.type.name))
                             {
-                                //$$->symbol.type.name = $1->symbol.type.name;
+                                long long int x  = loc_insert(curr,$$->symbol);
+            
+                                if(x < 0)
+                                {
+                                    semantic_error("Declaration of " +$$->symbol.name + " already exists at line number " + to_string(-x) + ".");
+                                }                            
                             }
                             else{
-                                semantic_error("Bad initialization at line number " +  to_string(line_number) + ".");
+                                //semantic_error("Bad initialization at line number " +  to_string(line_number) + ".");
+                                semantic_error("Bad initialization types ["  + $$->symbol.type.name + ", " + $3->arr[j]->symbol.type.name + "] at line number " +  to_string(line_number) + ".");
                             }
                         }
 
+                }
+                else{
+                    long long int x  = loc_insert(curr,$$->symbol);
+            
+                    if(x < 0)
+                    {
+                        semantic_error("Declaration of " +$$->symbol.name + " already exists at line number " + to_string(-x) + ".");
+                    }
                 }
 
             }
         }
 
         else{
+            //cout << $3->arr.size() <<endl;
             for(int j =0; j< $3->arr.size(); j++)
             {
                 $$->symbol.size += $2->symbol.size;
-                struct Type temp = $2->symbol.type;
+                $$->symbol.type = $2->symbol.type;
                 string txt = $3->arr[j]->symbol.name;
                 string name = "";
                 int count = 0;
                 for(int i=0; i<txt.size(); i++)
                 {
                     if(txt[i] != '[' && count == 0){
-                        name += txt[i];
+                        name.push_back(txt[i]);
                     }
                     else if(txt[i] == '['){
                         count += 1;
@@ -729,34 +753,61 @@ FieldDeclaration:
                 }
                 for(int i = 0; i < count ; i++ )
                 {
-                    temp.name += "[]";
+                    $$->symbol.type.name += "[]";
                 }
 
-                if($3->arr[j]->symbol.type.t == 4 ){
+                $$->symbol.name = name;
 
-                        if($2->symbol.type.name == $3->arr[j]->symbol.type.name)
-                        {
-                            //$$->symbol.type.name = $1->symbol.type.name;
+                if($3->arr[j]->t== 4 ){
+                        if($$->symbol.type.name == $3->arr[j]->symbol.type.name)
+                        {   
+                            $$->symbol.type= $3->arr[j]->symbol.type;
+                            $$->symbol.size = $3->arr[j]->symbol.size;
+                            //view_type($$->symbol.type);
+                            //view_symbol($$->symbol);
+                            long long int x  = loc_insert(curr,$$->symbol);
+                            if(x < 0)
+                            {
+                                semantic_error("Declaration of " +$$->symbol.name + " already exists at line number " + to_string(-x) + ".");
+                            }
+                            
                         }
                         else{
-                            if(isTypeCompatible($1->symbol.type.name, $3->symbol.type.name))
+                            if(isTypeCompatible($$->symbol.type.name, $3->arr[j]->symbol.type.name))
                             {
-                                //$$->symbol.type.name = $1->symbol.type.name;
+                                //$$->symbol.type = $1->symbol.type.name;
+                                long long int x  = loc_insert(curr,$$->symbol);
+                                if(x < 0)
+                                {
+                                    semantic_error("Declaration of " +$$->symbol.name + " already exists at line number " + to_string(-x) + ".");
+                                }
                             }
                             else{
-                                semantic_error("Bad initialization at line number " +  to_string(line_number) + ".");
+                                semantic_error("Bad initialization types ["  + $$->symbol.type.name + ", " + $3->arr[j]->symbol.type.name + "] at line number " +  to_string(line_number) + ".");
+                                //semantic_error("Bad initialization at line number " +  to_string(line_number) + ".");
                             }
                         }
 
                 }
-
+                else {
+                    long long int x  = loc_insert(curr,$$->symbol);
+            
+                    if(x < 0)
+                    {
+                        semantic_error("Declaration of " +$$->symbol.name + " already exists at line number " + to_string(-x) + ".");
+                    }
+                }
 
             }
+
         }
+
         struct node* E[2];
         E[0] = $$;
         E[1] = $3;
-        //buildTAC(E, 2, COPY_CODE);        
+        //buildTAC(E, 2, COPY_CODE);  
+
+
 
     }
 
@@ -803,6 +854,7 @@ VariableDeclarator:
         $$->isDeclaration = INITIALIZATION;
         $$->t = 0;
         $$->symbol.name = $1->symbol.name;
+        
         struct node* E[2];
         E[0] = $1;
         E[1] = $3;
@@ -812,8 +864,11 @@ VariableDeclarator:
         //buildTAC(E, 2, COPY_CODE);
 
         // $$->symbol.type.name holds the type of variable initializer
-        $$->symbol.type.t = 4;
-        $$->symbol.type.name = $3->symbol.type.name;
+        $$->t = 4;
+        $$->symbol.type= $3->symbol.type;
+        $$->symbol.size = $3->symbol.size;
+        //view_type($$->symbol.type);
+
     }
 
 VariableDeclaratorId: 
@@ -1022,6 +1077,7 @@ FormalParameterList:
 FormalParameter: 
     Type VariableDeclaratorId {
         $$ = makeleaf(concatenate_string($1->data, concatenate_string(" ", $2->data)));
+        $$->symbol.size = $1->symbol.size;
         $$->symbol.type.name = $1->symbol.type.name;
         $$->symbol.type.t = $1->symbol.type.t;
         string txt = $2->symbol.name;
@@ -1104,7 +1160,7 @@ ConstructorDeclaration:
         $$ = makeInternalNode($2->data, memArr, 4, 1);
         $$->isDeclaration = DECLARATION;
         $$->symbol = $2->symbol;
-        view_symbol($2->symbol);
+        //view_symbol($2->symbol);
         if($1 != NULL)
         {
             for(int i = 0; i<$1->arr.size(); i++)
@@ -1440,9 +1496,11 @@ LocalVariableDeclaration:
         $$ = makeInternalNode("Declaration", memArr, 2, 0);
         $$->isDeclaration = DECLARATION;
         for(int j = 0 ; j< $2->arr.size(); j++)
-            {
-                $$->symbol.type.name = $1->symbol.type.name;
-                $$-> symbol.type.t = $1->symbol.type.t;
+            {   
+                
+                //view_symbol($2->arr[j]->symbol);
+
+                $$->symbol.type = $1->symbol.type;
                 $$->symbol.name= $2->arr[j]->symbol.name;
                 $$->symbol.size += $1->symbol.size;
                 $$->symbol.source_file = $2->arr[j]->symbol.source_file;
@@ -1467,25 +1525,40 @@ LocalVariableDeclaration:
                 }
                 
                 $$->symbol.name = name;
-                
-                long long int x = loc_insert(curr, $$->symbol);
-
-                if(x<0)
-                {
-                    semantic_error("Declaration of " +$$->symbol.name + " already exists at line number " + to_string(-x));
-                }
 
                 //Type Checking if initialization
-                if($2->arr[j]->symbol.type.t == 4){
-                    if($1->symbol.type.name == $2->arr[j]->symbol.type.name);
-                    else{
-                        if($2->arr[j]->arr[1]->symbol.type.t != 5){
-                            if(isTypeCompatible($1->symbol.type.name, $2->arr[j]->arr[1]->symbol.type.name));
-                            else{
-                                semantic_error("Bad initialization types ["  + $1->symbol.type.name + ", " + $2->arr[j]->symbol.type.name + "] at line number " +  to_string(line_number) + ".");
-                            }
+                if($2->arr[j]->t == 4){
+                    //view_symbol($2->arr[j]);
+                    if($$->symbol.type.name == $2->arr[j]->symbol.type.name){
+                        $$->symbol.type = $2->arr[j]->symbol.type;
+                        $$->symbol.size = $2->arr[j]->symbol.size;
+                        //view_symbol($$->symbol);
+                        long long int x = loc_insert(curr,$$->symbol);
+                        if(x<0)
+                        {
+                            semantic_error("Declaration of " +$$->symbol.name + " already exists at line number " + to_string(-x));
                         }
                     }
+
+                    else{
+                            if(isTypeCompatible($$->symbol.type.name, $2->arr[j]->arr[1]->symbol.type.name)){
+                                long long int x = loc_insert(curr,$$->symbol);
+                                if(x<0)
+                                {
+                                    semantic_error("Declaration of " +$$->symbol.name + " already exists at line number " + to_string(-x));
+                                }
+                            }
+                            else{
+                                semantic_error("Bad initialization types ["  + $$->symbol.type.name + ", " + $2->arr[j]->symbol.type.name + "] at line number " +  to_string(line_number) + ".");
+                            }
+                        }
+                }
+                else{
+                    long long int x = loc_insert(curr,$$->symbol);
+                    if(x<0)
+                        {
+                            semantic_error("Declaration of " +$$->symbol.name + " already exists at line number " + to_string(-x));
+                        }
                 }
                 
 
@@ -2044,23 +2117,44 @@ ArgumentList:
 
 ArrayCreationExpression: 
     New PrimitiveType DimExprs Dims_opt {
+
+        struct node * memArr2[1];
+        memArr2[0] = $3;
+        $3 = makeInternalNode("Dimension", memArr2,1,1);
+
+        struct node * memArr[4];
+        memArr[0] = makeleaf($1);
+        memArr[1] =$2;
+        memArr[2] =$3;
+        memArr[3] =$4;
+
+        $$ = makeInternalNode("ArrayCreation", memArr, 4, 1);
+        $$->isDeclaration = DECLARATION;
+        $$->symbol.type.name = $2->symbol.type.name;
+        $$->symbol.size = $2->symbol.size;
+
+        for(int i = 0 ; i < $3->arr.size(); i++){
+            $$->symbol.type.name += "[]";
+            $$->symbol.type.dims.push_back(atoi($3->arr[i]->data));
+            $$->symbol.size *= $$->symbol.type.dims[i];
+        }
+
+        //view_type($$->symbol.type);
+
+        //buildVal($$);
+    }
+    | New ClassOrInterfaceType DimExprs Dims_opt {
+
+        struct node * memArr2[1];
+        memArr2[0] = $3;
+        $3 = makeInternalNode("Dimension", memArr2,1,1);
+
         struct node * memArr[4];
         memArr[0] = makeleaf($1);
         memArr[1] =$2;
         memArr[2] =$3;
         memArr[3] =$4;
         $$ = makeInternalNode("ArrayCreation", memArr, 4, 1);
-        $$->isDeclaration = DECLARATION;
-        $$->symbol.type.t = 5;
-        //buildVal($$);
-    }
-    | New ClassOrInterfaceType DimExprs Dims_opt {
-        struct node * memArr[4];
-        memArr[0] = makeleaf($1);
-        memArr[1] =$2;
-        memArr[2] =$3;
-        memArr[3] =$4;
-        $$ = makeInternalNode("ArrayCreation", memArr, 4, 0);
         $$->isDeclaration = DECLARATION;
         //buildVal($$);
     }
@@ -3198,16 +3292,16 @@ Expression: AssignmentExpression {
 
 int yyerror(string s)
 {
-    cout << "Error detected !" << s << " at [ line number: " << line_number << " ] after removing the comments.\nExiting...\n";
+    cout << s << " at [ line number: " << line_number << " ] \nExiting...\n";
     err = 1;
-    return 0;
+    exit(1);
 }
 
 int semantic_error(string s)
 {
     cout << s <<endl <<endl;
     err = 1;
-    return 0;
+    exit(1);
 }
 
 int main(int argc , char** argv)

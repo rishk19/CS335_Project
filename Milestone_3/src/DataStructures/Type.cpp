@@ -43,10 +43,20 @@ void view_type(struct Type type)
             cout << type.parameters_type[i] <<" -> " << type.parameters[i] <<",";
             //cout << "Hi";
         }
-        cout <<endl;
+        cout <<endl <<endl;;
     
     }
     cout << endl;
+    //cout << "Number of dimensions is : " << type.dims.size() <<endl;
+    if(type.dims.size() != 0)
+    {   
+        cout << "Dimension sizes are : ";
+        for(int i = 0; i< type.dims.size(); i++)
+        {
+            cout << type.dims[i] << " ";
+        }
+        cout << endl;
+    }
     
 
 }
