@@ -2229,8 +2229,8 @@ MethodInvocation:
         // Checking If function has been defined
         struct GlobalSymbol * glob_entry = glob_lookup(class_name, $1->data, glob_table);
         if(glob_entry ==  NULL){
+            // Function not defined before 
             semantic_error("Function " + string($1->data) + " at line number " + to_string(line_number) + " not declared." );
-            //cout << "Function at line number "<< line_number << " not declared" <<endl ;
         }
         else{
             // Checking if Arguments are filled in properly
@@ -2240,28 +2240,23 @@ MethodInvocation:
                 }
             }
             else{
-                //cout << $3->arr.size() <<endl;
                 if($3->arr.size()!= glob_entry->type.parameters_type.size()){
                     semantic_error("Function " + string($1->data) +  " invocation at line number " + to_string(line_number) + " has wrong number of parameters passed.");
                 }
                 else{
-                    //cout << "Hello good sir " << $3->arr.size() << endl;
                     for (int i = 0; i< $3->arr.size(); i++)
                     {   
-                        //view_symbol($3->arr[i]->symbol);
                         if(glob_entry->type.parameters_type[i] != $3->arr[i]->symbol.type.name)
                         {
                             semantic_error("Function " + string($1->data) +  " invocation at line number " + to_string(line_number) + " has wrong type of parameter passed at position " + to_string(i+1) + "." );          
                         }
                     }
+                    $$->symbol.type.name = glob_entry->type.return_type;
                 }
+                
             }
 
-
-            //cout << "Function at line number "<< line_number << " declared at line number " << glob_entry->line_num <<endl<<endl;
         }
-
-        //Checking if ArgumentList_opt is valid
 
 
         struct node * E[2];
