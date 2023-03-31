@@ -1,6 +1,6 @@
 test:
 	clear
-	read -p "Enter Serial Number of Test Case : " IMAGE;\
+	@read -p "Enter Serial Number of Test Case : " IMAGE;\
 	./bin/parser --input= ./tests/test_$${IMAGE}.java --output = ./output/test_$${IMAGE}.dot ;\
 	dot -Tpdf ./output/test_$${IMAGE}.dot -o ./output/test_$${IMAGE}.pdf ;\
 
@@ -18,8 +18,8 @@ parse:
 	mkdir output
 	clear
 
-parser: Type.o SymbolTable.o GlobalSymbolTable.o Tac.o Graph_maker.o Node.o Main.o Tokenizer.o Flag_extraction.o
-	g++ bin/Type.o bin/SymbolTable.o bin/GlobalSymbolTable.o bin/Tac.o bin/Graph_maker.o bin/Node.o bin/Main.o bin/Tokenizer.o bin/Flag_extraction.o -o bin/parser
+parser: Type.o SymbolTable.o GlobalSymbolTable.o Tac.o Graph_maker.o Node.o Main.o Tokenizer.o Flag_extraction.o TypeChecking.o
+	g++ bin/Type.o bin/SymbolTable.o bin/GlobalSymbolTable.o bin/Tac.o bin/Graph_maker.o bin/Node.o bin/Main.o bin/Tokenizer.o bin/Flag_extraction.o bin/TypeChecking.o -o bin/parser
 
 Type.o: src/DataStructures/Type.cpp src/DataStructures/Type.hpp src/Includes.hpp
 	g++ -c src/DataStructures/Type.cpp -o bin/Type.o
@@ -47,6 +47,9 @@ Tokenizer.o: bin/lex.yy.c bin/parser.tab.hh
 
 Flag_extraction.o : src/FlagExtraction/Flag_extraction.cpp src/Includes.hpp
 	g++ -c src/FlagExtraction/Flag_extraction.cpp -o bin/Flag_extraction.o
+
+TypeChecking.o : src/TypeSystem/TypeChecking.cpp src/Includes.hpp
+	g++ -c src/TypeSystem/TypeChecking.cpp -o bin/TypeChecking.o
 
 all: clean parse
 
