@@ -37,6 +37,6 @@ using namespace std;
 #define UNARY_CODE 134
 #define BINARY_CODE 135
 #define METHOD_INVOCATION 136
-
+#define ARRAY_ACCESS 137
 
 #endif

@@ -2336,7 +2336,14 @@ ArrayAccess:
         {
             semantic_error("Invalid array access at line number " + to_string(line_number) + " as the expression is of type " + $3->symbol.type.name);
         }
-        buildVal($$);
+        
+        struct node* E[3];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = $3;
+
+        // buildTAC(E, 3, ARRAY_ACCESS);
+
     }
     | PrimaryNoNewArray LeftSquareBracket Expression RightSquareBracket {
         struct node * memArr[2];

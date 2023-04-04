@@ -9,7 +9,6 @@ using namespace std;
 #define POS_STR 1
 #define GOOD_CPY 1
 #define GOOD_APPEND 1
-
 struct Value {
 
         string place;
@@ -33,6 +32,8 @@ int genForCode(Value &S, Value &E1, Value &E2, Value &E3, Value &E4,string L1, s
 int genBinaryOperatorCode(Value &S, Value &E1, Value &E2, string temp, string op);
 int genUnaryOperatorCode(Value &S, Value &E, string temp, string op);
 int genMethodInvocationCode(Value &S, Value &E, string methodName, string temp);
+int genArrayAcess(struct node* E[], int n);
+
 
 int buildTAC(struct node* E[], int n, int flag);
 int buildVal(struct node* E);
