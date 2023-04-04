@@ -5,9 +5,12 @@ class short_circuit{
         int a = 0 + 2;
         float b = 2.3f;
         a = a + b;
-        int arr[] = new int [5];
-        arr[4] = 2+9*7;
-        i = arr[0+2-1+3];
+        int arr[][][] = new int [10][500][4];
+        arr[6][4+7*8][1] = 2+9*7;
+
+        int arr2[] = new int [6];
+        arr2[1] = 1;
+        int i = arr2[2]+2;
         printInt(a);
     }
  }

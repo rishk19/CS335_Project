@@ -263,13 +263,17 @@ int buildTAC(struct node* E[], int n, int flag){
                 if(op_type!=E[1]->symbol.type.name){
                     string temp2 = makeNewTemp(newTempLabel);
                     newTempLabel = newTempLabel + 1;
-                    genUnaryOperatorCode(E[0]->val, E[1]->val, temp2, "cast_to_"+op_type+" ");
+                    pushCode(E[0]->val, temp2 + " = " + "cast_to_" + op_type + " " + E[1]->val.place);
+                    E[1]->val.place = temp2;
+                    //genUnaryOperatorCode(E[0]->val, E[1]->val, temp2, "cast_to_"+op_type+" ");
                 }
                 
                 if(op_type!=E[2]->symbol.type.name){
                     string temp2 = makeNewTemp(newTempLabel);
                     newTempLabel = newTempLabel + 1;
-                    genUnaryOperatorCode(E[0]->val, E[2]->val, temp2, "cast_to_"+op_type+" ");
+                    pushCode(E[0]->val, temp2 + " = " + "cast_to_"+op_type+" "+E[2]->val.place);
+                    E[2]->val.place = temp2;
+                    //genUnaryOperatorCode(E[0]->val, E[2]->val, temp2, "cast_to_"+op_type+" ");
                 }
 
                 temp = makeNewTemp(newTempLabel);
@@ -356,4 +360,42 @@ void printThreeAC(Value val){
     }
 
     return ;
+}
+
+int genArrayAccess(struct node* E_1, struct node* E_2, struct node* E_3)
+{
+    appendCode(E_1->val, E_3->val);
+    string temp1 = makeNewTemp(newTempLabel);
+    newTempLabel++;
+    E_1->val.place=temp1;
+    string s_code = temp1 + " = " + E_3->val.place + " * " + to_string(E_1->symbol.size);
+    pushCode(E_1->val, s_code);
+
+    return 0;
+}
+
+int genArrayAccess2(struct node* E_1, struct node* E_2, struct node* E_3)
+{
+    appendCode(E_1->val, E_2->val);
+    appendCode(E_1->val, E_3->val);
+    string temp1 = makeNewTemp(newTempLabel);
+    newTempLabel++;
+
+    string s_code1 = temp1 + " = " + E_3->val.place + " * " +  to_string(E_1->symbol.size);
+    pushCode(E_1->val,s_code1);
+
+
+    string temp2 = makeNewTemp(newTempLabel);
+    newTempLabel++;
+    E_1->val.place = temp2;
+
+    string s_code2 = temp2 + " = " +  E_2->val.place + " + " +  temp1;
+    pushCode(E_1->val,s_code2);
+
+
+
+
+
+
+    return 0;
 }

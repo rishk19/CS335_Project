@@ -32,7 +32,9 @@ int genForCode(Value &S, Value &E1, Value &E2, Value &E3, Value &E4,string L1, s
 int genBinaryOperatorCode(Value &S, Value &E1, Value &E2, string temp, string op);
 int genUnaryOperatorCode(Value &S, Value &E, string temp, string op);
 int genMethodInvocationCode(Value &S, Value &E, string methodName, string temp);
-int genArrayAcess(struct node* E[], int n);
+int genArrayAccess(struct node* E_1, struct node* E_2, struct node* E_3);
+int genArrayAccess2(struct node* E_1, struct node* E_2, struct node* E_3);
+
 
 
 int buildTAC(struct node* E[], int n, int flag);

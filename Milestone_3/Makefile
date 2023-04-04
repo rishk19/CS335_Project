@@ -1,4 +1,4 @@
-CC = g++
+CC = g++-12
 test:
 	clear
 	@read -p "Enter Serial Number of Test Case : " IMAGE;\

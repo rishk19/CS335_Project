@@ -2071,6 +2071,11 @@ PrimaryNoNewArray:
     }
     | ArrayAccess {
         $$ = $1;
+        string temp = makeNewTemp(newTempLabel);
+        newTempLabel++;
+        pushCode($$->val,string(temp + " = " + $1->symbol.name + "[" + $1->val.place + "]") );
+        // $$->val.place = $1->symbol.name + "[" + $1->val.place + "]";
+        $$->val.place = temp;
     }
 
 ClassInstanceCreationExpression: 
@@ -2336,16 +2341,21 @@ ArrayAccess:
         {
             semantic_error("Invalid array access at line number " + to_string(line_number) + " as the expression is of type " + $3->symbol.type.name);
         }
+        if($$->symbol.type.dims.size() != 0){
+            $$->symbol.size = $$->symbol.size/$$->symbol.type.dims[0];
+            $$->symbol.type.dims.erase($$->symbol.type.dims.begin());
+        }   
         
         struct node* E[3];
         E[0] = $$;
         E[1] = $1;
         E[2] = $3;
 
+        genArrayAccess($$,$1,$3);
         // buildTAC(E, 3, ARRAY_ACCESS);
 
     }
-    | PrimaryNoNewArray LeftSquareBracket Expression RightSquareBracket {
+    | ArrayAccess LeftSquareBracket Expression RightSquareBracket {
         struct node * memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
@@ -2382,7 +2392,15 @@ ArrayAccess:
         {
             semantic_error("Invalid array access at line number " + to_string(line_number) + " as the expression is of type " + $3->symbol.type.name);
         }
-        buildVal($$);
+
+        if($$->symbol.type.dims.size() != 0){
+            $$->symbol.size = $$->symbol.size/$$->symbol.type.dims[0];
+            $$->symbol.type.dims.erase($$->symbol.type.dims.begin());
+        } 
+
+        genArrayAccess2($$,$1,$3);
+
+        //buildVal($$);
     }
 
 PostfixExpression: 
@@ -3282,6 +3300,7 @@ LeftHandSide:
             //$$->symbol.type = lookup_entry->type;
         }
         $$->symbol.type.name = $1->symbol.type.name;
+        $$->val.place = $1->symbol.name + "[" + $1->val.place + "]";
         //cout << $$->symbol.type.name <<endl;
     }
 
@@ -3347,12 +3366,14 @@ int yyerror(string s)
 {
     cout << s << " at [ line number: " << line_number << " ] \nExiting...\n";
     err = 1;
+    //exit(1);
 }
 
 int semantic_error(string s)
 {
     cout << s <<endl <<endl;
     err = 1;
+    //exit(1);
 }
 
 int main(int argc , char** argv)
