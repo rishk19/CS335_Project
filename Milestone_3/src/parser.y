@@ -164,20 +164,20 @@ Literal:
 IntegerLiteral: 
     DecimalIntegerLiteral {
         $$ = makeleaf($1);
-        $$->symbol.type.name = "int";
+        $$->symbol.type.name = "byte";
         $$->symbol.size = 4;
 
         buildVal($$);
     }
     | HexIntegerLiteral {
         $$ = makeleaf($1);
-        $$->symbol.type.name = "int";
+        $$->symbol.type.name = "byte";
         $$->symbol.size = 4;
         buildVal($$);
     }
     | OctalIntegerLiteral {
         $$ = makeleaf($1);
-        $$->symbol.type.name = "int";
+        $$->symbol.type.name = "byte";
         $$->symbol.size = 4;
         buildVal($$);
     }
@@ -1550,7 +1550,7 @@ LocalVariableDeclaration:
                     }
 
                     else{
-                            if(isTypeCompatible($$->symbol.type.name, $2->arr[j]->arr[1]->symbol.type.name)){
+                            if(isAssignmentCompatible($$->symbol.type.name, $2->arr[j]->arr[1]->symbol.type.name)){
                                 long long int x = loc_insert(curr,$$->symbol);
                                 if(x<0)
                                 {
@@ -3340,14 +3340,12 @@ int yyerror(string s)
 {
     cout << s << " at [ line number: " << line_number << " ] \nExiting...\n";
     err = 1;
-    exit(1);
 }
 
 int semantic_error(string s)
 {
     cout << s <<endl <<endl;
     err = 1;
-    exit(1);
 }
 
 int main(int argc , char** argv)

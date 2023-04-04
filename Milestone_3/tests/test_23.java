@@ -5,7 +5,7 @@ class One {
     }
 }
   
-class Two extends One {
+class Two {
   
     public static void main(int args[])
     {

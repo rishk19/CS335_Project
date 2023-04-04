@@ -3,7 +3,7 @@ class bubblesort {
 
     int sort(int arr[], int len) {
         int n = len;
-        int temp, i, j;
+        //int temp, i, j;
         for(i=0; i < n; i++){
             for(j=1; j < (n-i); j++){
                 if(arr[j-1] > arr[j]){
