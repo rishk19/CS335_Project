@@ -2,8 +2,9 @@ class short_circuit{
     int printInt(int n);
     public static void main(int k)
     {
-        int a = 0;
-        a = 1 + 2 + 3*4*6+7-8;
+        int a = 0 + 2;
+        float b = 2.3f;
+        a = a + b;
         printInt(a);
     }
  }

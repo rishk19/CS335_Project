@@ -1,7 +1,7 @@
 #include "../Includes.hpp"
 
 using namespace std;
-long long int glob_insert(long long int line_num, string scope, string methodName, struct Type type, struct SymbolTable* curr, struct GlobalSymbolTable* glob)
+long long int glob_insert(long long int line_num, string scope, string methodName, struct Type type, struct SymbolTable* curr, struct GlobalSymbolTable* glob, struct Value tac)
 {   
 
     struct GlobalSymbol * glob_entry = glob_lookup(scope, methodName,glob);
@@ -14,9 +14,11 @@ long long int glob_insert(long long int line_num, string scope, string methodNam
     entry.LocalSymbolTable = curr;
     entry.methodName = methodName;
     entry.type = type;
+    entry.tac = tac;
 
     glob->scope_hash[scope+"::"+methodName] = glob->entries.size();
     glob->entries.push_back(entry);
+
 
     return 0;
 }
@@ -36,9 +38,22 @@ void viewGlobal(struct GlobalSymbolTable* glob_table){
         cout <<glob_table->entries[i].scope << "::";
         cout <<glob_table->entries[i].methodName <<endl <<endl;
         view_type(glob_table->entries[i].type);
+        cout << "xxxxxxxxxxxxxxxxxx 3 A C xxxxxxxxxxxxxxxx" <<endl;
+        printThreeAC(glob_table->entries[i].tac);
         cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" <<endl;
         if(glob_table->entries[i].LocalSymbolTable != NULL)
         view_symbol_table_with_children_hierarchy(glob_table->entries[i].LocalSymbolTable);
+        cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" <<endl;
+        cout << endl;
+    }
+
+}
+
+void viewGlobalTac(struct GlobalSymbolTable* glob_table){
+
+    for(int i = 0; i<glob_table->entries.size(); i++){
+        cout << "xxxxxxxxxxxxxxxxxx 3 A C xxxxxxxxxxxxxxxx" <<endl;
+        printThreeAC(glob_table->entries[i].tac);
         cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" <<endl;
         cout << endl;
     }

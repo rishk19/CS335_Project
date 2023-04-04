@@ -217,6 +217,7 @@ int buildVal(struct node* E){
     if(E==NULL)
         return -1;
     E->val.place = string(E->data);
+    // cout <<"line "<<E->symbol.line_num <<" tac:buildVal: "<<E->val.place <<endl;
     E->val.code.clear();
     E->val.label.clear();
 
@@ -255,9 +256,34 @@ int buildTAC(struct node* E[], int n, int flag){
         case BINARY_CODE:
             
             if(n == 4){
+               
+                //assuming semantic error has been handled for max_type()
+                string op_type = max_type(E[1]->symbol.type.name,E[2]->symbol.type.name);
+                
+                if(op_type!=E[1]->symbol.type.name){
+                    string temp2 = makeNewTemp(newTempLabel);
+                    newTempLabel = newTempLabel + 1;
+                    genUnaryOperatorCode(E[0]->val, E[1]->val, temp2, "cast_to_"+op_type+" ");
+                }
+                
+                if(op_type!=E[2]->symbol.type.name){
+                    string temp2 = makeNewTemp(newTempLabel);
+                    newTempLabel = newTempLabel + 1;
+                    genUnaryOperatorCode(E[0]->val, E[2]->val, temp2, "cast_to_"+op_type+" ");
+                }
+
                 temp = makeNewTemp(newTempLabel);
                 newTempLabel = newTempLabel + 1;
-                genBinaryOperatorCode(E[0]->val, E[1]->val, E[2]->val, temp, string(E[3]->data));
+                
+                if(isNumericType(op_type)){
+                    op_type = " "+string(E[3]->data)+op_type+" ";
+                }
+                else{
+                    op_type = " "+string(E[3]->data)+" ";
+                }
+                
+                genBinaryOperatorCode(E[0]->val, E[1]->val, E[2]->val, temp, op_type);
+            
             }
             break;
         
@@ -321,4 +347,13 @@ int buildTAC(struct node* E[], int n, int flag){
 
     return 0;
 
+}
+
+void printThreeAC(Value val){
+    int n = val.code.size();
+    for(int i = 0; i<n; i++){
+        cout << val.code[i] <<endl;
+    }
+
+    return ;
 }

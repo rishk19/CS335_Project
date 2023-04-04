@@ -71,3 +71,30 @@ int isNumericType(string type_1)
     }
     return 0;
 }
+
+int isAssignmentCompatible(string type_1, string type_2){
+    //we are checking type_1 <Expression> = type_2 <Expression>
+    if(type_1 == type_2)
+        return 1;
+    else if(isNumericType(type_1)!=1 ||isNumericType(type_1)!=1)
+        return 0;
+    else{
+        if(type_1 == "double"){
+            return 1;
+        }
+        if(type_1 == "float" && type_2 != "double"){
+            return 1;
+        }
+        if(type_1 == "long" && (type_2 != "double" && type_2!= "float")){
+            return 1;
+        }
+        if(type_1 == "int" && (type_2 != "double" && type_2!= "float" && type_2!= "long")){
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+    
+    return 0;
+}

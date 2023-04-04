@@ -37,6 +37,8 @@ int genMethodInvocationCode(Value &S, Value &E, string methodName, string temp);
 int buildTAC(struct node* E[], int n, int flag);
 int buildVal(struct node* E);
 
+void printThreeAC(Value val); 
+
 extern int newTempLabel;
 extern Value dummyVal;
 

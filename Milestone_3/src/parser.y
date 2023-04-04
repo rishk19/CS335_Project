@@ -911,10 +911,18 @@ MethodDeclaration:
         }
         struct node* E[3];
         E[0] = $$;
+        string str = class_name + "::" + string(E[0]->symbol.name) +" : ";
+        pushCode(E[0]->val,str);
+        pushCode(E[0]->val,"begin_func");
         E[1] = $1;
         E[2] = $2;
         buildTAC(E, 3, APPEND_CODE);
-
+        pushCode(E[0]->val, "end_func");
+        struct GlobalSymbol* globEntry =  glob_lookup(class_name, $1->symbol.name, glob_table);
+        if(globEntry == NULL){
+            semantic_error("Uncaught error!!!");
+        }
+        globEntry->tac = $$->val;
     }
 
 MethodHeader:
@@ -946,14 +954,15 @@ MethodHeader:
         }
 
 
-       long long int x = glob_insert(line_number, class_name,$$->symbol.name,$$->symbol.type,curr,glob_table);
-       if(x < 0){
-        semantic_error("Method declaration at line number " + to_string(line_number)+ " is invalid as constructor already with same name declared at line number " + to_string(-x) +".");
-       }
         struct node* E[2];
         E[0] = $$;
         E[1] = $3;
         buildTAC(E, 2, COPY_CODE);
+       long long int x = glob_insert(line_number, class_name,$$->symbol.name,$$->symbol.type,curr,glob_table,$$->val);
+
+       if(x < 0){
+        semantic_error("Method declaration at line number " + to_string(line_number)+ " is invalid as constructor already with same name declared at line number " + to_string(-x) +".");
+       }
         
     }
     | Modifiers_opt Void MethodDeclarator Throws_opt {
@@ -983,14 +992,14 @@ MethodHeader:
             $$->symbol.type.parameters_type.push_back($3->symbol.type.parameters_type[i]);
         }
 
-        long long int x = glob_insert(line_number,class_name,$$->symbol.name,$$->symbol.type,curr,glob_table);
-        if(x < 0){
-            semantic_error("Method declaration at line number " + to_string(line_number)+ " is invalid as constructor already with same name declared at line number " + to_string(-x) +".");
-        }
         struct node* E[2];
         E[0] = $$;
         E[1] = $3;
         buildTAC(E, 2, COPY_CODE);
+        long long int x = glob_insert(line_number,class_name,$$->symbol.name,$$->symbol.type,curr,glob_table, $$->val);
+        if(x < 0){
+            semantic_error("Method declaration at line number " + to_string(line_number)+ " is invalid as constructor already with same name declared at line number " + to_string(-x) +".");
+        }
 
     }
 
@@ -1170,15 +1179,15 @@ ConstructorDeclaration:
             
         }
 
-        long long int x = glob_insert(line_number,class_name,$$->symbol.name,$$->symbol.type,curr,glob_table);
-        if(x < 0){
-            semantic_error("Constructor declaration at line number " + to_string(line_number)+ " is invalid as constructor already defined at line number " + to_string(-x) +".");
-        }
         struct node* E[3];
         E[0] = $$;
         E[1] = $1;
         E[2] = $4;
         buildTAC(E, 3, APPEND_CODE);
+        long long int x = glob_insert(line_number,class_name,$$->symbol.name,$$->symbol.type,curr,glob_table, $$->val);
+        if(x < 0){
+            semantic_error("Constructor declaration at line number " + to_string(line_number)+ " is invalid as constructor already defined at line number " + to_string(-x) +".");
+        }
     }
 
 ConstructorDeclarator: 
@@ -1852,6 +1861,8 @@ Expression_opt: {
         E[0] = $$;
         E[1] = $1;
         buildTAC(E, 2, COPY_CODE);
+        //cout << $$->val.place <<endl;
+        // printThreeAC($1->val);
     }
 
 ForUpdate_opt: { 
@@ -1952,13 +1963,16 @@ ReturnStatement:
         struct node * memArr[1];
         memArr[0] =$2;
         $$ = makeInternalNode("return", memArr, 1, 1);
-        buildVal(makeleaf($1));
+        // buildVal(makeleaf($1));
+        // printThreeAC($2->val);
         struct node* E[3];
         E[0] = $$;
         E[1] = makeleaf($1);
         buildVal(E[1]);
         E[2] = $2;
         buildTAC(E, 3, APPEND_CODE);
+        string str = "return "+string($2->val.place);
+        pushCode($$->val,str);
     }
 
 ThrowStatement: 
@@ -3359,15 +3373,16 @@ int main(int argc , char** argv)
     yyparse();
     
     
-    if(err == 0){
-        // No syntax or semantic error
-        int limit = root->val.code.size();
-        for(int iter = 0; iter < limit/2; iter++)
-            cout << root->val.code[iter]<<endl; 
-    }
+    // if(err == 0){
+    //     // No syntax or semantic error
+    //     int limit = root->val.code.size();
+    //     for(int iter = 0; iter < limit/2; iter++)
+    //         cout << root->val.code[iter]<<endl; 
+    // }
     
     //// view_symbol_table(*glob_class_scope);
-    //viewGlobal(glob_table);
+    // viewGlobal(glob_table);
+    viewGlobalTac(glob_table);
     FILE* graph = fopen(output_file,"w");
     fprintf(graph, "digraph AST{ \n");
     generateGraph(root, graph);

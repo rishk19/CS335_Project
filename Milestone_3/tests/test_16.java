@@ -1,6 +1,7 @@
 class linked_list_search{
     int append(int l,int a){
-      return l;
+      l  = l + a;
+      return l+2;
     }
     int printInt(int n);
     int next(int l);
