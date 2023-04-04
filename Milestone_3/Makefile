@@ -1,56 +1,76 @@
-CC = g++-12
+CC = g++
+TEST_DIR = tests
+OUTPUT_DIR = output
+BIN_DIR = bin
+SRC_DIR = src
+
 test:
 	clear
 	@read -p "Enter Serial Number of Test Case : " IMAGE;\
-	./bin/parser --input= ./tests/test_$${IMAGE}.java --output = ./output/test_$${IMAGE}.dot ;\
-	# dot -Tpdf ./output/test_$${IMAGE}.dot -o ./output/test_$${IMAGE}.pdf ;\
+	./$(BIN_DIR)/parser --input= ./$(TEST_DIR)/test_$${IMAGE}.java --output = ./$(OUTPUT_DIR)/test_$${IMAGE}.dot ;\
+	# dot -Tpdf ./$(OUTPUT_DIR)/test_$${IMAGE}.dot -o ./$(OUTPUT_DIR)/test_$${IMAGE}.pdf ;\
 
 clean:
-	rm -r bin
-	rm -r output
+	rm -r $(BIN_DIR)
+	rm -r $(OUTPUT_DIR)
 	clear
 
 parse:
 	clear
-	mkdir bin
-	flex -o bin/lex.yy.c src/tokenizer.l 
-	bison -d -t -o bin/parser.tab.cc src/parser.y 
+	mkdir $(BIN_DIR)
+	flex -o $(BIN_DIR)/lex.yy.c $(SRC_DIR)/tokenizer.l 
+	bison -d -t -o $(BIN_DIR)/parser.tab.cc $(SRC_DIR)/parser.y 
 	make parser
-	mkdir output
+	mkdir $(OUTPUT_DIR)
 	clear
 
 parser: Type.o SymbolTable.o GlobalSymbolTable.o Tac.o Graph_maker.o Node.o Tokenizer.o Flag_extraction.o TypeChecking.o Main.o
-	$(CC) bin/Type.o bin/SymbolTable.o bin/GlobalSymbolTable.o bin/Tac.o bin/Graph_maker.o bin/Node.o bin/Main.o bin/Tokenizer.o bin/Flag_extraction.o bin/TypeChecking.o -o bin/parser
+	$(CC) $(BIN_DIR)/Type.o $(BIN_DIR)/SymbolTable.o $(BIN_DIR)/GlobalSymbolTable.o $(BIN_DIR)/Tac.o $(BIN_DIR)/Graph_maker.o $(BIN_DIR)/Node.o $(BIN_DIR)/Main.o $(BIN_DIR)/Tokenizer.o $(BIN_DIR)/Flag_extraction.o $(BIN_DIR)/TypeChecking.o -o $(BIN_DIR)/parser
 
-Type.o: src/DataStructures/Type.cpp src/DataStructures/Type.hpp src/Includes.hpp
-	$(CC) -c src/DataStructures/Type.cpp -o bin/Type.o
+Type.o: $(SRC_DIR)/DataStructures/Type.cpp $(SRC_DIR)/DataStructures/Type.hpp $(SRC_DIR)/Includes.hpp
+	$(CC) -c $(SRC_DIR)/DataStructures/Type.cpp -o $(BIN_DIR)/Type.o
 
-SymbolTable.o: src/DataStructures/SymbolTable.cpp src/Includes.hpp
-	$(CC) -c src/DataStructures/SymbolTable.cpp -o bin/SymbolTable.o
+SymbolTable.o: $(SRC_DIR)/DataStructures/SymbolTable.cpp $(SRC_DIR)/Includes.hpp
+	$(CC) -c $(SRC_DIR)/DataStructures/SymbolTable.cpp -o $(BIN_DIR)/SymbolTable.o
 
-GlobalSymbolTable.o: src/DataStructures/GlobalSymbolTable.cpp src/Includes.hpp
-	$(CC) -c src/DataStructures/GlobalSymbolTable.cpp -o bin/GlobalSymbolTable.o
+GlobalSymbolTable.o: $(SRC_DIR)/DataStructures/GlobalSymbolTable.cpp $(SRC_DIR)/Includes.hpp
+	$(CC) -c $(SRC_DIR)/DataStructures/GlobalSymbolTable.cpp -o $(BIN_DIR)/GlobalSymbolTable.o
 
-Tac.o: src/DataStructures/Tac.cpp src/Includes.hpp
-	$(CC) -c src/DataStructures/Tac.cpp -o bin/Tac.o
+Tac.o: $(SRC_DIR)/DataStructures/Tac.cpp $(SRC_DIR)/Includes.hpp
+	$(CC) -c $(SRC_DIR)/DataStructures/Tac.cpp -o $(BIN_DIR)/Tac.o
 
-Graph_maker.o: src/GraphGeneration/graph_maker.cpp src/Includes.hpp
-	$(CC) -c src/GraphGeneration/graph_maker.cpp -o bin/Graph_maker.o
+Graph_maker.o: $(SRC_DIR)/GraphGeneration/graph_maker.cpp $(SRC_DIR)/Includes.hpp
+	$(CC) -c $(SRC_DIR)/GraphGeneration/graph_maker.cpp -o $(BIN_DIR)/Graph_maker.o
 
-Node.o: src/GraphGeneration/node.cpp src/Includes.hpp
-	$(CC) -c src/GraphGeneration/node.cpp -o bin/Node.o
+Node.o: $(SRC_DIR)/GraphGeneration/node.cpp $(SRC_DIR)/Includes.hpp
+	$(CC) -c $(SRC_DIR)/GraphGeneration/node.cpp -o $(BIN_DIR)/Node.o
 
-Main.o: bin/parser.tab.cc src/Includes.hpp
-	$(CC) -c bin/parser.tab.cc -o bin/Main.o
+Main.o: $(BIN_DIR)/parser.tab.cc $(SRC_DIR)/Includes.hpp
+	$(CC) -c $(BIN_DIR)/parser.tab.cc -o $(BIN_DIR)/Main.o
 
-Tokenizer.o: bin/lex.yy.c bin/parser.tab.hh
-	$(CC) -c bin/lex.yy.c -o bin/Tokenizer.o
+Tokenizer.o: $(BIN_DIR)/lex.yy.c $(BIN_DIR)/parser.tab.hh
+	$(CC) -c $(BIN_DIR)/lex.yy.c -o $(BIN_DIR)/Tokenizer.o
 
-Flag_extraction.o : src/FlagExtraction/Flag_extraction.cpp src/Includes.hpp
-	$(CC) -c src/FlagExtraction/Flag_extraction.cpp -o bin/Flag_extraction.o
+Flag_extraction.o : $(SRC_DIR)/FlagExtraction/Flag_extraction.cpp $(SRC_DIR)/Includes.hpp
+	$(CC) -c $(SRC_DIR)/FlagExtraction/Flag_extraction.cpp -o $(BIN_DIR)/Flag_extraction.o
 
-TypeChecking.o : src/TypeSystem/TypeChecking.cpp src/Includes.hpp
-	$(CC) -c src/TypeSystem/TypeChecking.cpp -o bin/TypeChecking.o
+TypeChecking.o : $(SRC_DIR)/TypeSystem/TypeChecking.cpp $(SRC_DIR)/Includes.hpp
+	$(CC) -c $(SRC_DIR)/TypeSystem/TypeChecking.cpp -o $(BIN_DIR)/TypeChecking.o
 
 all: clean parse
 
+
+list: $(TEST_DIR)/*
+	for file in $^ ; do \
+			(( out_file = (file:.java=.3ac) )) ;\
+            echo "Hello" $${file} ; \
+    done
+
+test_many:
+	clear
+	@read -p "Enter Number of Test Case [n] you want to run : " IMAGE;\
+	number = 1 ;\
+	while [[ $$number -le $$IMAGE ]] ; do \
+		./$(BIN_DIR)/parser --input= ./$(TEST_DIR)/test_$${number}.java --output = ./$(OUTPUT_DIR)/test_$${number}.3ac ;\
+		((number = number + 1)); \
+	done
