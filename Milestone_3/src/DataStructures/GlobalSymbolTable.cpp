@@ -59,3 +59,15 @@ void viewGlobalTac(struct GlobalSymbolTable* glob_table){
     }
 
 }
+
+void generateTac(FILE* graph, struct GlobalSymbolTable* glob_table){
+    for(int i = 0; i<glob_table->entries.size(); i++){
+        cout<<endl;
+        Value tac = glob_table->entries[i].tac;
+        for(int j = 0; j<tac.code.size(); j++){
+            cout <<tac.code[j]<<endl;
+            // fprintf(graph,"%s\n",&tac.code[j]);
+        }
+        cout<<endl;
+    }
+}

@@ -3433,9 +3433,15 @@ int main(int argc , char** argv)
     // viewGlobal(glob_table);
     viewGlobalTac(glob_table);
     FILE* graph = fopen(output_file,"w");
-    fprintf(graph, "digraph AST{ \n");
-    generateGraph(root, graph);
-    fprintf(graph, "} \n");
+    if(err == 0){
+        ofstream cout(output_file);
+        generateTac(graph, glob_table);
+    }
+    // fprintf(graph, "digraph AST{ \n");
+    // if(err == 0){
+    //     generateGraph(root, graph);
+    // }
+    // fprintf(graph, "} \n");
     fclose(graph);
     fclose(yyin);
 

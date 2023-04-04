@@ -27,6 +27,8 @@ struct GlobalSymbol* glob_lookup(string, string, struct GlobalSymbolTable * );
 void viewGlobal(struct GlobalSymbolTable* glob_table);
 //struct GlobalSymbol* glob_lookup(string scope, string methodName, struct GlobalSymbolTable * glob)
 void viewGlobalTac(struct GlobalSymbolTable* glob_table);
+void generateTac(FILE* graph, struct GlobalSymbolTable* glob_table);
+
 
 
 #endif

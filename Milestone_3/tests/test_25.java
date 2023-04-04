@@ -8,7 +8,6 @@ class short_circuit{
 
         int a = 0 + 2;
         float b = 2.3f;
-        a = a + b;
         int arr[][][] = new int [10][500][4];
         arr[6][4+7*8][1] = 2+9*7;
 
