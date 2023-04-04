@@ -1,11 +1,9 @@
 class short_circuit{
-
-    int a = 1;
-    int arr[] = new int[5];
-
+    int printInt(int n);
     public static void main(int k)
     {
-        int a = 'c';
-        double []arr[] = new double[7][2];
+        int a = 0;
+        a = 1 + 2 + 3*4*6+7-8;
+        printInt(a);
     }
  }

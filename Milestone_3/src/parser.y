@@ -133,32 +133,32 @@ Literal:
         $$ = makeleaf($1);
         $$->symbol.type.name = "float";
         $$->symbol.size = 4;
-        //buildVal($$);
+        buildVal($$);
     }
     | BooleanLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "boolean";
         $$->symbol.size = 1;
 
-        //buildVal($$);
+        buildVal($$);
     }
     | CharacterLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "char";
         $$->symbol.size = 2;
-        //buildVal($$);
+        buildVal($$);
     }
     | StringLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "string";
         $$->symbol.size = 8;
-        //buildVal($$);
+        buildVal($$);
     }
     | NullLiteral{
         $$ = makeleaf($1);
         $$->symbol.type.name = "null";
         $$->symbol.size = 8;
-        //buildVal($$);
+        buildVal($$);
     }
 
 IntegerLiteral: 
@@ -167,19 +167,19 @@ IntegerLiteral:
         $$->symbol.type.name = "int";
         $$->symbol.size = 4;
 
-        //buildVal($$);
+        buildVal($$);
     }
     | HexIntegerLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "int";
         $$->symbol.size = 4;
-        //buildVal($$);
+        buildVal($$);
     }
     | OctalIntegerLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "int";
         $$->symbol.size = 4;
-        //buildVal($$);
+        buildVal($$);
     }
 
 Type: 
@@ -314,13 +314,13 @@ SimpleName:
         struct Symbol* lookup_entry = check_scope(curr,$1);      
         if(lookup_entry != NULL){
             $$->symbol = *lookup_entry;
-        }//buildVal($$);
+        }buildVal($$);
     }
 
 QualifiedName: 
     Name Dot Identifier {
         $$ = makeleaf(concatenate_string($1->data,concatenate_string($2,$3)));
-        //buildVal($$);
+        buildVal($$);
     }
 
 CompilationUnit: 
@@ -334,7 +334,7 @@ CompilationUnit:
         struct node*E[2];
         E[0] = $$;
         E[1] = $3;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
 
 ImportDeclarations_opt : 
@@ -372,7 +372,7 @@ TypeDeclarations_opt :
         struct node*E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
 
 TypeDeclarations: 
@@ -384,7 +384,7 @@ TypeDeclarations:
         struct node*E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
     | TypeDeclarations TypeDeclaration {
         struct node * memArr[2];
@@ -396,7 +396,7 @@ TypeDeclarations:
         E[0] = $$;
         E[1] = $1;
         E[2] = $2;
-        //buildTAC(E, 3, APPEND_CODE);
+        buildTAC(E, 3, APPEND_CODE);
     }
 
 PackageDeclaration_opt : 
@@ -525,7 +525,7 @@ ClassDeclaration:
         struct node* E[2];
         E[0] = $$;
         E[1] = $3;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
 
 Modifiers_opt : { 
@@ -584,7 +584,7 @@ ClassBody:
         struct node* E[2];
         E[0] = $$;
         E[1] = $2;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
 
 ClassBodyDeclarations_opt : { 
@@ -597,7 +597,7 @@ ClassBodyDeclarations_opt : {
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
         
     }
 
@@ -609,7 +609,7 @@ ClassBodyDeclarations:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
 
     }
     | ClassBodyDeclarations ClassBodyDeclaration {
@@ -621,7 +621,7 @@ ClassBodyDeclarations:
         E[0] = $$;
         E[1] = $1;
         E[2] = $2;
-        //buildTAC(E, 3, APPEND_CODE);
+        buildTAC(E, 3, APPEND_CODE);
     }
 
 ClassBodyDeclaration: 
@@ -805,7 +805,7 @@ FieldDeclaration:
         struct node* E[2];
         E[0] = $$;
         E[1] = $3;
-        //buildTAC(E, 2, COPY_CODE);  
+        buildTAC(E, 2, COPY_CODE);  
 
 
 
@@ -819,7 +819,7 @@ VariableDeclarators:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
 
     }
     | VariableDeclarators Comma VariableDeclarator {
@@ -831,7 +831,7 @@ VariableDeclarators:
         E[0] = $$;
         E[1] = $1;
         E[2] = $3;
-        //buildTAC(E, 2, APPEND_CODE);
+        buildTAC(E, 2, APPEND_CODE);
     }
 
 VariableDeclarator: 
@@ -858,10 +858,10 @@ VariableDeclarator:
         struct node* E[2];
         E[0] = $1;
         E[1] = $3;
-        //buildTAC(E, 2, ASSIGN_CODE);
+        buildTAC(E, 2, ASSIGN_CODE);
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
 
         // $$->symbol.type.name holds the type of variable initializer
         $$->t = 4;
@@ -876,13 +876,13 @@ VariableDeclaratorId:
         $$ = makeleaf($1);
         string temp  = string($1);
         $$->symbol.name = temp;
-        //buildVal($$);
+        buildVal($$);
     }
     | VariableDeclaratorId LeftSquareBracket RightSquareBracket {
         $$ = makeleaf(concatenate_string($1->data,"[]"));
         string temp = string($1->data) + "[]";
         $$->symbol.name = temp;
-        //buildVal($$);
+        buildVal($$);
     }
 
 VariableInitializer:
@@ -913,7 +913,7 @@ MethodDeclaration:
         E[0] = $$;
         E[1] = $1;
         E[2] = $2;
-        //buildTAC(E, 3, APPEND_CODE);
+        buildTAC(E, 3, APPEND_CODE);
 
     }
 
@@ -953,7 +953,7 @@ MethodHeader:
         struct node* E[2];
         E[0] = $$;
         E[1] = $3;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
         
     }
     | Modifiers_opt Void MethodDeclarator Throws_opt {
@@ -990,7 +990,7 @@ MethodHeader:
         struct node* E[2];
         E[0] = $$;
         E[1] = $3;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
 
     }
 
@@ -1023,7 +1023,7 @@ MethodDeclarator:
         struct node* E[2];
         E[0] = $$;
         E[1] = $4;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
     | MethodDeclarator LeftSquareBracket RightSquareBracket {
         struct node * memArr[1];
@@ -1034,7 +1034,7 @@ MethodDeclarator:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
 
 FormalParameterList_opt : {
@@ -1048,7 +1048,7 @@ FormalParameterList_opt : {
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
 
 FormalParameterList: 
@@ -1059,7 +1059,7 @@ FormalParameterList:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
         
     }
     | FormalParameterList Comma FormalParameter{
@@ -1071,7 +1071,7 @@ FormalParameterList:
         E[0] = $$;
         E[1] = $1;
         E[2] = $3;
-        //buildTAC(E, 3, APPEND_CODE);
+        buildTAC(E, 3, APPEND_CODE);
     }
 
 FormalParameter: 
@@ -1106,7 +1106,7 @@ FormalParameter:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);        
+        buildTAC(E, 2, COPY_CODE);        
     }
 
 Throws: 
@@ -1147,7 +1147,7 @@ StaticInitializer:
         struct node* E[2];
         E[0] = $$;
         E[1] = $3;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
 
 ConstructorDeclaration: 
@@ -1178,7 +1178,7 @@ ConstructorDeclaration:
         E[0] = $$;
         E[1] = $1;
         E[2] = $4;
-        //buildTAC(E, 3, APPEND_CODE);
+        buildTAC(E, 3, APPEND_CODE);
     }
 
 ConstructorDeclarator: 
@@ -1212,7 +1212,7 @@ ConstructorDeclarator:
         struct node* E[2];
         E[0] = $$;
         E[1] = $4;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
         
     }
 
@@ -1226,7 +1226,7 @@ ConstructorBody:
         E[0] = $$;
         E[1] = $2;
         E[2] = $3;
-        //buildTAC(E, 3, APPEND_CODE);
+        buildTAC(E, 3, APPEND_CODE);
     }
 
 ExplicitConstructorInvocation_opt : { 
@@ -1239,7 +1239,7 @@ ExplicitConstructorInvocation_opt : {
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
 
 ExplicitConstructorInvocation: 
@@ -1250,7 +1250,7 @@ ExplicitConstructorInvocation:
         struct node* E[2];
         E[0] = $$;
         E[1] = $3;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
     | Super LeftParanthesis ArgumentList_opt RightParanthesis Semicolon {
         struct node* memArr[1];
@@ -1260,7 +1260,7 @@ ExplicitConstructorInvocation:
         struct node* E[2];
         E[0] = $$;
         E[1] = $3;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
 */
 ArgumentList_opt: {
@@ -1274,7 +1274,7 @@ ArgumentList_opt: {
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);        
+        buildTAC(E, 2, COPY_CODE);        
     }
 
 InterfaceDeclaration: 
@@ -1372,7 +1372,7 @@ VariableInitializers_opt: {
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);  
+        buildTAC(E, 2, COPY_CODE);  
     }
 
 Comma_opt : {
@@ -1390,7 +1390,7 @@ VariableInitializers:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);  
+        buildTAC(E, 2, COPY_CODE);  
     }
     | VariableInitializers Comma VariableInitializer {
         struct node* memArr[2];
@@ -1401,7 +1401,7 @@ VariableInitializers:
         E[0] = $$;
         E[1] = $1;
         E[2] = $3;
-        //buildTAC(E, 3, APPEND_CODE);  
+        buildTAC(E, 3, APPEND_CODE);  
     }
 
 Block: 
@@ -1430,7 +1430,7 @@ BlockStatements_opt : {
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);  
+        buildTAC(E, 2, COPY_CODE);  
     }
 
 BlockStatements: 
@@ -1441,7 +1441,7 @@ BlockStatements:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE); 
+        buildTAC(E, 2, COPY_CODE); 
     }
     | BlockStatements BlockStatement {
         struct node* memArr[2];
@@ -1452,7 +1452,7 @@ BlockStatements:
         E[0] = $$;
         E[1] = $1;
         E[2] = $2;
-        //buildTAC(E, 3, APPEND_CODE);  
+        buildTAC(E, 3, APPEND_CODE);  
         
     }
 
@@ -1464,7 +1464,7 @@ BlockStatement:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
     | Statement {
         struct node* memArr[1];
@@ -1473,7 +1473,7 @@ BlockStatement:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
 
     }
 
@@ -1485,7 +1485,7 @@ LocalVariableDeclarationStatement:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
 
 LocalVariableDeclaration: 
@@ -1566,12 +1566,15 @@ LocalVariableDeclaration:
         struct node* E[2];
         E[0] = $$;
         E[1] = $2;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
 
 Statement: 
     StatementWithoutTrailingSubstatement {
         $$ = $1;
+        // for(int i = 0; i < $$->val.code.size(); i++){
+        //     cout <<"line: 1576 "<<$$->val.code[i] << " "<<endl;
+        // }
     }
     | LabeledStatement {
         $$ = $1;
@@ -1609,12 +1612,18 @@ StatementNoShortIf:
 StatementWithoutTrailingSubstatement: 
     Block{
         $$ = $1;
+        // for(int i = 0; i < $$->val.code.size(); i++){
+        //     cout <<"line: 1616 "<<$$->val.code[i] << " "<<endl;
+        // }
     }
     | EmptyStatement {
         $$ = NULL;
     }
     | ExpressionStatement {
         $$ = $1;
+        // for(int i = 0; i < $$->val.code.size(); i++){
+        //     cout <<"line: 1625 "<<$$->val.code[i] << " "<<endl;
+        // }
     }
     | BreakStatement {
         $$ = $1;
@@ -1649,9 +1658,9 @@ LabeledStatement:
         struct node* E[3];
         E[0] = $$;
         E[1] = makeleaf($1);
-        //buildVal(E[1]);
+        buildVal(E[1]);
         E[2] = $3;
-        //buildTAC(E, 3, APPEND_CODE);
+        buildTAC(E, 3, APPEND_CODE);
     }
 
 LabeledStatementNoShortIf: 
@@ -1663,14 +1672,17 @@ LabeledStatementNoShortIf:
         struct node* E[3];
         E[0] = $$;
         E[1] = makeleaf($1);
-        //buildVal(E[1]);
+        buildVal(E[1]);
         E[2] = $3;
-        //buildTAC(E, 3, APPEND_CODE);
+        buildTAC(E, 3, APPEND_CODE);
     }
 
 ExpressionStatement: 
     StatementExpression Semicolon {
         $$ = $1;
+        // for(int i = 0; i < $$->val.code.size(); i++){
+        //     cout <<"line: 1684 "<<$$->val.code[i] << " "<<endl;
+        // }
     }
 
 StatementExpression:  
@@ -1706,7 +1718,7 @@ IfThenStatement:
         E[0] = $$;
         E[1] = $4;
         E[2] = $6;
-        //buildTAC(E,3,IF_CODE);
+        buildTAC(E,3,IF_CODE);
     }
 
 IfThenElseStatement: 
@@ -1723,7 +1735,7 @@ IfThenElseStatement:
         E[1] = $4;
         E[2] = $6;
         E[3] = $8;
-        //buildTAC(E,4,IF_CODE);
+        buildTAC(E,4,IF_CODE);
         
     }
 
@@ -1741,7 +1753,7 @@ IfThenElseStatementNoShortIf:
         E[1] = $4;
         E[2] = $6;
         E[3] = $8;
-        //buildTAC(E,4,IF_CODE);
+        buildTAC(E,4,IF_CODE);
         
     }
 
@@ -1757,7 +1769,7 @@ WhileStatement:
         E[0] = $$;
         E[1] = $4;
         E[2] = $6;
-        //buildTAC(E,3,WHILE_CODE);
+        buildTAC(E,3,WHILE_CODE);
         
     }
 
@@ -1772,7 +1784,7 @@ WhileStatementNoShortIf:
         E[0] = $$;
         E[1] = $4;
         E[2] = $6;
-        //buildTAC(E,3,WHILE_CODE);
+        buildTAC(E,3,WHILE_CODE);
     }
 
 ForStatement: 
@@ -1792,7 +1804,7 @@ ForStatement:
         E[2] = $6;
         E[3] = $8;
         E[4] = $10;
-        //buildTAC(E,5,FOR_CODE);
+        buildTAC(E,5,FOR_CODE);
 
     }
 
@@ -1812,7 +1824,7 @@ ForStatementNoShortIf:
         E[2] = $6;
         E[3] = $8;
         E[4] = $10;
-        //buildTAC(E,5,FOR_CODE);
+        buildTAC(E,5,FOR_CODE);
     }
 
 ForInit_opt: { 
@@ -1826,7 +1838,7 @@ ForInit_opt: {
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
 
 Expression_opt: { 
@@ -1839,7 +1851,7 @@ Expression_opt: {
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
 
 ForUpdate_opt: { 
@@ -1852,7 +1864,7 @@ ForUpdate_opt: {
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
 
 ForInit: 
@@ -1863,7 +1875,7 @@ ForInit:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
     | LocalVariableDeclaration {
         struct node * memArr[1];
@@ -1874,7 +1886,7 @@ ForInit:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
 
 ForUpdate: 
@@ -1885,7 +1897,7 @@ ForUpdate:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
 
 StatementExpressionList: 
@@ -1896,7 +1908,7 @@ StatementExpressionList:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
     | StatementExpressionList Comma StatementExpression {
         struct node * memArr[2];
@@ -1907,7 +1919,7 @@ StatementExpressionList:
         E[0] = $$;
         E[1] = $1;
         E[2] = $3;
-        //buildTAC(E, 3, APPEND_CODE);
+        buildTAC(E, 3, APPEND_CODE);
     }
 
 BreakStatement:
@@ -1915,7 +1927,7 @@ BreakStatement:
         struct node * memArr[1];
         memArr[0] =$2;
         $$ = makeInternalNode("break", memArr, 1, 1);
-        //buildVal($$);
+        buildVal($$);
     }
 
 Identifier_opt: 
@@ -1923,7 +1935,7 @@ Identifier_opt:
         $$ = NULL;
     }| Identifier {
         $$ = makeleaf($1);
-        //buildVal($$);
+        buildVal($$);
     }
 
 ContinueStatement: 
@@ -1931,7 +1943,7 @@ ContinueStatement:
         struct node * memArr[1];
         memArr[0] =$2;
         $$ = makeInternalNode("continue", memArr, 1, 1);
-        //buildVal($$);
+        buildVal($$);
 
     }
 
@@ -1940,13 +1952,13 @@ ReturnStatement:
         struct node * memArr[1];
         memArr[0] =$2;
         $$ = makeInternalNode("return", memArr, 1, 1);
-        //buildVal(makeleaf($1));
+        buildVal(makeleaf($1));
         struct node* E[3];
         E[0] = $$;
         E[1] = makeleaf($1);
-        //buildVal(E[1]);
+        buildVal(E[1]);
         E[2] = $2;
-        //buildTAC(E, 3, APPEND_CODE);
+        buildTAC(E, 3, APPEND_CODE);
     }
 
 ThrowStatement: 
@@ -2059,7 +2071,7 @@ ClassInstanceCreationExpression:
         struct GlobalSymbol * glob_entry = glob_lookup($2->symbol.name,$2->symbol.name,glob_table);
 
         if(glob_entry == NULL){
-            //buildVal($$);
+            buildVal($$);
         }
 
         else{
@@ -2089,7 +2101,7 @@ ClassInstanceCreationExpression:
 
         }
 
-        //buildVal($$);
+        buildVal($$);
 
     }
 
@@ -2101,7 +2113,7 @@ ArgumentList:
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        //buildTAC(E, 2, COPY_CODE);
+        buildTAC(E, 2, COPY_CODE);
     }
     | ArgumentList Comma Expression {
         struct node * memArr[2];
@@ -2112,7 +2124,7 @@ ArgumentList:
         E[0] = $$;
         E[1] = $1;
         E[2] = $3;
-        //buildTAC(E, 3, APPEND_CODE);
+        buildTAC(E, 3, APPEND_CODE);
     }
 
 ArrayCreationExpression: 
@@ -2141,7 +2153,7 @@ ArrayCreationExpression:
 
         //view_type($$->symbol.type);
 
-        //buildVal($$);
+        buildVal($$);
     }
     | New ClassOrInterfaceType DimExprs Dims_opt {
 
@@ -2156,7 +2168,7 @@ ArrayCreationExpression:
         memArr[3] =$4;
         $$ = makeInternalNode("ArrayCreation", memArr, 4, 1);
         $$->isDeclaration = DECLARATION;
-        //buildVal($$);
+        buildVal($$);
     }
 
 Dims_opt: { 
@@ -2199,12 +2211,12 @@ FieldAccess:
         $$ = makeleaf(concatenate_string($1->data,$3));
         //string class_in = $1->symbol.type.name;
 
-        //buildVal($$);
+        buildVal($$);
 
     } 
     | Super Dot Identifier {
         $$ = makeleaf(concatenate_string($1,$3));
-        //buildVal($$);
+        buildVal($$);
 
     }
 
@@ -2255,7 +2267,7 @@ MethodInvocation:
         struct node * E[2];
         E[0] = $$;
         E[1] = $3;
-        //buildTAC(E, 2, METHOD_INVOCATION);
+        buildTAC(E, 2, METHOD_INVOCATION);
     } 
     | Primary Dot Identifier LeftParanthesis ArgumentList_opt RightParanthesis {
         struct node * memArr[1];
@@ -2264,7 +2276,7 @@ MethodInvocation:
         struct node * E[2];
         E[0] = $$;
         E[1] = $5;
-        //buildTAC(E, 2, METHOD_INVOCATION);
+        buildTAC(E, 2, METHOD_INVOCATION);
     }
     | Super Dot Identifier LeftParanthesis ArgumentList_opt RightParanthesis {
         struct node * memArr[1];
@@ -2273,7 +2285,7 @@ MethodInvocation:
         struct node * E[2];
         E[0] = $$;
         E[1] = $5;
-        //buildTAC(E, 2, METHOD_INVOCATION);
+        buildTAC(E, 2, METHOD_INVOCATION);
     }
 
 ArrayAccess: 
@@ -2315,7 +2327,7 @@ ArrayAccess:
         {
             semantic_error("Invalid array access at line number " + to_string(line_number) + " as the expression is of type " + $3->symbol.type.name);
         }
-        //buildVal($$);
+        buildVal($$);
     }
     | PrimaryNoNewArray LeftSquareBracket Expression RightSquareBracket {
         struct node * memArr[2];
@@ -2354,7 +2366,7 @@ ArrayAccess:
         {
             semantic_error("Invalid array access at line number " + to_string(line_number) + " as the expression is of type " + $3->symbol.type.name);
         }
-        //buildVal($$);
+        buildVal($$);
     }
 
 PostfixExpression: 
@@ -2397,7 +2409,7 @@ PostIncrementExpression:
             semantic_error("Bad operand types ["  + $1->symbol.type.name + "] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
         }
 
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
     } 
 
 PostDecrementExpression: 
@@ -2419,7 +2431,7 @@ PostDecrementExpression:
             semantic_error("Bad operand types ["  + $1->symbol.type.name + "] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
         }
 
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
     } 
 
 UnaryExpression:
@@ -2446,7 +2458,7 @@ UnaryExpression:
             semantic_error("Bad operand types ["  + $2->symbol.type.name + "] for operator " + string($1) + " at line number " +  to_string(line_number) + ".");
         }
 
-        //buildTAC(E,3,UNARY_CODE);
+        buildTAC(E,3,UNARY_CODE);
 
     }
     | Substraction UnaryExpression {
@@ -2466,7 +2478,7 @@ UnaryExpression:
             semantic_error("Bad operand types ["  + $2->symbol.type.name + "] for operator " + string($1) + " at line number " +  to_string(line_number) + ".");
         }
 
-        //buildTAC(E,3,UNARY_CODE);
+        buildTAC(E,3,UNARY_CODE);
     }
     | UnaryExpressionNotPlusMinus {
         $$ = $1;
@@ -2491,7 +2503,7 @@ PreIncrementExpression:
         else{
             semantic_error("Bad operand types ["  + $2->symbol.type.name + "] for operator " + string($1) + " at line number " +  to_string(line_number) + ".");
         }
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
     } 
 
 PreDecrementExpression: 
@@ -2514,7 +2526,7 @@ PreDecrementExpression:
             semantic_error("Bad operand types ["  + $2->symbol.type.name + "] for operator " + string($1) + " at line number " +  to_string(line_number) + ".");
         }
 
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
     } 
 
 UnaryExpressionNotPlusMinus: 
@@ -2536,7 +2548,7 @@ UnaryExpressionNotPlusMinus:
         else{
             semantic_error("Bad operand types ["  + $2->symbol.type.name + "] for operator " + string($1) + " at line number " +  to_string(line_number) + ".");
         }
-        //buildTAC(E,3,UNARY_CODE);
+        buildTAC(E,3,UNARY_CODE);
     } 
     | NotOperator UnaryExpression {
          struct node * memArr[1];
@@ -2554,7 +2566,7 @@ UnaryExpressionNotPlusMinus:
         else{
             semantic_error("Bad operand types ["  + $2->symbol.type.name + "] for operator " + string($1) + " at line number " +  to_string(line_number) + ".");
         }
-        //buildTAC(E,3,UNARY_CODE);
+        buildTAC(E,3,UNARY_CODE);
     } 
     | CastExpression {
         $$ = $1;
@@ -2569,7 +2581,7 @@ CastExpression:
         struct node* E[2];
         E[0] = $$;
         E[1] = $5;
-        //buildTAC(E,2,COPY_CODE);
+        buildTAC(E,2,COPY_CODE);
     }
     | LeftParanthesis Expression RightParanthesis UnaryExpressionNotPlusMinus {
         struct  node * memArr[2];
@@ -2579,7 +2591,7 @@ CastExpression:
         struct node* E[2];
         E[0] = $$;
         E[1] = $4;
-        //buildTAC(E,2,COPY_CODE);
+        buildTAC(E,2,COPY_CODE);
     }
     | LeftParanthesis Name Dims RightParanthesis UnaryExpressionNotPlusMinus {
         struct node * memArr[1];
@@ -2589,7 +2601,7 @@ CastExpression:
         struct node* E[2];
         E[0] = $$;
         E[1] = $5;
-        //buildTAC(E,2,COPY_CODE);
+        buildTAC(E,2,COPY_CODE);
     }
 
 MultiplicativeExpression: 
@@ -2623,7 +2635,7 @@ MultiplicativeExpression:
         }
 
 
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
     } 
     | MultiplicativeExpression Divide UnaryExpression {
         struct node* memArr[2];
@@ -2652,7 +2664,7 @@ MultiplicativeExpression:
         }
 
 
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
     } 
     | MultiplicativeExpression Modulo UnaryExpression {
         struct node* memArr[2];
@@ -2681,7 +2693,7 @@ MultiplicativeExpression:
         }
 
 
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
     }
 
 AdditiveExpression: 
@@ -2714,7 +2726,8 @@ AdditiveExpression:
             semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
         }
 
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
+        
     }
     | AdditiveExpression Substraction MultiplicativeExpression {
         struct node* memArr[2];
@@ -2742,12 +2755,15 @@ AdditiveExpression:
             semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
         }
 
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
     }
 
 ShiftExpression: 
     AdditiveExpression {
         $$ = $1;
+        // for(int i = 0; i < $$->val.code.size(); i++){
+        //     cout <<"line: 2753 "<<$$->val.code[i] << " "<<endl;
+        // }
     }
     | ShiftExpression LeftShit AdditiveExpression {
         struct node* memArr[2];
@@ -2770,7 +2786,7 @@ ShiftExpression:
         }
 
 
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
     }
     | ShiftExpression RightShift AdditiveExpression {
         struct node* memArr[2];
@@ -2791,7 +2807,7 @@ ShiftExpression:
             semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
         }
 
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
     }
     | ShiftExpression TripleGreaterThan AdditiveExpression {
         struct node* memArr[2];
@@ -2812,12 +2828,15 @@ ShiftExpression:
             semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
         }
 
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
     }
 
 RelationalExpression: 
     ShiftExpression {
         $$ = $1;
+        // for(int i = 0; i < $$->val.code.size(); i++){
+        //     cout <<"line: 2826 "<<$$->val.code[i] << " "<<endl;
+        // }
     }
     | RelationalExpression LessThan ShiftExpression {
         struct node* memArr[2];
@@ -2845,7 +2864,7 @@ RelationalExpression:
         else{
             semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
         }
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
     } 
     | RelationalExpression GreaterThan ShiftExpression {
         struct node* memArr[2];
@@ -2874,7 +2893,7 @@ RelationalExpression:
         else{
             semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
         }
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
     }
     | RelationalExpression LessThanEqualTo ShiftExpression {
         struct node* memArr[2];
@@ -2903,7 +2922,7 @@ RelationalExpression:
         else{
             semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
         }
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
     }
     | RelationalExpression GreaterThanEqualTo ShiftExpression {
         struct node* memArr[2];
@@ -2932,7 +2951,7 @@ RelationalExpression:
         else{
             semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
         }
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
     } 
     | RelationalExpression Instanceof ReferenceType {
         struct node* memArr[2];
@@ -2944,12 +2963,15 @@ RelationalExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
     }
 
 EqualityExpression: 
     RelationalExpression {
         $$ = $1;
+        // for(int i = 0; i < $$->val.code.size(); i++){
+        //     cout <<"line: 2961 "<<$$->val.code[i] << " "<<endl;
+        // }
     }
     | EqualityExpression EqualToEqualTo RelationalExpression {
         struct node* memArr[2];
@@ -2961,7 +2983,7 @@ EqualityExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
         
         if(isTypeCompatible($1->symbol.type.name,$3->symbol.type.name))
         {
@@ -2988,7 +3010,7 @@ EqualityExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
 
         if(isTypeCompatible($1->symbol.type.name,$3->symbol.type.name))
         {
@@ -3009,6 +3031,9 @@ EqualityExpression:
 AndExpression: 
     EqualityExpression {
         $$ = $1;
+        // for(int i = 0; i < $$->val.code.size(); i++){
+        //     cout <<"line: 3023 "<<$$->val.code[i] << " "<<endl;
+        // }
     }
     | AndExpression BitwiseAnd EqualityExpression {
         struct node* memArr[2];
@@ -3030,7 +3055,7 @@ AndExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
     }
 
 ExclusiveOrExpression:
@@ -3058,7 +3083,7 @@ ExclusiveOrExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
     }
 
 InclusiveOrExpression:
@@ -3086,12 +3111,15 @@ InclusiveOrExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
     }
 
 ConditionalAndExpression:
     InclusiveOrExpression {
         $$ = $1;
+        // for(int i = 0; i < $$->val.code.size(); i++){
+        //     cout <<"line: 3109 "<<$$->val.code[i] << " "<<endl;
+        // }
     }
     | ConditionalAndExpression AndOperator InclusiveOrExpression {
         struct node* memArr[2];
@@ -3113,12 +3141,15 @@ ConditionalAndExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
     }
 
 ConditionalOrExpression: 
     ConditionalAndExpression {
         $$ = $1;
+        // for(int i = 0; i < $$->val.code.size(); i++){
+        //     cout <<"line: 3142 "<<$$->val.code[i] << " "<<endl;
+        // }
     }
     | ConditionalOrExpression OrOperator ConditionalAndExpression {
         struct node* memArr[2];
@@ -3140,7 +3171,7 @@ ConditionalOrExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = makeleaf($2);
-        //buildTAC(E,4,BINARY_CODE);
+        buildTAC(E,4,BINARY_CODE);
 
 
     }
@@ -3148,6 +3179,9 @@ ConditionalOrExpression:
 ConditionalExpression: 
     ConditionalOrExpression {
         $$ = $1;
+        // for(int i = 0; i < $$->val.code.size(); i++){
+        //     cout <<"line: 3174 "<<$$->val.code[i] << " "<<endl;
+        // }
     }
     | ConditionalOrExpression QuestionMark Expression Colon ConditionalExpression {
         struct node* memArr[3];
@@ -3160,12 +3194,15 @@ ConditionalExpression:
         E[1] = $1;
         E[2] = $3;
         E[3] = $5;
-        //buildTAC(E, 4, IF_CODE);
+        buildTAC(E, 4, IF_CODE);
     }
 
 AssignmentExpression: 
     ConditionalExpression {
         $$ = $1;
+        // for(int i = 0; i < $$->val.code.size(); i++){
+        //     cout <<"line: 3186 "<<$$->val.code[i] << " "<<endl;
+        // }
     }
     | Assignment{
         $$ = $1;
@@ -3195,10 +3232,8 @@ Assignment:
     struct node* E[2];
     E[0] = $1;
     E[1] = $3;
-    //buildTAC(E, 2, ASSIGN_CODE);
-    E[0] = $$;
-    E[1] = $1;
-    //buildTAC(E, 2, ASSIGN_CODE);
+    buildTAC(E, 2, ASSIGN_CODE);
+    $$ = $1;
 
     
 
@@ -3332,7 +3367,7 @@ int main(int argc , char** argv)
     if(err == 0){
         // No syntax or semantic error
         int limit = root->val.code.size();
-        for(int iter = 0; iter < limit; iter++)
+        for(int iter = 0; iter < limit/2; iter++)
             cout << root->val.code[iter]<<endl; 
     }
     

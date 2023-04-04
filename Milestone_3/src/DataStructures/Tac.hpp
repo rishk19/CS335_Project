@@ -26,7 +26,7 @@ int pushCode(Value &val, string str); //pushes the str to val.code vector
 int copyValue(Value &v1, Value &v2); //copies value of v2 to v1   i.e., v1 <= v2
 int appendCode(Value &v1, Value&v2); //appends code of v2 to v1 i.e., final_code(v1) = initial_code(v1)+initial_code(v2)
 
-int genAssignCode(Value &S, Value &E, string temp);
+int genAssignCode(Value &S, Value &E);
 int genIfElseCode(Value &S, Value &E1, Value &E2, Value &E3, string L1, string L2);
 int genWhileCode(Value &S, Value &E1, Value &E2, string L1, string L2);
 int genForCode(Value &S, Value &E1, Value &E2, Value &E3, Value &E4,string L1, string L2);

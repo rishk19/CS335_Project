@@ -63,10 +63,10 @@ int appendCode(Value &v1, Value&v2){
     return GOOD_APPEND;
 }
 
-int genAssignCode(Value &S, Value &E, string temp){
+int genAssignCode(Value &S, Value &E){
 
-    S.place = temp;
-    string s_code = temp;
+    appendCode(S, E);
+    string s_code = S.place;
     s_code.append(" = ");
     s_code.append(E.place);
     
@@ -84,6 +84,7 @@ int genBinaryOperatorCode(Value &S, Value &E1, Value &E2, string temp, string op
         s_code.append(E1.place);
         s_code.append(op);
         s_code.append(E2.place);
+        //cout << "This is being pushed: "<<s_code<<endl;
         pushCode(S, s_code);
 
         return 0;
@@ -248,9 +249,7 @@ int buildTAC(struct node* E[], int n, int flag){
         case ASSIGN_CODE:
             
             if(n == 2){
-                temp = makeNewTemp(newTempLabel);
-                newTempLabel = newTempLabel + 1;
-                genAssignCode(E[0]->val, ((E[1]!=NULL)? E[1]->val : dummyVal), temp);
+                genAssignCode(E[0]->val, ((E[1]!=NULL)? E[1]->val : dummyVal));
             }
 
         case BINARY_CODE:
