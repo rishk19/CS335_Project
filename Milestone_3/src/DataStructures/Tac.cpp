@@ -192,22 +192,48 @@ int genForCode(Value &S, Value &E1, Value &E2, Value &E3, Value &E4, string L1, 
         return 0;
 }
 
-int genMethodInvocationCode(Value &S, Value &E, string methodName, string temp){
-    S.place = temp;
+int genMethodInvocationCode(struct node* E[], int n){
+    if(E[0]==NULL || E[1]==NULL)return 1;
 
-    int n = E.code.size();
-    for(int i = 0; i <n; i++){
+    string temp = makeNewTemp(newTempLabel);
+    newTempLabel++;
+    E[0]->val.place = temp;
+    E[0]->val.place = temp;
+    appendCode(E[0]->val, E[1]->val);
+    for(int i = 0; i<E[1]->arr.size(); i++){
         string param = "param ";
-        if(E.code[i].size()!=0)
-            param.append(E.code[i]);
-        
-        pushCode(S, param);
+        if(E[1]->arr[i]->val.place.size()!=0){
+            param.append(E[1]->arr[i]->val.place);
+        }
+        pushCode(E[0]->val, param);
     }
     string s_code = "call ";
-    s_code.append(methodName);
+    s_code.append(string(E[0]->data));
     s_code.append(to_string(n));
     s_code.append(" ");
     s_code.append(temp);
+    pushCode(E[0]->val, s_code);
+    // case METHOD_INVOCATION:
+    //         if(n==2){
+    //             temp = makeNewTemp(newTempLabel);
+    //             newTempLabel = newTempLabel + 1;
+    //             genMethodInvocationCode(((E[0]!=NULL)?E[0]->val:dummyVal), ((E[1]!=NULL)?E[1]->val:dummyVal), string(((E[0]!=NULL)?E[0]->data:"method")), temp);
+    //         }
+    // S.place = temp;
+
+    // int n = E.code.size();
+    // for(int i = 0; i <n; i++){
+    //     string param = "param ";
+    //     if(E.code[i].size()!=0)
+    //         param.append(E.code[i]);
+        
+    //     pushCode(S, param);
+    // }
+    // string s_code = "call ";
+    // s_code.append(methodName);
+    // s_code.append(to_string(n));
+    // s_code.append(" ");
+    // s_code.append(temp);
 
     return 0;
 
@@ -335,12 +361,7 @@ int buildTAC(struct node* E[], int n, int flag){
          
          break;
 
-         case METHOD_INVOCATION:
-            if(n==2){
-                temp = makeNewTemp(newTempLabel);
-                newTempLabel = newTempLabel + 1;
-                genMethodInvocationCode(((E[0]!=NULL)?E[0]->val:dummyVal), ((E[0]!=NULL)?E[0]->val:dummyVal), string(((E[0]!=NULL)?E[0]->data:"method")), temp);
-            }
+         
         
         break;
 

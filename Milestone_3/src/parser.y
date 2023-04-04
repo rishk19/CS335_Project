@@ -1283,7 +1283,9 @@ ArgumentList_opt: {
         struct node* E[2];
         E[0] = $$;
         E[1] = $1;
-        buildTAC(E, 2, COPY_CODE);        
+        buildTAC(E, 2, COPY_CODE);
+        cout << "ArgumentList: \n";
+        printThreeAC($1->val) ;       
     }
 
 InterfaceDeclaration: 
@@ -2133,6 +2135,8 @@ ArgumentList:
         E[0] = $$;
         E[1] = $1;
         buildTAC(E, 2, COPY_CODE);
+        cout << "Expression argumentlist: \n";
+        printThreeAC($1->val) ;
     }
     | ArgumentList Comma Expression {
         struct node * memArr[2];
@@ -2281,7 +2285,9 @@ MethodInvocation:
         struct node * E[2];
         E[0] = $$;
         E[1] = $3;
-        buildTAC(E, 2, METHOD_INVOCATION);
+        genMethodInvocationCode(E, 2);
+        // cout << "three ac for method invocation: \n";
+        // printThreeAC($3->val);
     } 
     | Primary Dot Identifier LeftParanthesis ArgumentList_opt RightParanthesis {
         struct node * memArr[1];
@@ -2432,7 +2438,9 @@ PostIncrementExpression:
         struct node* E[4];
         E[0] = $$;
         E[1] = $1;
-        E[2] = $1;
+        struct node tempNode = *($1);
+        tempNode.val.place = "1";
+        E[2] = &tempNode;
         E[3] = makeleaf("+");
 
         if(isPrimitiveType($1->symbol.type.name) && $1->symbol.type.name != "boolean")
@@ -2444,6 +2452,7 @@ PostIncrementExpression:
         }
 
         buildTAC(E,4,BINARY_CODE);
+        pushCode($$->val, string($1->data) + " = " + $$->val.place);
     } 
 
 PostDecrementExpression: 
@@ -2454,7 +2463,9 @@ PostDecrementExpression:
         struct node* E[4];
         E[0] = $$;
         E[1] = $1;
-        E[2] = $1;
+        struct node tempNode = *($1);
+        tempNode.val.place = "1";
+        E[2] = &tempNode;
         E[3] = makeleaf("-");
 
         if(isPrimitiveType($1->symbol.type.name) && $1->symbol.type.name != "boolean")
@@ -2466,6 +2477,8 @@ PostDecrementExpression:
         }
 
         buildTAC(E,4,BINARY_CODE);
+        pushCode($$->val, string($1->data) + " = " + $$->val.place);
+
     } 
 
 UnaryExpression:
@@ -2527,7 +2540,9 @@ PreIncrementExpression:
         struct node* E[4];
         E[0] = $$;
         E[1] = $2;
-        E[2] = $2;
+        struct node tempNode = *($2);
+        tempNode.val.place = "1";
+        E[2] = &tempNode;
         E[3] = makeleaf("+");
 
         if(isPrimitiveType($2->symbol.type.name) && $2->symbol.type.name != "boolean")
@@ -2538,6 +2553,8 @@ PreIncrementExpression:
             semantic_error("Bad operand types ["  + $2->symbol.type.name + "] for operator " + string($1) + " at line number " +  to_string(line_number) + ".");
         }
         buildTAC(E,4,BINARY_CODE);
+        pushCode($$->val, string($2->data) + " = " + $$->val.place);
+
     } 
 
 PreDecrementExpression: 
@@ -2549,7 +2566,9 @@ PreDecrementExpression:
         struct node* E[4];
         E[0] = $$;
         E[1] = $2;
-        E[2] = $2;
+        struct node tempNode = *($2);
+        tempNode.val.place = "1";
+        E[2] = &tempNode;
         E[3] = makeleaf("-");
 
         if(isPrimitiveType($2->symbol.type.name) && $2->symbol.type.name != "boolean")
@@ -2561,6 +2580,8 @@ PreDecrementExpression:
         }
 
         buildTAC(E,4,BINARY_CODE);
+        pushCode($$->val, string($2->data) + " = " + $$->val.place);
+
     } 
 
 UnaryExpressionNotPlusMinus: 
