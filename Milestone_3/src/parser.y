@@ -3237,7 +3237,9 @@ Assignment:
             semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name + "] for operator " + string($2->symbol.name) + " at line number " +  to_string(line_number) + ".");
         }
     }
-
+    if(isAssignmentCompatible($1->symbol.type.name, $3->symbol.type.name) == 0){
+            semantic_error("Possible lossy conversion from "  + $3->symbol.type.name + " to " + $1->symbol.type.name +" at line number " +  to_string(line_number) + ".");
+    }
     struct node* E[2];
     E[0] = $1;
     E[1] = $3;

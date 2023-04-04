@@ -8,5 +8,6 @@ int isTypeCompatible(string, string);
 int isPrimitiveType(string);
 int isIntegralType(string);
 int isNumericType(string);
+int isAssignmentCompatible(string, string);
 
 #endif
