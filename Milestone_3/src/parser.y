@@ -928,7 +928,7 @@ MethodDeclaration:
         pushCode(E[0]->val,str);
         pushCode(E[0]->val,"begin_func");
         pushCode(E[0]->val,"$rsp = $rsp - 8");
-        pushCode(E[0]->val,"push $rbp");
+        pushCode(E[0]->val,"push $rbp (0)$rsp");
         pushCode(E[0]->val,"$rbp = $rsp");
         long long int stackOffset = getTotalStackOffset(curr);
         for(int  i = 0; i<$1->symbol.type.parameters_size.size(); i++){

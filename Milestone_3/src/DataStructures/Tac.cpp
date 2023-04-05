@@ -212,10 +212,7 @@ int genMethodInvocationCode(struct node* E[], int n){
         string param = "push ";
         if(E[1]->arr[i]->val.place.size()!=0){
             param.append(E[1]->arr[i]->val.place);
-            if(currSize!=0)
-                param.append(" (" + to_string(currSize) + ")$rsp");
-            else
-                param.append(" $rsp");
+            param.append(" (" + to_string(currSize) + ")$rsp");
 
             currSize+=E[1]->arr[i]->symbol.size;
         }
@@ -232,7 +229,7 @@ int genMethodInvocationCode(struct node* E[], int n){
     pushCode(E[0]->val, s_code);
     pushCode(E[0]->val, "$rsp = $rsp + 8");
     if(E[0]->symbol.size!=0)
-        pushCode(E[0]->val, temp + " = pop (" + to_string(E[0]->symbol.size)+")$rsp");
+        pushCode(E[0]->val, "load " +temp+" (0)$rsp "  + to_string(E[0]->symbol.size));
     pushCode(E[0]->val, "$rsp = $rsp - " + to_string(E[0]->symbol.size  + parameterSize) + "  // Popping return value and arguments");
 
     // case METHOD_INVOCATION:
