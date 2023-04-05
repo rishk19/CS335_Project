@@ -22,7 +22,7 @@ string makeNewTemp(long int i){
         return "T_ERROR";
     }
 
-    string t = "t";
+    string t = "%t";
     t.append(to_string(i));
     return t;
 }

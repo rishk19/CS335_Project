@@ -947,8 +947,8 @@ MethodDeclaration:
         E[2] = $2;
         buildTAC(E, 3, APPEND_CODE);
 
+        pushCode(E[0]->val, "$load $rbp (0)$rbp 8 // loading old frame pointer value to rbp");
         pushCode(E[0]->val, "$rsp = $rbp + 8");
-        pushCode(E[0]->val, "$load $rbp (0)$rbp 8");
         pushCode(E[0]->val, "end_func");
         struct GlobalSymbol* globEntry =  glob_lookup(class_name, $1->symbol.name, glob_table);
         if(globEntry == NULL){
@@ -3483,7 +3483,7 @@ int main(int argc , char** argv)
     
     //// view_symbol_table(*glob_class_scope);
     // viewGlobal(glob_table);
-    viewGlobalTac(glob_table);
+    //viewGlobalTac(glob_table);
     FILE* graph = fopen(output_file,"w");
     if(err == 0){
         freopen(output_file,"w", stdout);
