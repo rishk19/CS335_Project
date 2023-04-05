@@ -18,6 +18,7 @@ struct node *root = NULL;
 int semantic_error(string s);
 void help();
 long long int line_number=1;
+int ret_size = 0;
 
 int newTempLabel = 0;
 Value dummyVal; // do not delete needed for generating 3AC text
@@ -29,6 +30,7 @@ string class_name = "";
 int assign_flag = 0;
 string src_file = "";
 int err = 0;
+int hasReturned = 0;
 
 %}
 
@@ -896,6 +898,17 @@ VariableInitializer:
 MethodDeclaration: 
     MethodHeader MethodBody{
         
+        if(hasReturned == 0){
+            if($1->symbol.type.return_type != "Void"){
+                semantic_error("Non-Void Function " + $1->symbol.name + " must return some value!");
+            }
+        }
+        else{
+            if($1->symbol.type.return_type == "Void"){
+                semantic_error("Void Function " + $1->symbol.name + " cannot return any value!");
+            }
+        }
+        hasReturned = 0;
         
         struct node * memArr[2];
         memArr[0] = $1;
@@ -914,9 +927,28 @@ MethodDeclaration:
         string str = class_name + "::" + string(E[0]->symbol.name) +" : ";
         pushCode(E[0]->val,str);
         pushCode(E[0]->val,"begin_func");
+        pushCode(E[0]->val,"$rsp = $rsp - 8");
+        pushCode(E[0]->val,"push $rbp");
+        pushCode(E[0]->val,"$rbp = $rsp");
+        long long int stackOffset = getTotalStackOffset(curr);
+        for(int  i = 0; i<$1->symbol.type.parameters_size.size(); i++){
+            stackOffset -= $1->symbol.type.parameters_size[i];
+        }
+        if(stackOffset!=0)
+            pushCode(E[0]->val, "$rsp = $rsp - " + to_string(stackOffset));
+        int controlOffset = 16 + $1->symbol.type.return_size;
+        for(int i  = 0; i<$1->symbol.type.parameters.size(); i++){
+            pushCode(E[0]->val, "load " + $1->symbol.type.parameters[i] +" (" + to_string(controlOffset) + ")$rbp " + to_string($1->symbol.type.parameters_size[i]));
+            controlOffset += $1->symbol.type.parameters_size[i];
+        }
+
+
         E[1] = $1;
         E[2] = $2;
         buildTAC(E, 3, APPEND_CODE);
+
+        pushCode(E[0]->val, "$rsp = $rbp + 8");
+        pushCode(E[0]->val, "$load $rbp (0)$rbp 8");
         pushCode(E[0]->val, "end_func");
         struct GlobalSymbol* globEntry =  glob_lookup(class_name, $1->symbol.name, glob_table);
         if(globEntry == NULL){
@@ -943,14 +975,16 @@ MethodHeader:
             }
         }
         $$->symbol.type.return_type = $2->symbol.type.name;
+        $$->symbol.type.return_size = $2->symbol.size;
         $$->symbol.type.t = 2;
         $$->symbol.name = $3->symbol.name;
-
+        ret_size = $2->symbol.size;
         
         for(int i=0; i< $3->symbol.type.parameters.size(); i++)
         {
             $$->symbol.type.parameters.push_back($3->symbol.type.parameters[i]);
             $$->symbol.type.parameters_type.push_back($3->symbol.type.parameters_type[i]);
+            $$->symbol.type.parameters_size.push_back($3->symbol.type.parameters_size[i]);
         }
 
 
@@ -983,13 +1017,17 @@ MethodHeader:
             }
         }
         $$->symbol.type.return_type = "void";
+        $$->symbol.type.return_size = 0;
         $$->symbol.type.t = 2;
         $$->symbol.name = $3->symbol.name;
+        ret_size = 0;
 
         for(int i=0; i< $3->symbol.type.parameters.size(); i++)
         {
             $$->symbol.type.parameters.push_back($3->symbol.type.parameters[i]);
             $$->symbol.type.parameters_type.push_back($3->symbol.type.parameters_type[i]);
+            $$->symbol.type.parameters_size.push_back($3->symbol.type.parameters_size[i]);
+
         }
 
         struct node* E[2];
@@ -1027,6 +1065,8 @@ MethodDeclarator:
             {
                 $$->symbol.type.parameters.push_back($4->arr[i]->symbol.name);
                 $$->symbol.type.parameters_type.push_back($4->arr[i]->symbol.type.name);
+                $$->symbol.type.parameters_size.push_back($4->arr[i]->symbol.size);
+
             }
         }
         struct node* E[2];
@@ -1284,8 +1324,8 @@ ArgumentList_opt: {
         E[0] = $$;
         E[1] = $1;
         buildTAC(E, 2, COPY_CODE);
-        cout << "ArgumentList: \n";
-        printThreeAC($1->val) ;       
+        // cout << "ArgumentList: \n";
+        // printThreeAC($1->val) ;       
     }
 
 InterfaceDeclaration: 
@@ -1973,8 +2013,19 @@ ReturnStatement:
         buildVal(E[1]);
         E[2] = $2;
         buildTAC(E, 3, APPEND_CODE);
-        string str = "return "+string($2->val.place);
-        pushCode($$->val,str);
+
+
+        if($2 != NULL){
+            if(ret_size == 0){
+                semantic_error("Function of type void returning value at line number " + to_string(line_number));
+            }
+            else{
+                pushCode($$->val, "push " + $2->val.place + " (" + to_string(ret_size) + ")$rbp");
+            }
+        }
+        hasReturned = 1;
+        //string str = "ret";
+        //pushCode($$->val,str);
     }
 
 ThrowStatement: 
@@ -2135,8 +2186,8 @@ ArgumentList:
         E[0] = $$;
         E[1] = $1;
         buildTAC(E, 2, COPY_CODE);
-        cout << "Expression argumentlist: \n";
-        printThreeAC($1->val) ;
+        // cout << "Expression argumentlist: \n";
+        // printThreeAC($1->val) ;
     }
     | ArgumentList Comma Expression {
         struct node * memArr[2];
@@ -2176,7 +2227,7 @@ ArrayCreationExpression:
 
         //view_type($$->symbol.type);
 
-        buildVal($$);
+        // buildVal($$);
     }
     | New ClassOrInterfaceType DimExprs Dims_opt {
 
@@ -2191,7 +2242,7 @@ ArrayCreationExpression:
         memArr[3] =$4;
         $$ = makeInternalNode("ArrayCreation", memArr, 4, 1);
         $$->isDeclaration = DECLARATION;
-        buildVal($$);
+        // buildVal($$);
     }
 
 Dims_opt: { 
@@ -2275,6 +2326,8 @@ MethodInvocation:
                         }
                     }
                     $$->symbol.type.name = glob_entry->type.return_type;
+                    $$->symbol.size = glob_entry->type.return_size;
+                    //cout << $$->symbol.size <<endl;
                 }
                 
             }
@@ -2292,11 +2345,11 @@ MethodInvocation:
     | Primary Dot Identifier LeftParanthesis ArgumentList_opt RightParanthesis {
         struct node * memArr[1];
         memArr[0] = $5;
-        $$ = makeInternalNode(concatenate_string($1->data,concatenate_string(" ",$3)), memArr, 1, 1);
+        $$ = makeInternalNode(concatenate_string($1->data,concatenate_string(".",$3)), memArr, 1, 1);
         struct node * E[2];
         E[0] = $$;
         E[1] = $5;
-        buildTAC(E, 2, METHOD_INVOCATION);
+        genMethodInvocationCode(E, 2);
     }
     | Super Dot Identifier LeftParanthesis ArgumentList_opt RightParanthesis {
         struct node * memArr[1];
@@ -3434,7 +3487,9 @@ int main(int argc , char** argv)
     viewGlobalTac(glob_table);
     FILE* graph = fopen(output_file,"w");
     if(err == 0){
-        ofstream cout(output_file);
+        freopen(output_file,"w", stdout);
+        cout <<"Hello \n";
+        // ofstream cout(output_file);
         generateTac(graph, glob_table);
     }
     // fprintf(graph, "digraph AST{ \n");

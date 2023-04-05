@@ -118,3 +118,19 @@ struct Symbol* check_scope(struct SymbolTable* curr, string name)
         return sym;
     }
 }
+
+long long int getTotalStackOffset(struct SymbolTable* curr){
+
+    if(curr == NULL)
+        return 0;
+    
+    long long int offset = 0;
+    for(int i = 0; i<curr->entries.size(); i++){
+        offset += curr->entries[i].size;
+    }
+    for(int k = 0; k<curr->children.size(); k++){
+        offset += getTotalStackOffset(curr->children[k]);
+    }
+
+    return offset;
+}

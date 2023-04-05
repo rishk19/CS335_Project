@@ -12,6 +12,7 @@ struct node* makeleaf(char nodeStr[100]){
     leaf->symbol.type.modifier.clear();
     leaf->symbol.source_file = src_file;
     leaf->symbol.type.dims.clear();
+    leaf->symbol.type.return_size = 0;
 
     return leaf;
 }
@@ -45,7 +46,7 @@ struct node* makeInternalNode(char rule[100], struct node* memArr[], int n, int 
     internalNode->symbol.type.modifier.clear();
     internalNode->symbol.source_file = src_file;
     internalNode->symbol.type.dims.clear();
-
+    internalNode->symbol.type.return_size = 0;
     return internalNode;
 
 }

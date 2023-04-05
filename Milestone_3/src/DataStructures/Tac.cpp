@@ -34,6 +34,7 @@ string makeNewLabel(long int i){
     
     string t = "L";
     t.append(to_string(i));
+    t.append(":");
     return t;
 }
 
@@ -200,19 +201,40 @@ int genMethodInvocationCode(struct node* E[], int n){
     E[0]->val.place = temp;
     E[0]->val.place = temp;
     appendCode(E[0]->val, E[1]->val);
-    for(int i = 0; i<E[1]->arr.size(); i++){
-        string param = "param ";
+    long long int parameterSize = 0;
+    int argSize = E[1]->arr.size();
+    for(int i = 0; i< argSize ; i++){
+        parameterSize+=E[1]->arr[i]->symbol.size;
+    }
+    pushCode(E[0]->val, "$rsp = $rsp - " + to_string(parameterSize) +  "// stack space for actual parameters ");
+    int currSize = 0;
+    for(int i = 0 ; i< argSize; i++){
+        string param = "push ";
         if(E[1]->arr[i]->val.place.size()!=0){
             param.append(E[1]->arr[i]->val.place);
+            if(currSize!=0)
+                param.append(" (" + to_string(currSize) + ")$rsp");
+            else
+                param.append(" $rsp");
+
+            currSize+=E[1]->arr[i]->symbol.size;
         }
         pushCode(E[0]->val, param);
     }
+    pushCode(E[0]->val, "$rsp = $rsp - " + to_string(E[0]->symbol.size  + 8)+" // stack space for return value, pc");
+    pushCode(E[0]->val, "push PC // pushin program counter ");
+
     string s_code = "call ";
     s_code.append(string(E[0]->data));
     s_code.append(to_string(n));
     s_code.append(" ");
-    s_code.append(temp);
+    // s_code.append(temp);
     pushCode(E[0]->val, s_code);
+    pushCode(E[0]->val, "$rsp = $rsp + 8");
+    if(E[0]->symbol.size!=0)
+        pushCode(E[0]->val, temp + " = pop (" + to_string(E[0]->symbol.size)+")$rsp");
+    pushCode(E[0]->val, "$rsp = $rsp - " + to_string(E[0]->symbol.size  + parameterSize) + "  // Popping return value and arguments");
+
     // case METHOD_INVOCATION:
     //         if(n==2){
     //             temp = makeNewTemp(newTempLabel);
