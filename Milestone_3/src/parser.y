@@ -899,12 +899,12 @@ MethodDeclaration:
     MethodHeader MethodBody{
         
         if(hasReturned == 0){
-            if($1->symbol.type.return_type != "Void"){
+            if($1->symbol.type.return_type != "void"){
                 semantic_error("Non-Void Function " + $1->symbol.name + " must return some value!");
             }
         }
         else{
-            if($1->symbol.type.return_type == "Void"){
+            if($1->symbol.type.return_type == "void"){
                 semantic_error("Void Function " + $1->symbol.name + " cannot return any value!");
             }
         }
@@ -2320,14 +2320,13 @@ MethodInvocation:
                 else{
                     for (int i = 0; i< $3->arr.size(); i++)
                     {   
-                        if(glob_entry->type.parameters_type[i] != $3->arr[i]->symbol.type.name)
+                        if(!isAssignmentCompatible(glob_entry->type.parameters_type[i],$3->arr[i]->symbol.type.name))
                         {
                             semantic_error("Function " + string($1->data) +  " invocation at line number " + to_string(line_number) + " has wrong type of parameter passed at position " + to_string(i+1) + "." );          
                         }
                     }
                     $$->symbol.type.name = glob_entry->type.return_type;
                     $$->symbol.size = glob_entry->type.return_size;
-                    //cout << $$->symbol.size <<endl;
                 }
                 
             }
