@@ -2109,6 +2109,10 @@ PrimaryNoNewArray:
     }
     | This {
         $$ = makeleaf($1);
+        string temp = makeNewTemp(newTempLabel);
+        newTempLabel++;
+        $$->val.place = temp;
+        pushCode($$->val,temp + " = poparam");
     }
     | LeftParanthesis Expression RightParanthesis  {
         $$ = $2;
@@ -2284,13 +2288,17 @@ FieldAccess:
     Primary Dot Identifier {
         $$ = makeleaf(concatenate_string($1->data,$3));
         //string class_in = $1->symbol.type.name;
-
-        buildVal($$);
-
+        // loc_lookup(glob_class_scope,cla)
+        struct node * E[3];
+        E[0] = $$;
+        E[1] = $1;
+        E[2] = makeleaf($3);
+        buildVal(E[2]);
+        buildTAC(E, 3, APPEND_CODE);
+        pushCode(E[0]->val,E[0]->val.place  + " = *" +(E[1]->val.place + E[2]->val.place));
     } 
     | Super Dot Identifier {
         $$ = makeleaf(concatenate_string($1,$3));
-        buildVal($$);
 
     }
 
