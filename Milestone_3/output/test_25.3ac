@@ -1,0 +1,31 @@
+Hello 
+
+short_circuit::printInt : 
+begin_func
+$rsp = $rsp - 8
+push $rbp (0)$rsp
+$rbp = $rsp
+$rsp = $rsp - 4
+$load $rbp (0)$rbp 8 // loading old frame pointer value to rbp
+$rsp = $rbp + 8
+ret
+end_func
+
+
+short_circuit::main : 
+begin_func
+$rsp = $rsp - 8
+push $rbp (0)$rsp
+$rbp = $rsp
+$rsp = $rsp - 4
+load k (20)$rbp 4
+%t0 = poparam
+%t1 = x
+%t2 = *(%t0 + %t1)
+%t2 = 0
+push 46 (4)$rbp
+$load $rbp (0)$rbp 8 // loading old frame pointer value to rbp
+$rsp = $rbp + 8
+ret
+end_func
+

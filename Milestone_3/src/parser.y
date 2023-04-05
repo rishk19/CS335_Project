@@ -949,6 +949,7 @@ MethodDeclaration:
 
         pushCode(E[0]->val, "$load $rbp (0)$rbp 8 // loading old frame pointer value to rbp");
         pushCode(E[0]->val, "$rsp = $rbp + 8");
+        pushCode(E[0]->val, "ret");
         pushCode(E[0]->val, "end_func");
         struct GlobalSymbol* globEntry =  glob_lookup(class_name, $1->symbol.name, glob_table);
         if(globEntry == NULL){
@@ -2310,8 +2311,15 @@ FieldAccess:
         E[1] = $1;
         E[2] = makeleaf($3);
         buildVal(E[2]);
+        string temp = makeNewTemp(newTempLabel);
+        newTempLabel++;
+        E[2]->val.place = temp;
+        pushCode(E[2]->val, temp + " = " + string($3)); 
         buildTAC(E, 3, APPEND_CODE);
-        pushCode(E[0]->val,E[0]->val.place  + " = *" +(E[1]->val.place + E[2]->val.place));
+        temp = makeNewTemp(newTempLabel);
+        newTempLabel++;
+        E[0]->val.place = temp;
+        pushCode(E[0]->val,E[0]->val.place  + " = *(" +(E[1]->val.place +" + " +E[2]->val.place)+")");
     } 
     | Super Dot Identifier {
         $$ = makeleaf(concatenate_string($1,$3));
@@ -2369,6 +2377,7 @@ MethodInvocation:
         struct node * memArr[1];
         memArr[0] = $5;
         $$ = makeInternalNode(concatenate_string($1->data,concatenate_string(".",$3)), memArr, 1, 1);
+        $$->symbol.name = string($3);
         struct node * E[2];
         E[0] = $$;
         E[1] = $5;
