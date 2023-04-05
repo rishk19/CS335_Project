@@ -1462,7 +1462,7 @@ Block:
 
 Symbol_Table_Change :
     { 
-        curr = loc_mktable(curr,"local");
+        curr = loc_mktable(curr,class_name);
     }
 
 Symbol_Table_Back :
@@ -2111,6 +2111,7 @@ PrimaryNoNewArray:
         $$ = makeleaf($1);
         string temp = makeNewTemp(newTempLabel);
         newTempLabel++;
+        $$->symbol.type.name = class_name;
         $$->val.place = temp;
         pushCode($$->val,temp + " = poparam");
     }
@@ -2143,6 +2144,7 @@ ClassInstanceCreationExpression:
         memArr[2] =$4;
         $$ = makeInternalNode("ClassInstance", memArr, 3, 1);
         $$->isDeclaration = DECLARATION;
+        $$->symbol.name = $2->symbol.name;
 
         struct GlobalSymbol * glob_entry = glob_lookup($2->symbol.name,$2->symbol.name,glob_table);
 
@@ -2287,8 +2289,22 @@ Dims:
 FieldAccess: 
     Primary Dot Identifier {
         $$ = makeleaf(concatenate_string($1->data,$3));
-        //string class_in = $1->symbol.type.name;
-        // loc_lookup(glob_class_scope,cla)
+        for (int i =0; i<glob_class_scope->children.size(); i++)
+        {
+            if(glob_class_scope->children[i]->scope == $1->symbol.type.name)
+            {
+                struct Symbol* symb = loc_lookup(glob_class_scope->children[i],string($3));
+                if(symb == NULL)
+                {
+                    semantic_error("No such modifier for the class " + $1->symbol.type.name);
+                }
+                else{
+                    $$->symbol.type = symb->type;
+                }
+            }
+        }
+        
+
         struct node * E[3];
         E[0] = $$;
         E[1] = $1;
