@@ -1,6 +1,6 @@
 class uminus_bminus{
     int printInt(int n){
-        int j;
+        return n;
     }
 
     public static void main(int k){

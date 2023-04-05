@@ -6,7 +6,9 @@ class Qsort
                 float ghd = 9;
         }
 
-        int printInt(int n);
+        int printInt(int n){
+                return 1+4+7*8;
+        }
         public static int quicksort(int x[], int first, int last){
                 int pivot,i,temp,i1,f,e,a[];
                 char arr;
@@ -74,7 +76,7 @@ class Qsort
                         int j;
                         printInt(x[i]);
                 }
-                return 0;
+
         }
 
 }

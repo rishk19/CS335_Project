@@ -3504,6 +3504,8 @@ int main(int argc , char** argv)
         return 0;
     }
 
+    //freopen(output_file,"w", stdout);
+    // yyout = fopen(output_file,"w");
     yyparse();
     
     
@@ -3520,9 +3522,14 @@ int main(int argc , char** argv)
     FILE* graph = fopen(output_file,"w");
     if(err == 0){
         freopen(output_file,"w", stdout);
-        cout <<"Hello \n";
-        // ofstream cout(output_file);
+        cout <<"//// The 3AC is the following : ";
+        // ofseam cout(output_file);
         generateTac(graph, glob_table);
+    }
+    else{
+        freopen(output_file,"w", stdout);
+        cout <<"//// There are errors in the code and thus 3AC generation failed";
+        // ofseam cout(output_file);
     }
     // fprintf(graph, "digraph AST{ \n");
     // if(err == 0){

@@ -1,8 +1,18 @@
 class complex_data_type{
-    int append(int l,int a);
-    int printInt(int n);
-    int next(int l);
-    int val(int l);
+    int append(int l,int a){
+      return 0;
+    }
+    int printInt(int n){
+      return 0;
+    }
+    int next(int l)
+    {
+      return 0;
+    }
+    int val(int l){
+      return 0;
+    }
+    
     public static int complex(int y){
       int i;
       for(i=0;i<5;i++){

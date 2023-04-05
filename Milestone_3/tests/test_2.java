@@ -1,6 +1,9 @@
 class bubblesort {
     long x;
-    int printInt(int n);
+    int printInt(int n)
+    {
+        return 0;
+    }
     void sort(int arr[], int len) {
         int n = len;
         int temp, i, j;

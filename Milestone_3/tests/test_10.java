@@ -1,5 +1,7 @@
 class matrix_multiplication{
-    int printInt(int n);
+    int printInt(int n){
+        return 999;
+    }
 
     public static void main(){
         int i, j, k;
