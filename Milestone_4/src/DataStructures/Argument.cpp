@@ -2,7 +2,7 @@
 #include "../Includes.hpp"
 
 
-void fill_arg(struct Argument* arg, struct Value val)
+void fill_arg(struct Argument* arg, struct Value &val)
 {
     if(val.status == IS_LITERAL)
     {
@@ -12,8 +12,7 @@ void fill_arg(struct Argument* arg, struct Value val)
 
     else if(val.status == IS_VARIABLE)
     {
-       arg->symbol_entry = loc_lookup(curr, val.place);
-       //cout << arg->symbol_entry->name <<endl;
+       arg->literal = val.place;
        arg->status = IS_VARIABLE;
     }
 

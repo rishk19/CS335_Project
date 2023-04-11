@@ -16,13 +16,18 @@ string view_quad(struct Quad* qd){
         return res;
     }
     else if(qd->result.status == IS_VARIABLE){
+        qd->result.symbol_entry = loc_lookup(qd->my_table,qd->result.literal);
+        //view_symbol(*qd->result.symbol_entry);
         if(qd->result.symbol_entry == NULL)
         {
             cout << "Result symbol table is NULL" <<endl;
         }
         else{
             //cout << "I am here (res) pspsps" <<endl;
+            //view_symbol(*qd->result.symbol_entry);
             res = qd->result.symbol_entry->name;
+            //cout << res << endl;
+            //res = qd->result.symbol_entry->name;
             //cout << res;
         }
     }
@@ -36,6 +41,7 @@ string view_quad(struct Quad* qd){
         arg_1 = "#" + qd->arg_1.literal;
     }
     else if(qd->arg_1.status == IS_VARIABLE){
+        qd->arg_1.symbol_entry = loc_lookup(qd->my_table,qd->arg_1.literal);
         if(qd->arg_1.symbol_entry == NULL)
         {
             cout << "Argument 1 symbol table is NULL" <<endl;
@@ -58,6 +64,7 @@ string view_quad(struct Quad* qd){
         
     }
     else if(qd->arg_2.status == IS_VARIABLE){
+        qd->arg_2.symbol_entry = loc_lookup(qd->my_table,qd->arg_2.literal);
         if(qd->arg_2.symbol_entry == NULL)
         {
             cout << "Argument 2 symbol table is NULL" <<endl;
@@ -96,6 +103,7 @@ int insert_temp(struct Symbol symb,string temp, string op_type)
     temp_symbol->type.name = op_type;
     temp_symbol->size = type_size(op_type);
     temp_symbol->type.t = 0;
+    temp_symbol->line_num = symb.line_num;
     long long int x = loc_insert(curr, *temp_symbol);
     if(x < 0)
     {

@@ -15,6 +15,6 @@ struct Argument
     string label;
 };
 
-void fill_arg(struct Argument* arg, struct Value val);
+void fill_arg(struct Argument* arg, struct Value &val);
 
 #endif

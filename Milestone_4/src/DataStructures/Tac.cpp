@@ -26,7 +26,7 @@ int pushCode(Value &val, string str){
 }
 
 int pushQuad(Value &val, Quad &quad)
-{
+{   
     val.quad.push_back(quad);
     return 1;
 }
@@ -138,10 +138,7 @@ int genBinaryOperatorCode(Value &S, Value &E1, Value &E2, string temp, string op
         fill_arg(&quad->arg_1, E1);
         fill_arg(&quad->arg_2, E2);
         quad->my_table = curr;
-        //cout << view_quad(quad) << endl;
         pushQuad(S,*quad);
-        //cout << view_quad(&quad) << endl;
-
         return 0;
 }
 
@@ -358,7 +355,6 @@ int buildTAC(struct node* E[], int n, int flag){
 
                     insert_temp(E[1]->symbol, temp2, op_type);
                     E[1]->val.status = IS_VARIABLE;
-                    //genUnaryOperatorCode(E[0]->val, E[1]->val, temp2, "cast_to_"+op_type+" ");
                 }
                 
                 if(op_type!=E[2]->symbol.type.name){
@@ -369,14 +365,13 @@ int buildTAC(struct node* E[], int n, int flag){
                     
                     insert_temp(E[2]->symbol, temp2, op_type);
                     E[2]->val.status = IS_VARIABLE;
-                    //genUnaryOperatorCode(E[0]->val, E[2]->val, temp2, "cast_to_"+op_type+" ");
                 }
 
                 temp = makeNewTemp(newTempLabel);
                 newTempLabel = newTempLabel + 1;
                 
                 insert_temp(E[0]->symbol, temp, E[0]->symbol.type.name);
-                //cout << temp << endl;
+
                 E[0]->val.status = IS_VARIABLE;
                 E[0]->val.place = temp;
                 
