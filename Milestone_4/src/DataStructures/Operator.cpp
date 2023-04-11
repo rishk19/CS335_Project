@@ -10,10 +10,11 @@ Operator str_to_op(string op_appended){
         i+=1;
     }
     //op.push_back('\0');
-    while(op_appended.size() > i){
+    while(op_appended.size()-1 >= i){
         type.push_back(op_appended[i]);
         i+=1;
     }
+    //cout << op << "  " << type <<endl;
 
     struct Operator new_operator;
     if(op == "+"){

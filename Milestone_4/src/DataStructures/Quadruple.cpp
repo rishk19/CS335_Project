@@ -2,7 +2,6 @@
 #include "../Includes.hpp"
 
 string view_quad(struct Quad* qd){
-
     string ans = "";
 
     string op = "";
@@ -22,8 +21,9 @@ string view_quad(struct Quad* qd){
             cout << "Result symbol table is NULL" <<endl;
         }
         else{
-            cout << "I am here " <<endl;
+            //cout << "I am here (res) pspsps" <<endl;
             res = qd->result.symbol_entry->name;
+            //cout << res;
         }
     }
 
@@ -41,6 +41,9 @@ string view_quad(struct Quad* qd){
             cout << "Argument 1 symbol table is NULL" <<endl;
         }
         else{
+            //cout << "I am here (1) pspsps" <<endl;
+    
+            //cout << qd->arg_1.symbol_entry->name << endl;
             arg_1 = qd->arg_1.symbol_entry->name;
         }
     }
@@ -60,6 +63,8 @@ string view_quad(struct Quad* qd){
             cout << "Argument 2 symbol table is NULL" <<endl;
         }
         else{
+            //cout << "I am here (2) pspsps" <<endl;
+            //cout << qd->arg_2.symbol_entry->name <<endl;
             arg_2 = qd->arg_2.symbol_entry->name;
         }
     }
@@ -75,7 +80,7 @@ vector<string> view_quadruple(vector<Quad> quad){
     vector<string> printQuad;
     printQuad.clear();
     for(int i = 0; i<quad.size(); i++){
-        printQuad.push_back(view_quad(&quad[i]));
+        //printQuad.push_back(view_quad(&quad[i]));
         cout << view_quad(&quad[i]) << endl;
     }
     
@@ -85,12 +90,13 @@ vector<string> view_quadruple(vector<Quad> quad){
 
 int insert_temp(struct Symbol symb,string temp, string op_type)
 {
-    struct Symbol temp_symbol = symb; 
-    temp_symbol.name = temp;
-    temp_symbol.type.name = op_type;
-    temp_symbol.size = type_size(op_type);
-    temp_symbol.type.t = 0;
-    long long int x = loc_insert(curr, temp_symbol);
+    struct Symbol * temp_symbol = new struct Symbol;
+    *temp_symbol = symb;
+    temp_symbol->name = temp;
+    temp_symbol->type.name = op_type;
+    temp_symbol->size = type_size(op_type);
+    temp_symbol->type.t = 0;
+    long long int x = loc_insert(curr, *temp_symbol);
     if(x < 0)
     {
         cout << "Temporary Redeclaration for " << temp  << " for statement at line number " <<-x << endl <<endl;

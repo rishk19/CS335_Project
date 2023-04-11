@@ -25,7 +25,7 @@ int pushCode(Value &val, string str){
     return NEG_STR;
 }
 
-int pushQuad(Value &val, Quad quad)
+int pushQuad(Value &val, Quad &quad)
 {
     val.quad.push_back(quad);
     return 1;
@@ -104,14 +104,14 @@ int genAssignCode(Value &S, Value &E){
     s_code.append(" = ");
     s_code.append(E.place);
 
-    struct Quad quad;
-    quad.op.op = Empty;
-    quad.op.type = "int";
-    fill_arg(&quad.result, S);
-    fill_arg(&quad.arg_1, E);
-    quad.arg_2.status = IS_EMPTY;
-    quad.my_table = curr;
-    pushQuad(S,quad);
+    struct Quad* quad = new struct Quad;
+    quad->op.op = Empty;
+    quad->op.type = "int";
+    fill_arg(&quad->result, S);
+    fill_arg(&quad->arg_1, E);
+    quad->arg_2.status = IS_EMPTY;
+    quad->my_table = curr;
+    pushQuad(S,*quad);
     
     pushCode(S, s_code);
 
@@ -131,14 +131,16 @@ int genBinaryOperatorCode(Value &S, Value &E1, Value &E2, string temp, string op
         //cout << "This is being pushed: "<<s_code<<endl;
         pushCode(S, s_code);
 
-        struct Quad quad;
+        struct Quad * quad = new struct Quad;
 
-        quad.op = str_to_op(op);
-        fill_arg(&quad.result, S);
-        fill_arg(&quad.arg_1, E1);
-        fill_arg(&quad.arg_2, E2);
-        quad.my_table = curr;
-        pushQuad(S,quad);
+        quad->op = str_to_op(op);
+        fill_arg(&quad->result, S);
+        fill_arg(&quad->arg_1, E1);
+        fill_arg(&quad->arg_2, E2);
+        quad->my_table = curr;
+        //cout << view_quad(quad) << endl;
+        pushQuad(S,*quad);
+        //cout << view_quad(&quad) << endl;
 
         return 0;
 }

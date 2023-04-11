@@ -13,6 +13,7 @@ void fill_arg(struct Argument* arg, struct Value val)
     else if(val.status == IS_VARIABLE)
     {
        arg->symbol_entry = loc_lookup(curr, val.place);
+       //cout << arg->symbol_entry->name <<endl;
        arg->status = IS_VARIABLE;
     }
 
