@@ -1,6 +1,6 @@
 #ifndef TAC_H_
 #define TAC_H_
-
+#include "Quadruple.hpp"
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -15,7 +15,7 @@ struct Value {
         string label;
         
         vector<string> code;
-
+        vector<Quad> qaud;
 };
 
 string makeNewTemp(long int i);

@@ -1,5 +1,8 @@
 #include <bits/stdc++.h>
 #include "../Includes.hpp"
+#include "../../bin/parser.tab.hh"
+
+extern struct SymbolTable* curr;
 
 using namespace std;
 

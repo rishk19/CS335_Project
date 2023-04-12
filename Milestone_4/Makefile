@@ -24,8 +24,8 @@ parse:
 	mkdir $(OUTPUT_DIR)
 	clear
 
-parser: Type.o SymbolTable.o GlobalSymbolTable.o Tac.o Graph_maker.o Node.o Tokenizer.o Flag_extraction.o TypeChecking.o Main.o
-	$(CC) $(BIN_DIR)/Type.o $(BIN_DIR)/SymbolTable.o $(BIN_DIR)/GlobalSymbolTable.o $(BIN_DIR)/Tac.o $(BIN_DIR)/Graph_maker.o $(BIN_DIR)/Node.o $(BIN_DIR)/Main.o $(BIN_DIR)/Tokenizer.o $(BIN_DIR)/Flag_extraction.o $(BIN_DIR)/TypeChecking.o -o $(BIN_DIR)/parser
+parser: Type.o SymbolTable.o GlobalSymbolTable.o Tac.o Graph_maker.o Node.o Tokenizer.o Flag_extraction.o TypeChecking.o Quadruple.o Main.o
+	$(CC) $(BIN_DIR)/Type.o $(BIN_DIR)/SymbolTable.o $(BIN_DIR)/GlobalSymbolTable.o $(BIN_DIR)/Tac.o $(BIN_DIR)/Graph_maker.o $(BIN_DIR)/Node.o $(BIN_DIR)/Main.o $(BIN_DIR)/Tokenizer.o $(BIN_DIR)/Flag_extraction.o $(BIN_DIR)/TypeChecking.o  $(BIN_DIR)/Quadruple.o -o $(BIN_DIR)/parser
 
 Type.o: $(SRC_DIR)/DataStructures/Type.cpp $(SRC_DIR)/DataStructures/Type.hpp $(SRC_DIR)/Includes.hpp
 	$(CC) -c $(SRC_DIR)/DataStructures/Type.cpp -o $(BIN_DIR)/Type.o
@@ -56,6 +56,9 @@ Flag_extraction.o : $(SRC_DIR)/FlagExtraction/Flag_extraction.cpp $(SRC_DIR)/Inc
 
 TypeChecking.o : $(SRC_DIR)/TypeSystem/TypeChecking.cpp $(SRC_DIR)/Includes.hpp
 	$(CC) -c $(SRC_DIR)/TypeSystem/TypeChecking.cpp -o $(BIN_DIR)/TypeChecking.o
+
+Quadruple.o : $(SRC_DIR)/DataStructures/Quadruple.cpp $(SRC_DIR)/Includes.hpp
+	$(CC) -c $(SRC_DIR)/DataStructures/Quadruple.cpp -o $(BIN_DIR)/Quadruple.o
 
 all: clean parse
 

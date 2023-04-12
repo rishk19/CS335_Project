@@ -10,10 +10,16 @@
 #include "DataStructures/GlobalSymbolTable.hpp"
 #include "DataStructures/SymbolTable.hpp"
 #include "DataStructures/Tac.hpp"
+#include "DataStructures/Operator.hpp"
+#include "DataStructures/Argument.hpp"
+
 #include "GraphGeneration/graph_maker.hpp"
 #include "GraphGeneration/node.hpp"
+
 #include "FlagExtraction/Flag_extraction.hpp"
+
 #include "TypeSystem/TypeChecking.hpp"
+
 #include <bits/stdc++.h>
 
 
