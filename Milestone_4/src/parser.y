@@ -135,32 +135,32 @@ Literal:
         $$ = makeleaf($1);
         $$->symbol.type.name = "float";
         $$->symbol.size = 4;
-        buildVal($$);
+        buildVal($$,0);
     }
     | BooleanLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "boolean";
         $$->symbol.size = 1;
 
-        buildVal($$);
+        buildVal($$,0);
     }
     | CharacterLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "char";
         $$->symbol.size = 2;
-        buildVal($$);
+        buildVal($$,0);
     }
     | StringLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "string";
         $$->symbol.size = 8;
-        buildVal($$);
+        buildVal($$,0);
     }
     | NullLiteral{
         $$ = makeleaf($1);
         $$->symbol.type.name = "null";
         $$->symbol.size = 8;
-        buildVal($$);
+        buildVal($$,0);
     }
 
 IntegerLiteral: 
@@ -169,19 +169,19 @@ IntegerLiteral:
         $$->symbol.type.name = "byte";
         $$->symbol.size = 4;
 
-        buildVal($$);
+        buildVal($$,0);
     }
     | HexIntegerLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "byte";
         $$->symbol.size = 4;
-        buildVal($$);
+        buildVal($$,0);
     }
     | OctalIntegerLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "byte";
         $$->symbol.size = 4;
-        buildVal($$);
+        buildVal($$,0);
     }
 
 Type: 
@@ -316,13 +316,13 @@ SimpleName:
         struct Symbol* lookup_entry = check_scope(curr,$1);      
         if(lookup_entry != NULL){
             $$->symbol = *lookup_entry;
-        }buildVal($$);
+        }buildVal($$,1);
     }
 
 QualifiedName: 
     Name Dot Identifier {
         $$ = makeleaf(concatenate_string($1->data,concatenate_string($2,$3)));
-        buildVal($$);
+        buildVal($$,1);
     }
 
 CompilationUnit: 
@@ -878,13 +878,13 @@ VariableDeclaratorId:
         $$ = makeleaf($1);
         string temp  = string($1);
         $$->symbol.name = temp;
-        buildVal($$);
+        buildVal($$, 1);
     }
     | VariableDeclaratorId LeftSquareBracket RightSquareBracket {
         $$ = makeleaf(concatenate_string($1->data,"[]"));
         string temp = string($1->data) + "[]";
         $$->symbol.name = temp;
-        buildVal($$);
+        buildVal($$, 1);
     }
 
 VariableInitializer:
@@ -957,7 +957,6 @@ MethodDeclaration:
         }
         globEntry->tac = $$->val;
 
-        checkCurr();
     }
 
 MethodHeader:
@@ -1712,7 +1711,7 @@ LabeledStatement:
         struct node* E[3];
         E[0] = $$;
         E[1] = makeleaf($1);
-        buildVal(E[1]);
+        buildVal(E[1], 1);
         E[2] = $3;
         buildTAC(E, 3, APPEND_CODE);
     }
@@ -1726,7 +1725,7 @@ LabeledStatementNoShortIf:
         struct node* E[3];
         E[0] = $$;
         E[1] = makeleaf($1);
-        buildVal(E[1]);
+        buildVal(E[1], 1);
         E[2] = $3;
         buildTAC(E, 3, APPEND_CODE);
     }
@@ -1983,7 +1982,7 @@ BreakStatement:
         struct node * memArr[1];
         memArr[0] =$2;
         $$ = makeInternalNode("break", memArr, 1, 1);
-        buildVal($$);
+        buildVal($$, 1);
     }
 
 Identifier_opt: 
@@ -1991,7 +1990,7 @@ Identifier_opt:
         $$ = NULL;
     }| Identifier {
         $$ = makeleaf($1);
-        buildVal($$);
+        buildVal($$,1);
     }
 
 ContinueStatement: 
@@ -1999,7 +1998,7 @@ ContinueStatement:
         struct node * memArr[1];
         memArr[0] =$2;
         $$ = makeInternalNode("continue", memArr, 1, 1);
-        buildVal($$);
+        buildVal($$, 1);
 
     }
 
@@ -2013,7 +2012,7 @@ ReturnStatement:
         struct node* E[3];
         E[0] = $$;
         E[1] = makeleaf($1);
-        buildVal(E[1]);
+        buildVal(E[1], 1);
         E[2] = $2;
         buildTAC(E, 3, APPEND_CODE);
 
@@ -2152,7 +2151,7 @@ ClassInstanceCreationExpression:
         struct GlobalSymbol * glob_entry = glob_lookup($2->symbol.name,$2->symbol.name,glob_table);
 
         if(glob_entry == NULL){
-            buildVal($$);
+            buildVal($$, 1);
         }
 
         else{
@@ -2182,7 +2181,7 @@ ClassInstanceCreationExpression:
 
         }
 
-        buildVal($$);
+        buildVal($$, 1);
 
     }
 
@@ -2312,7 +2311,7 @@ FieldAccess:
         E[0] = $$;
         E[1] = $1;
         E[2] = makeleaf($3);
-        buildVal(E[2]);
+        buildVal(E[2], 1);
         string temp = makeNewTemp(newTempLabel);
         newTempLabel++;
         E[2]->val.place = temp;
