@@ -3,6 +3,8 @@
         "stdlib.h": "c",
         "string": "cpp",
         "iostream": "cpp",
-        "symboltable.hpp": "c"
+        "symboltable.hpp": "c",
+        "iosfwd": "cpp",
+        "vector": "cpp"
     }
 }

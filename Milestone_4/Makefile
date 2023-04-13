@@ -1,4 +1,4 @@
-CC = g++
+CC = g++-12
 TEST_DIR = tests
 OUTPUT_DIR = output
 BIN_DIR = bin
