@@ -1,10 +1,16 @@
 #include <bits/stdc++.h>
 #include "../Includes.hpp"
-#include "../../bin/parser.tab.hh"
-
-extern struct SymbolTable* curr;
 
 using namespace std;
+
+int checkCurr(){
+    if(curr!=NULL)
+        view_symbol_table(*curr);
+    else {
+        cout << "curr was null";
+    }
+    return 0;
+}
 
 int pushCode(Value &val, string str){
     

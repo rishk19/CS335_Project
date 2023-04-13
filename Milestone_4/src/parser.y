@@ -956,6 +956,8 @@ MethodDeclaration:
             semantic_error("Uncaught error!!!");
         }
         globEntry->tac = $$->val;
+
+        checkCurr();
     }
 
 MethodHeader:

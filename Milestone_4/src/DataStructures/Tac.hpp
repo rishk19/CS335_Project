@@ -2,6 +2,7 @@
 #define TAC_H_
 #include "Quadruple.hpp"
 #include <bits/stdc++.h>
+
 using namespace std;
 
 #define NULL_STR 0 
@@ -41,8 +42,12 @@ int buildTAC(struct node* E[], int n, int flag);
 int buildVal(struct node* E);
 
 void printThreeAC(Value val); 
+int checkCurr();
 
 extern int newTempLabel;
 extern Value dummyVal;
+
+extern struct SymbolTable* curr;
+
 
 #endif
