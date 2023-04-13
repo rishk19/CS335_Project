@@ -27,6 +27,10 @@ string view_quad(struct Quad* qd){
         case Xor:
             op = "xor";
             break;
+            
+        case Assign:
+            op = "=";
+            break;
 
         default:
             op = "no matching operator";
@@ -35,39 +39,39 @@ string view_quad(struct Quad* qd){
     }
 
     string res = "";
-    if(qd->result.is_label){
+    if(qd->result.status == 2){
         res = "goto line number: " + to_string(qd->result.label);
     }
-    else if(qd->result.is_literal){
+    else if(qd->result.status == 0){
         res = "bad result not possible";
         return res;
     }
-    else if(qd->result.is_symbol_entry){
+    else if(qd->result.status == 1){
         res = qd->result.symbol_entry->name;
     }
 
     string arg_1 = "";
-    if(qd->arg_1.is_label){
+    if(qd->arg_1.status == 2){
         arg_1 = "bad argument not possible";
         return arg_1;
     }
-    else if(qd->arg_1.is_literal){
+    else if(qd->arg_1.status == 0){
         arg_1 = "#" + to_string(qd->arg_1.literal);
     }
-    else if(qd->arg_1.is_symbol_entry){
+    else if(qd->arg_1.status == 1){
         arg_1 = qd->arg_1.symbol_entry->name;
     }
 
     string arg_2 = "";
-    if(qd->arg_2.is_label){
+    if(qd->arg_2.status == 2){
         arg_2 = "bad argument not possible";
         return arg_2;
     }
-    else if(qd->arg_2.is_literal){
+    else if(qd->arg_2.status == 0){
         arg_2 = "#" + to_string(qd->arg_2.literal);
         
     }
-    else if(qd->arg_2.is_symbol_entry){
+    else if(qd->arg_2.status == 1){
         arg_2 = qd->arg_2.symbol_entry->name;
     }
 

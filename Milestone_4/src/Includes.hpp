@@ -45,4 +45,8 @@ using namespace std;
 #define METHOD_INVOCATION 136
 #define ARRAY_ACCESS 137
 
+extern struct SymbolTable* curr;
+extern int newTempLabel;
+extern Value dummyVal;
+
 #endif

@@ -14,6 +14,8 @@ struct Value {
 
         string place;
         string label;
+
+        int status;  // 0-> literal 1-> temporary  -1->unassigned
         
         vector<string> code;
         vector<Quad> qaud;
@@ -39,15 +41,13 @@ int genArrayAccess2(struct node* E_1, struct node* E_2, struct node* E_3);
 
 
 int buildTAC(struct node* E[], int n, int flag);
-int buildVal(struct node* E);
+int buildVal(struct node* E, int status);
 
 void printThreeAC(Value val); 
 int checkCurr();
 
-extern int newTempLabel;
-extern Value dummyVal;
 
-extern struct SymbolTable* curr;
+
 
 
 #endif

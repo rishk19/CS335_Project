@@ -8,6 +8,7 @@ enum Operator {
     Div,
     Or,
     Xor,
+    Assign,
 };
 
 #endif

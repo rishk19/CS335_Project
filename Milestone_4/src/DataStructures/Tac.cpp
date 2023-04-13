@@ -49,10 +49,16 @@ string makeNewLabel(long int i){
 
 int copyValue(Value &v1, Value &v2){
     if(v2.place.size()!=0)
+    {
         v1.place = v2.place;
+        v1.status = v2.status;
+    }
 
     if(v2.label.size()!=0)
-        v2.label = v2.label;
+    {
+        v1.label = v2.label;
+        v1.status = 2;
+    }   
 
     int n = v2.code.size();
     for(int j = 0; j<n; j++){
@@ -60,6 +66,12 @@ int copyValue(Value &v1, Value &v2){
             v1.code.push_back(v2.code[j]);
         }
     }
+
+    n = v2.quad.size();
+    for(int j =0; j<n; j++){
+        v1.quad.push_back(v2.quad[j]);
+    }
+
     return GOOD_CPY;
 }
 int appendCode(Value &v1, Value&v2){
@@ -68,6 +80,12 @@ int appendCode(Value &v1, Value&v2){
     for(int j = 0; j<n; j++){
         if(v2.code[j].size()!=0)
             v1.code.push_back(v2.code[j]);
+    }
+
+    n = v2.quad.size();
+    for(int j=0; j<n; j++)
+    {
+        v1.quad.push_back(v2.quad[j]);
     }
 
     return GOOD_APPEND;
@@ -79,6 +97,14 @@ int genAssignCode(Value &S, Value &E){
     string s_code = S.place;
     s_code.append(" = ");
     s_code.append(E.place);
+
+    struct Quad quad;
+    quad.op = Assign;
+    quad.result.status = S.status;
+    quad.arg_1.status = E.status;
+    fill_arg(&quad.result, S);
+    fill_arg(&quad.arg_1, E);
+    
     
     pushCode(S, s_code);
 
@@ -267,13 +293,15 @@ int genMethodInvocationCode(struct node* E[], int n){
 
 }
 
-int buildVal(struct node* E){
+int buildVal(struct node* E, int status){
+
     if(E==NULL)
         return -1;
     E->val.place = string(E->data);
     // cout <<"line "<<E->symbol.line_num <<" tac:buildVal: "<<E->val.place <<endl;
     E->val.code.clear();
     E->val.label.clear();
+    E->val.status = status;
 
     return 0;
 }
@@ -287,15 +315,14 @@ int buildTAC(struct node* E[], int n, int flag){
     switch(flag){
         case COPY_CODE:
             if(n == 2 && E[1]!=NULL)
-                copyValue(E[0]->val, E[1]->val);
-            
+                copyValue(E[0]->val, E[1]->val);   // Updated
             break;
 
         case APPEND_CODE:
 
             for(int i = 1; i < n; i++){
                 if(E[i]!=NULL){
-                    appendCode(E[0]->val, E[i]->val);
+                    appendCode(E[0]->val, E[i]->val); //Updated
                 }
             }
 
@@ -304,7 +331,7 @@ int buildTAC(struct node* E[], int n, int flag){
         case ASSIGN_CODE:
             
             if(n == 2){
-                genAssignCode(E[0]->val, ((E[1]!=NULL)? E[1]->val : dummyVal));
+                genAssignCode(E[0]->val, ((E[1]!=NULL)? E[1]->val : dummyVal)); 
             }
 
         case BINARY_CODE:
