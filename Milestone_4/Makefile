@@ -24,8 +24,43 @@ parse:
 	mkdir $(OUTPUT_DIR)
 	clear
 
-parser: Type.o SymbolTable.o GlobalSymbolTable.o Tac.o Graph_maker.o Node.o Tokenizer.o Flag_extraction.o TypeChecking.o Quadruple.o Argument.o Main.o
-	$(CC) $(BIN_DIR)/Type.o $(BIN_DIR)/SymbolTable.o $(BIN_DIR)/GlobalSymbolTable.o $(BIN_DIR)/Tac.o $(BIN_DIR)/Graph_maker.o $(BIN_DIR)/Node.o $(BIN_DIR)/Main.o $(BIN_DIR)/Tokenizer.o $(BIN_DIR)/Flag_extraction.o $(BIN_DIR)/TypeChecking.o  $(BIN_DIR)/Quadruple.o $(BIN_DIR)/Argument.o -o $(BIN_DIR)/parser
+change:
+	clear
+	flex -o $(BIN_DIR)/lex.yy.c $(SRC_DIR)/tokenizer.l 
+	bison -d -t -o $(BIN_DIR)/parser.tab.cc $(SRC_DIR)/parser.y 
+	make parser
+	clear
+	
+parser: \
+	Type.o \
+	SymbolTable.o \
+	GlobalSymbolTable.o \
+	Tac.o \
+	Graph_maker.o \
+	Node.o \
+	Tokenizer.o \
+	Flag_extraction.o \
+	TypeChecking.o \
+	Quadruple.o \
+	Argument.o \
+	Operator.o \
+	Main.o 
+
+	$(CC) \
+	$(BIN_DIR)/Type.o \
+	$(BIN_DIR)/SymbolTable.o \
+	$(BIN_DIR)/GlobalSymbolTable.o \
+	$(BIN_DIR)/Tac.o \
+	$(BIN_DIR)/Graph_maker.o \
+	$(BIN_DIR)/Node.o \
+	$(BIN_DIR)/Main.o \
+	$(BIN_DIR)/Tokenizer.o \
+	$(BIN_DIR)/Flag_extraction.o \
+	$(BIN_DIR)/TypeChecking.o  \
+	$(BIN_DIR)/Quadruple.o \
+	$(BIN_DIR)/Argument.o \
+	$(BIN_DIR)/Operator.o \
+	-o $(BIN_DIR)/parser
 
 Type.o: $(SRC_DIR)/DataStructures/Type.cpp $(SRC_DIR)/DataStructures/Type.hpp $(SRC_DIR)/Includes.hpp
 	$(CC) -c $(SRC_DIR)/DataStructures/Type.cpp -o $(BIN_DIR)/Type.o
@@ -62,6 +97,9 @@ Quadruple.o : $(SRC_DIR)/DataStructures/Quadruple.cpp $(SRC_DIR)/Includes.hpp
 
 Argument.o : $(SRC_DIR)/DataStructures/Argument.cpp $(SRC_DIR)/Includes.hpp
 	$(CC) -c $(SRC_DIR)/DataStructures/Argument.cpp -o $(BIN_DIR)/Argument.o
+
+Operator.o : $(SRC_DIR)/DataStructures/Operator.cpp $(SRC_DIR)/Includes.hpp
+	$(CC) -c $(SRC_DIR)/DataStructures/Operator.cpp -o $(BIN_DIR)/Operator.o
 
 all: clean parse
 

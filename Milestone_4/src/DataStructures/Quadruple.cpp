@@ -6,37 +6,7 @@ string view_quad(struct Quad* qd){
     string ans = "";
 
     string op = "";
-    switch (qd->op){
-        case Add:
-            op = "+";
-            break;
-        case Sub:
-            op = "-";
-            break;
-        case Mul:
-            op = "*";
-            break;
-        case Div:
-            op = "/";
-            break;
-
-        case Or:
-            op = "||";
-            break;
-
-        case Xor:
-            op = "xor";
-            break;
-            
-        case Assign:
-            op = "=";
-            break;
-
-        default:
-            op = "no matching operator";
-            return op;
-            break;
-    }
+    op = op_to_str(qd->op);
 
     string res = "";
     if(qd->result.status == 2){
