@@ -129,12 +129,12 @@ int genBinaryOperatorCode(Value &S, Value &E1, Value &E2, string temp, string op
         //cout << "This is being pushed: "<<s_code<<endl;
         pushCode(S, s_code);
 
-        struct Quad quad;
-        quad.op = Assign;
-        fill_arg(&quad.result, S);
-        fill_arg(&quad.arg_1, E);
-        quad.arg_2.status = IS_EMPTY;
-        pushQuad(S,quad);
+        // struct Quad quad;
+        // quad.op = Assign;
+        // fill_arg(&quad.result, S);
+        // fill_arg(&quad.arg_1, E);
+        // quad.arg_2.status = IS_EMPTY;
+        // pushQuad(S,quad);
 
         return 0;
 }
