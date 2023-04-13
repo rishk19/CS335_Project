@@ -141,14 +141,20 @@ Literal:
         $$ = makeleaf($1);
         $$->symbol.type.name = "boolean";
         $$->symbol.size = 1;
-
         buildVal($$,0);
+        if($1[0]=='t'){
+            $$->val.place = "1";
+        }
+        else if($1[0] =='f'){
+            $$->val.place = "0";
+        }
     }
     | CharacterLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "char";
         $$->symbol.size = 2;
         buildVal($$,0);
+        $$->val.place = to_string(int($1[0]));
     }
     | StringLiteral {
         $$ = makeleaf($1);
@@ -161,6 +167,7 @@ Literal:
         $$->symbol.type.name = "null";
         $$->symbol.size = 8;
         buildVal($$,0);
+        $$->val.place = "0";
     }
 
 IntegerLiteral: 
