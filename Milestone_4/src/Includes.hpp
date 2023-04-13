@@ -44,6 +44,10 @@ using namespace std;
 #define BINARY_CODE 135
 #define METHOD_INVOCATION 136
 #define ARRAY_ACCESS 137
+#define IS_LABEL 2
+#define IS_LITERAL 0
+#define IS_VARIABLE 1
+#define IS_EMPTY -1
 
 extern struct SymbolTable* curr;
 extern int newTempLabel;

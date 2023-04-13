@@ -36,12 +36,11 @@ void view_type(struct Type type)
     if(type.t==2){
         cout << "Return Type : " << type.return_type << endl;
         cout << "Type Parameters : ";
-        //cout << type.parameters.size();
         
         for (int i=0; i<type.parameters.size();i++)
         {
             cout << type.parameters_type[i] <<" -> " << type.parameters[i] <<",";
-            //cout << "Hi";
+
         }
         cout <<endl <<endl;;
     

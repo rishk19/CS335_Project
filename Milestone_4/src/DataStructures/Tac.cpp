@@ -25,6 +25,12 @@ int pushCode(Value &val, string str){
     return NEG_STR;
 }
 
+int pushQuad(Value &val, Quad quad)
+{
+    val.quad.push_back(quad);
+    return 1;
+}
+
 string makeNewTemp(long int i){
     if(i < 0){
         cout << " Negative index of temporary!!!\n";
@@ -100,13 +106,13 @@ int genAssignCode(Value &S, Value &E){
 
     struct Quad quad;
     quad.op = Assign;
-    quad.result.status = S.status;
-    quad.arg_1.status = E.status;
     fill_arg(&quad.result, S);
     fill_arg(&quad.arg_1, E);
-    
+    quad.arg_2.status = IS_EMPTY;
+    pushQuad(S,quad);
     
     pushCode(S, s_code);
+
 
     return 0;
 }
@@ -122,6 +128,13 @@ int genBinaryOperatorCode(Value &S, Value &E1, Value &E2, string temp, string op
         s_code.append(E2.place);
         //cout << "This is being pushed: "<<s_code<<endl;
         pushCode(S, s_code);
+
+        struct Quad quad;
+        quad.op = Assign;
+        fill_arg(&quad.result, S);
+        fill_arg(&quad.arg_1, E);
+        quad.arg_2.status = IS_EMPTY;
+        pushQuad(S,quad);
 
         return 0;
 }
@@ -266,28 +279,6 @@ int genMethodInvocationCode(struct node* E[], int n){
     if(E[0]->symbol.size!=0)
         pushCode(E[0]->val, "load " +temp+" (0)$rsp "  + to_string(E[0]->symbol.size));
     pushCode(E[0]->val, "$rsp = $rsp - " + to_string(E[0]->symbol.size  + parameterSize) + "  // Popping return value and arguments");
-
-    // case METHOD_INVOCATION:
-    //         if(n==2){
-    //             temp = makeNewTemp(newTempLabel);
-    //             newTempLabel = newTempLabel + 1;
-    //             genMethodInvocationCode(((E[0]!=NULL)?E[0]->val:dummyVal), ((E[1]!=NULL)?E[1]->val:dummyVal), string(((E[0]!=NULL)?E[0]->data:"method")), temp);
-    //         }
-    // S.place = temp;
-
-    // int n = E.code.size();
-    // for(int i = 0; i <n; i++){
-    //     string param = "param ";
-    //     if(E.code[i].size()!=0)
-    //         param.append(E.code[i]);
-        
-    //     pushCode(S, param);
-    // }
-    // string s_code = "call ";
-    // s_code.append(methodName);
-    // s_code.append(to_string(n));
-    // s_code.append(" ");
-    // s_code.append(temp);
 
     return 0;
 

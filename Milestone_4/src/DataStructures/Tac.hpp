@@ -25,6 +25,8 @@ string makeNewTemp(long int i);
 string makeNewLabel(long int i);
 
 int pushCode(Value &val, string str); //pushes the str to val.code vector
+int pushQuad(Value &val, Quad quad);
+
 int copyValue(Value &v1, Value &v2); //copies value of v2 to v1   i.e., v1 <= v2
 int appendCode(Value &v1, Value&v2); //appends code of v2 to v1 i.e., final_code(v1) = initial_code(v1)+initial_code(v2)
 
