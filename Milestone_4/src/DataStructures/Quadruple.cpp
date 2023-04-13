@@ -40,7 +40,7 @@ string view_quad(struct Quad* qd){
 
     string res = "";
     if(qd->result.status == 2){
-        res = "goto line number: " + to_string(qd->result.label);
+        res = "goto line number: " + qd->result.label;
     }
     else if(qd->result.status == 0){
         res = "bad result not possible";
@@ -56,7 +56,7 @@ string view_quad(struct Quad* qd){
         return arg_1;
     }
     else if(qd->arg_1.status == 0){
-        arg_1 = "#" + to_string(qd->arg_1.literal);
+        arg_1 = "#" + qd->arg_1.literal;
     }
     else if(qd->arg_1.status == 1){
         arg_1 = qd->arg_1.symbol_entry->name;
@@ -68,7 +68,7 @@ string view_quad(struct Quad* qd){
         return arg_2;
     }
     else if(qd->arg_2.status == 0){
-        arg_2 = "#" + to_string(qd->arg_2.literal);
+        arg_2 = "#" + qd->arg_2.literal;
         
     }
     else if(qd->arg_2.status == 1){

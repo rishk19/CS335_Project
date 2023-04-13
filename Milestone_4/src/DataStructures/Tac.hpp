@@ -18,7 +18,7 @@ struct Value {
         int status;  // 0-> literal 1-> temporary  -1->unassigned
         
         vector<string> code;
-        vector<Quad> qaud;
+        vector<Quad> quad;
 };
 
 string makeNewTemp(long int i);
