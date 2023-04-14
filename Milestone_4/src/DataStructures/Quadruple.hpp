@@ -6,7 +6,7 @@
 #include "SymbolTable.hpp"
 
 struct Quad{
-    enum Operator op;
+    struct Operator op;
     struct Argument arg_1;
     struct Argument arg_2;   
     struct Argument result;
@@ -15,5 +15,4 @@ struct Quad{
 
 string view_quad(struct Quad* qd);
 vector<string> view_quadruple(vector<Quad> quad);
-int insert_temp(struct Symbol symb,string temp, string op_type);
 #endif

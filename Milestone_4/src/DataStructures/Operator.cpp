@@ -1,34 +1,44 @@
 #include"../Includes.hpp"
 
-Operator str_to_op(string op){
+Operator str_to_op(string op, string type){
+    struct Operator new_operator;
     if(op == "+"){
-        return Add;
+        new_operator.op = Add;
+        new_operator.type = type;
     }
     else if(op == "-"){
-        return Sub;
+        new_operator.op = Sub;
+        new_operator.type = type;
     }
     else if(op == "*"){
-        return Mul;
+        new_operator.op = Mul;
+        new_operator.type = type;
     }
     else if(op == "/"){
-        return Div;
+        new_operator.op = Div;
+        new_operator.type = type;
     }
     else if(op == "||"){
-        return Or;
+        new_operator.op = Or;
+        new_operator.type = type;
     }
     else if(op == "^"){
-        return Xor;
+        new_operator.op = Xor;
+        new_operator.type = type;
     }
     else if(op == "="){
-        return Assign;
+        new_operator.op = Assign;
+        new_operator.type = type;
     }
     else{
         cout << op <<endl;
-        return Unknown;
+        new_operator.op = Unknown;
+        new_operator.type = type;
     }
-    return Unknown;
+    
+    return new_operator;
 }
-string op_to_str(Operator op){
+string op_to_str(Op op){
     switch (op){
         case Add:
             return "+";

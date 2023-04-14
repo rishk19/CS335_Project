@@ -3,7 +3,7 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-enum Operator {
+enum Op {
     Unknown,
     Add,
     Sub,
@@ -13,6 +13,10 @@ enum Operator {
     Xor,
     Assign,
 };
+struct Operator {
+    Op op;
+    string type;
+};
 Operator str_to_op(string );
-string op_to_str(Operator );
+string op_to_str(Op );
 #endif
