@@ -3,11 +3,14 @@
 
 #include "Operator.hpp"
 #include "Argument.hpp"
+#include "SymbolTable.hpp"
+
 struct Quad{
     enum Operator op;
     struct Argument arg_1;
     struct Argument arg_2;   
     struct Argument result;
+    struct SymbolTable* my_table; 
 };
 
 string view_quad(struct Quad* qd);
