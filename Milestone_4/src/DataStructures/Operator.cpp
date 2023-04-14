@@ -9,7 +9,8 @@ Operator str_to_op(string op_appended){
         op.push_back(op_appended[i]);
         i+=1;
     }
-    while(op[i] != '\0'){
+    //op.push_back('\0');
+    while(op_appended.size() > i){
         type.push_back(op_appended[i]);
         i+=1;
     }
