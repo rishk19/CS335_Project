@@ -60,3 +60,18 @@ vector<string> view_quadruple(vector<Quad> quad){
 
     return printQuad;
 }
+
+int insert_temp(struct Symbol symb,string temp, string op_type)
+{
+    struct Symbol temp_symbol = symb; 
+    temp_symbol.name = temp;
+    temp_symbol.type.name = op_type;
+    temp_symbol.size = type_size(op_type);
+    temp_symbol.type.t = 0;
+    long long int x = loc_insert(curr, temp_symbol);
+    if(x < 0)
+    {
+        cout << "Temporary Redeclaration for " << temp  << " for statement at line number " <<-x << endl <<endl;
+    }
+    return 1;
+}

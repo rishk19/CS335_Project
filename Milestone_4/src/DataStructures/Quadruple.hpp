@@ -15,4 +15,5 @@ struct Quad{
 
 string view_quad(struct Quad* qd);
 vector<string> view_quadruple(vector<Quad> quad);
+int insert_temp(struct Symbol symb,string temp, string op_type);
 #endif

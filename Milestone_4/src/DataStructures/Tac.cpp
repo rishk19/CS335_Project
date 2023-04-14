@@ -109,6 +109,7 @@ int genAssignCode(Value &S, Value &E){
     fill_arg(&quad.result, S);
     fill_arg(&quad.arg_1, E);
     quad.arg_2.status = IS_EMPTY;
+    quad.my_table = curr;
     pushQuad(S,quad);
     
     pushCode(S, s_code);
@@ -129,12 +130,13 @@ int genBinaryOperatorCode(Value &S, Value &E1, Value &E2, string temp, string op
         //cout << "This is being pushed: "<<s_code<<endl;
         pushCode(S, s_code);
 
-        // struct Quad quad;
-        // quad.op = Assign;
-        // fill_arg(&quad.result, S);
-        // fill_arg(&quad.arg_1, E);
-        // quad.arg_2.status = IS_EMPTY;
-        // pushQuad(S,quad);
+        struct Quad quad;
+        quad.op = str_to_op(op);
+        fill_arg(&quad.result, S);
+        fill_arg(&quad.arg_1, E1);
+        fill_arg(&quad.arg_2, E2);
+        quad.my_table = curr;
+        pushQuad(S,quad);
 
         return 0;
 }
@@ -150,11 +152,19 @@ int genUnaryOperatorCode(Value &S, Value &E, string temp, string op){
     s_code.append(E.place);
     pushCode(S, s_code);
 
+    struct Quad quad;
+    quad.op = str_to_op(op);
+    fill_arg(&quad.result, S);
+    fill_arg(&quad.arg_1, E);
+    quad.arg_2.status = IS_EMPTY;
+    quad.my_table = curr;
+    pushQuad(S,quad);    
+
     return 0;
 
 }
 
-int genIfElseCode(Value &S, Value &E1, Value &E2, Value &E3, string L1, string L2){
+int genIfElseCode(Value &S, Value &E1, Value &E2, Value &E3, string L1, string L2){     // Quadruple left
 
     S.label = L1;
     S.label.push_back(',');
@@ -186,7 +196,7 @@ int genIfElseCode(Value &S, Value &E1, Value &E2, Value &E3, string L1, string L
 }
 
 
-int genWhileCode(Value &S, Value &E1, Value &E2, string L1, string L2){
+int genWhileCode(Value &S, Value &E1, Value &E2, string L1, string L2){     // Quadruple Left
     
     S.label = L1;
     S.label.push_back(',');
@@ -211,7 +221,7 @@ int genWhileCode(Value &S, Value &E1, Value &E2, string L1, string L2){
     return 0;
 }
 
-int genForCode(Value &S, Value &E1, Value &E2, Value &E3, Value &E4, string L1, string L2){
+int genForCode(Value &S, Value &E1, Value &E2, Value &E3, Value &E4, string L1, string L2){     // Quadruple Left
 
         S.label = L1;
         S.label.push_back(',');
@@ -241,7 +251,7 @@ int genForCode(Value &S, Value &E1, Value &E2, Value &E3, Value &E4, string L1, 
         return 0;
 }
 
-int genMethodInvocationCode(struct node* E[], int n){
+int genMethodInvocationCode(struct node* E[], int n){               // Quadruple Left
     if(E[0]==NULL || E[1]==NULL)return 1;
 
     string temp = makeNewTemp(newTempLabel);
@@ -289,10 +299,12 @@ int buildVal(struct node* E, int status){
     if(E==NULL)
         return -1;
     E->val.place = string(E->data);
-    // cout <<"line "<<E->symbol.line_num <<" tac:buildVal: "<<E->val.place <<endl;
+    
+     // cout <<"line "<<E->symbol.line_num <<" tac:buildVal: "<<E->val.place <<endl;
     E->val.code.clear();
     E->val.label.clear();
     E->val.status = status;
+
 
     return 0;
 }
@@ -337,6 +349,9 @@ int buildTAC(struct node* E[], int n, int flag){
                     newTempLabel = newTempLabel + 1;
                     pushCode(E[0]->val, temp2 + " = " + "cast_to_" + op_type + " " + E[1]->val.place);
                     E[1]->val.place = temp2;
+
+                    insert_temp(E[1]->symbol, temp2, op_type);
+                    E[1]->val.status = IS_VARIABLE;
                     //genUnaryOperatorCode(E[0]->val, E[1]->val, temp2, "cast_to_"+op_type+" ");
                 }
                 
@@ -345,11 +360,17 @@ int buildTAC(struct node* E[], int n, int flag){
                     newTempLabel = newTempLabel + 1;
                     pushCode(E[0]->val, temp2 + " = " + "cast_to_"+op_type+" "+E[2]->val.place);
                     E[2]->val.place = temp2;
+                    
+                    insert_temp(E[2]->symbol, temp2, op_type);
+                    E[2]->val.status = IS_VARIABLE;
                     //genUnaryOperatorCode(E[0]->val, E[2]->val, temp2, "cast_to_"+op_type+" ");
                 }
 
                 temp = makeNewTemp(newTempLabel);
                 newTempLabel = newTempLabel + 1;
+                
+                insert_temp(E[0]->symbol, temp, E[0]->symbol.type.name);
+                E[0]->val.status = IS_VARIABLE;
                 
                 if(isNumericType(op_type)){
                     op_type = " "+string(E[3]->data)+op_type+" ";
@@ -368,6 +389,10 @@ int buildTAC(struct node* E[], int n, int flag){
             if(n == 3){
                 temp = makeNewTemp(newTempLabel);
                 newTempLabel = newTempLabel + 1;
+
+                insert_temp(E[1]->symbol, temp, E[1]->symbol.type.name);
+                E[0]->val.status = IS_VARIABLE;
+
                 genUnaryOperatorCode(E[0]->val, E[1]->val, temp, string(E[2]->data));
             }
             break;
@@ -434,8 +459,26 @@ int genArrayAccess(struct node* E_1, struct node* E_2, struct node* E_3)
     appendCode(E_1->val, E_3->val);
     string temp1 = makeNewTemp(newTempLabel);
     newTempLabel++;
+    E_1->val.status = IS_VARIABLE;
+
     E_1->val.place=temp1;
     string s_code = temp1 + " = " + E_3->val.place + " * " + to_string(E_1->symbol.size);
+
+    struct Value val;
+    val.status = IS_LITERAL;
+    val.place = to_string(E_1->symbol.size);
+
+    insert_temp(E_1->symbol, temp1, E_3->symbol.type.name);
+    struct Quad quad;
+    quad.op = Mul;
+    fill_arg(&quad.result, E_1->val);
+    fill_arg(&quad.arg_1, E_3->val);
+    fill_arg(&quad.arg_2, val);
+
+    quad.my_table = curr;
+    pushQuad(E_1->val,quad);
+
+    //cout << E_3->symbol.type.name << endl; 
     pushCode(E_1->val, s_code);
 
     return 0;
@@ -450,19 +493,40 @@ int genArrayAccess2(struct node* E_1, struct node* E_2, struct node* E_3)
 
     string s_code1 = temp1 + " = " + E_3->val.place + " * " +  to_string(E_1->symbol.size);
     pushCode(E_1->val,s_code1);
+    E_1->val.place = temp1;
+    E_1->val.status = IS_VARIABLE;
+
+    struct Value val;
+    val.status = IS_LITERAL;
+    val.place = to_string(E_1->symbol.size); 
+
+    insert_temp(E_1->symbol, temp1, E_3->symbol.type.name);
+    struct Quad quad;
+    quad.op = Mul;
+    fill_arg(&quad.result, E_1->val);
+    fill_arg(&quad.arg_1, E_3->val);
+    fill_arg(&quad.arg_2, val);
+
+    quad.my_table = curr;
+    pushQuad(E_1->val,quad);
 
 
     string temp2 = makeNewTemp(newTempLabel);
     newTempLabel++;
+    val = E_1->val;
     E_1->val.place = temp2;
 
     string s_code2 = temp2 + " = " +  E_2->val.place + " + " +  temp1;
     pushCode(E_1->val,s_code2);
 
+    insert_temp(E_1->symbol, temp2, max_type(E_2->symbol.type.name, E_3->symbol.type.name));
+    quad.op = Mul;
+    fill_arg(&quad.result, E_1->val);
+    fill_arg(&quad.arg_1, E_2->val);
+    fill_arg(&quad.arg_2, val);
 
-
-
-
+    quad.my_table = curr;
+    pushQuad(E_1->val,quad);
 
     return 0;
 }

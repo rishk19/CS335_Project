@@ -73,3 +73,16 @@ void copy_type(struct Type* type_1, struct Type type_2)
 
 }
 
+int type_size(string type)
+{
+    if(type == "byte") return 1;
+    if(type == "short") return 2;
+    if(type == "int") return 4;
+    if(type == "long") return 4;
+    if(type == "char") return 2;
+    if(type == "float") return 4;
+    if(type == "double") return 8;
+
+    return -1;
+}
+
