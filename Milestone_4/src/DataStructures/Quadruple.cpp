@@ -6,7 +6,7 @@ string view_quad(struct Quad* qd){
     string ans = "";
 
     string op = "";
-    op = op_to_str(qd->op);
+    op = op_to_str(qd->op.op);
 
     string res = "";
     if(qd->result.status == IS_LABEL){
@@ -22,6 +22,7 @@ string view_quad(struct Quad* qd){
             cout << "Result symbol table is NULL" <<endl;
         }
         else{
+            cout << "I am here " <<endl;
             res = qd->result.symbol_entry->name;
         }
     }
@@ -63,7 +64,7 @@ string view_quad(struct Quad* qd){
         }
     }
 
-    ans = op + " " + arg_1 + " " + arg_2 + " " + res;
+    ans = res + " = " + arg_1 + " " + op +  " "  +  arg_2 ;
     return ans;
 
 

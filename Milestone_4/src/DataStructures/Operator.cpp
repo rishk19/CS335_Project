@@ -1,6 +1,19 @@
 #include"../Includes.hpp"
 
-Operator str_to_op(string op, string type){
+Operator str_to_op(string op_appended){
+
+    int i =1;
+    string op = "";
+    string type = "";
+    while(op_appended[i]-'a' < 0 || op_appended[i] - 'z' > 0){
+        op += op_appended[i];
+        i+=1;
+    }
+    while(op[i] != '\0'){
+        type += op_appended[i];
+        i+=1;
+    }
+
     struct Operator new_operator;
     if(op == "+"){
         new_operator.op = Add;
@@ -26,8 +39,8 @@ Operator str_to_op(string op, string type){
         new_operator.op = Xor;
         new_operator.type = type;
     }
-    else if(op == "="){
-        new_operator.op = Assign;
+    else if(op == ""){
+        new_operator.op = Empty;
         new_operator.type = type;
     }
     else{
@@ -61,8 +74,8 @@ string op_to_str(Op op){
             return "^";
             break;
             
-        case Assign:
-            return "=";
+        case Empty:
+            return "";
             break;
 
         default:
@@ -70,3 +83,4 @@ string op_to_str(Op op){
     }
     return "no matching operator";
 }
+

@@ -11,7 +11,7 @@ enum Op {
     Div,
     Or,
     Xor,
-    Assign,
+    Empty,
 };
 struct Operator {
     Op op;

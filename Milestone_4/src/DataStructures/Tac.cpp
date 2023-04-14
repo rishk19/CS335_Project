@@ -105,7 +105,8 @@ int genAssignCode(Value &S, Value &E){
     s_code.append(E.place);
 
     struct Quad quad;
-    quad.op = Assign;
+    quad.op.op = Empty;
+    quad.op.type = "int";
     fill_arg(&quad.result, S);
     fill_arg(&quad.arg_1, E);
     quad.arg_2.status = IS_EMPTY;
@@ -131,6 +132,7 @@ int genBinaryOperatorCode(Value &S, Value &E1, Value &E2, string temp, string op
         pushCode(S, s_code);
 
         struct Quad quad;
+
         quad.op = str_to_op(op);
         fill_arg(&quad.result, S);
         fill_arg(&quad.arg_1, E1);
@@ -153,6 +155,8 @@ int genUnaryOperatorCode(Value &S, Value &E, string temp, string op){
     pushCode(S, s_code);
 
     struct Quad quad;
+
+
     quad.op = str_to_op(op);
     fill_arg(&quad.result, S);
     fill_arg(&quad.arg_1, E);
@@ -370,7 +374,9 @@ int buildTAC(struct node* E[], int n, int flag){
                 newTempLabel = newTempLabel + 1;
                 
                 insert_temp(E[0]->symbol, temp, E[0]->symbol.type.name);
+                //cout << temp << endl;
                 E[0]->val.status = IS_VARIABLE;
+                E[0]->val.place = temp;
                 
                 if(isNumericType(op_type)){
                     op_type = " "+string(E[3]->data)+op_type+" ";
@@ -470,7 +476,8 @@ int genArrayAccess(struct node* E_1, struct node* E_2, struct node* E_3)
 
     insert_temp(E_1->symbol, temp1, E_3->symbol.type.name);
     struct Quad quad;
-    quad.op = Mul;
+    quad.op.op = Mul;
+    quad.op.type = "int";
     fill_arg(&quad.result, E_1->val);
     fill_arg(&quad.arg_1, E_3->val);
     fill_arg(&quad.arg_2, val);
@@ -502,7 +509,8 @@ int genArrayAccess2(struct node* E_1, struct node* E_2, struct node* E_3)
 
     insert_temp(E_1->symbol, temp1, E_3->symbol.type.name);
     struct Quad quad;
-    quad.op = Mul;
+    quad.op.op = Mul;
+    quad.op.type = "int";
     fill_arg(&quad.result, E_1->val);
     fill_arg(&quad.arg_1, E_3->val);
     fill_arg(&quad.arg_2, val);
@@ -520,7 +528,8 @@ int genArrayAccess2(struct node* E_1, struct node* E_2, struct node* E_3)
     pushCode(E_1->val,s_code2);
 
     insert_temp(E_1->symbol, temp2, max_type(E_2->symbol.type.name, E_3->symbol.type.name));
-    quad.op = Mul;
+    quad.op.op = Mul;
+    quad.op.type = "int";
     fill_arg(&quad.result, E_1->val);
     fill_arg(&quad.arg_1, E_2->val);
     fill_arg(&quad.arg_2, val);
