@@ -17,7 +17,13 @@ string view_quad(struct Quad* qd){
         return res;
     }
     else if(qd->result.status == IS_VARIABLE){
-        res = qd->result.symbol_entry->name;
+        if(qd->result.symbol_entry == NULL)
+        {
+            cout << "Result symbol table is NULL" <<endl;
+        }
+        else{
+            res = qd->result.symbol_entry->name;
+        }
     }
 
     string arg_1 = "";
@@ -29,7 +35,13 @@ string view_quad(struct Quad* qd){
         arg_1 = "#" + qd->arg_1.literal;
     }
     else if(qd->arg_1.status == IS_VARIABLE){
-        arg_1 = qd->arg_1.symbol_entry->name;
+        if(qd->arg_1.symbol_entry == NULL)
+        {
+            cout << "Argument 1 symbol table is NULL" <<endl;
+        }
+        else{
+            arg_1 = qd->arg_1.symbol_entry->name;
+        }
     }
 
     string arg_2 = "";
@@ -42,11 +54,18 @@ string view_quad(struct Quad* qd){
         
     }
     else if(qd->arg_2.status == IS_VARIABLE){
-        arg_2 = qd->arg_2.symbol_entry->name;
+        if(qd->arg_2.symbol_entry == NULL)
+        {
+            cout << "Argument 2 symbol table is NULL" <<endl;
+        }
+        else{
+            arg_2 = qd->arg_2.symbol_entry->name;
+        }
     }
 
     ans = op + " " + arg_1 + " " + arg_2 + " " + res;
     return ans;
+
 
 }
 
@@ -56,7 +75,9 @@ vector<string> view_quadruple(vector<Quad> quad){
     printQuad.clear();
     for(int i = 0; i<quad.size(); i++){
         printQuad.push_back(view_quad(&quad[i]));
+        cout << view_quad(&quad[i]) << endl;
     }
+    
 
     return printQuad;
 }

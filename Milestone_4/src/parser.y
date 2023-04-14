@@ -963,6 +963,8 @@ MethodDeclaration:
             semantic_error("Uncaught error!!!");
         }
         globEntry->tac = $$->val;
+
+        view_quadruple($$->val.quad);
     }
 
 MethodHeader:
@@ -3523,7 +3525,7 @@ int main(int argc , char** argv)
     //         cout << root->val.code[iter]<<endl; 
     // }
     
-    //// view_symbol_table(*glob_class_scope);
+    //view_symbol_table_with_children_hierarchy(glob_class_scope);
     // viewGlobal(glob_table);
     //viewGlobalTac(glob_table);
     FILE* graph = fopen(output_file,"w");

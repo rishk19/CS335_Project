@@ -23,6 +23,7 @@ Operator str_to_op(string op){
         return Assign;
     }
     else{
+        cout << op <<endl;
         return Unknown;
     }
     return Unknown;
