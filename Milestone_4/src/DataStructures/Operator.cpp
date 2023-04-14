@@ -6,11 +6,11 @@ Operator str_to_op(string op_appended){
     string op = "";
     string type = "";
     while(op_appended[i]-'a' < 0 || op_appended[i] - 'z' > 0){
-        op += op_appended[i];
+        op.push_back(op_appended[i]);
         i+=1;
     }
     while(op[i] != '\0'){
-        type += op_appended[i];
+        type.push_back(op_appended[i]);
         i+=1;
     }
 
