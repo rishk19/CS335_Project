@@ -181,19 +181,39 @@ int genIfElseCode(Value &S, Value &E1, Value &E2, Value &E3, string L1, string L
     s_code.append(L1);
     pushCode(S, s_code);
     s_code.clear();
+
+    struct Value * val = new struct Value;
+    val->status = IS_LABEL;
+    val->label = L2;
+
+    //E1.status = IS_VARIABLE;
+
+    struct Quad * quad = new struct Quad;
+    fill_arg(&quad->result, *val);
+    fill_arg(&quad->arg_1, E1);
+
+    val->status = IS_LITERAL;
+    val->place = "#0";
+
+    fill_arg(&quad->arg_2, *val);
+    quad->my_table = curr;
+    quad->op.op = Compare_;
+
+    pushQuad(S, *quad);
     
-    s_code = "else goto ";
+    s_code = "goto ";
     s_code.append(L2);
+    appendCode(S,E3);
     pushCode(S, s_code);
     s_code.clear();
-    
+    pushCode(S,s_code);
+
     pushCode(S, L1);
     
     appendCode(S,E2);
     
     pushCode(S, L2);
     
-    appendCode(S, E3);
 
     return 0;
 }

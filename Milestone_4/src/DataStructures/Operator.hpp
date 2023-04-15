@@ -42,7 +42,8 @@ enum Op {
     RightShiftEqualTo_,
     TripleGreaterThanEqualTo_,
     GreaterThan_,
-    LessThan_
+    LessThan_,
+    Compare_
 };
 struct Operator {
     Op op;

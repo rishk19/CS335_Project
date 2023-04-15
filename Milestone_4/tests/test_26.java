@@ -12,11 +12,12 @@ class short_circuit{
             j = 1;
         }
         else if(i == 1){
-            j = 2;
+            j ++;
         }
         else{
-            i = 2;
+            k = true;
         }
+        i = 0;
     }
 
  }
