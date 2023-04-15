@@ -228,14 +228,14 @@ int genIfElseCode(Value &S, Value &E1, Value &E2, Value &E3, string L1, string L
 
     // s_code.clear();
     // pushCode(S,s_code);
-    val->status=IS_LABEL;
-    val->label= L1;
     struct Quad * quad2 = new struct Quad;
     quad2->op.op = Label_;
     quad2->op.type = "int";
     fill_arg(&quad2->result, *val);
     quad2->arg_1.status = IS_EMPTY;
     quad2->arg_2.status = IS_EMPTY;
+
+    quad2->my_table = curr;
     pushQuad(S,*quad2);
 
 
@@ -251,6 +251,8 @@ int genIfElseCode(Value &S, Value &E1, Value &E2, Value &E3, string L1, string L
     fill_arg(&quad3->result, *val);
     quad3->arg_1.status = IS_EMPTY;
     quad3->arg_2.status = IS_EMPTY;
+
+    quad3->my_table = curr;
     pushCode(S, L2);
     pushQuad(S,*quad3);
 
@@ -266,6 +268,20 @@ int genWhileCode(Value &S, Value &E1, Value &E2, string L1, string L2){     // Q
     S.label.push_back(',');
     S.label.append(L2);
 
+    struct Value * val = new struct Value;
+    struct Quad * quad1 = new struct Quad;
+
+    val->status = IS_LABEL;
+    val->label = L1;
+
+    quad1->op.op = Label_;
+    quad1->op.type = "int";
+    fill_arg(&quad1->result, *val);
+    quad1->arg_1.status = IS_EMPTY;
+    quad1->arg_2.status = IS_EMPTY;
+    quad1->my_table = curr;
+    pushQuad(S,*quad1);
+
     pushCode(S, L1);
     appendCode(S, E1);
 
@@ -274,13 +290,59 @@ int genWhileCode(Value &S, Value &E1, Value &E2, string L1, string L2){     // Q
     s_code.append(" == 0 goto ");
     s_code.append(L2);
     pushCode(S, s_code);
+
+    struct Quad * quad2 = new struct Quad;
+    val->label = L2;
+
+    fill_arg(&quad2->result, *val);
+    fill_arg(&quad2->arg_1, E1);
+    
+    val->status = IS_LITERAL;
+    val->place = "0";
+
+    fill_arg(&quad2->arg_2, *val);
+    
+    quad2->my_table = curr;
+    quad2->op.op = Compare_;
+    quad2->op.type = "int";
+
+    pushQuad(S, *quad2);
+
+
+
+
     s_code.clear();
 
     appendCode(S, E2);
     s_code = "goto ";
     s_code.append(L1);
     pushCode(S, s_code);
+
+    val->status=IS_LABEL;
+    val->label= L1;
+    struct Quad * quad3 = new struct Quad;
+    quad3->op.op = Jmp_;
+    quad3->op.type = "int";
+    quad3->my_table = curr;
+    fill_arg(&quad3->result, *val);
+    quad3->arg_1.status = IS_EMPTY;
+    quad3->arg_2.status = IS_EMPTY;
+    pushQuad(S,*quad3);
+
+
     pushCode(S, L2);
+
+    val->label = L2;
+    struct Quad * quad4 = new struct Quad;
+    quad4->op.op = Label_;
+    quad4->op.type = "int";
+    quad4->my_table = curr;
+    fill_arg(&quad4->result, *val);
+    quad4->arg_1.status = IS_EMPTY;
+    quad4->arg_2.status = IS_EMPTY;
+    pushQuad(S, *quad4);
+
+
 
     return 0;
 }
