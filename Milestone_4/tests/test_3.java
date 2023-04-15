@@ -11,7 +11,7 @@ class uminus_bminus{
         //printInt(i--);
         i = 5;
         //printInt(i-1);
-        i = 1-5;
+        i = -5;
         //printInt(i-10);
     }
 }

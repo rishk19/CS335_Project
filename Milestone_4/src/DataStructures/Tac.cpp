@@ -395,8 +395,9 @@ int buildTAC(struct node* E[], int n, int flag){
 
                 insert_temp(E[1]->symbol, temp, E[1]->symbol.type.name);
                 E[0]->val.status = IS_VARIABLE;
-
-                genUnaryOperatorCode(E[0]->val, E[1]->val, temp, string(E[2]->data));
+                E[0]->val.place = temp;
+                string op_type = " "+string(E[2]->data)+E[1]->symbol.type.name+" ";
+                genUnaryOperatorCode(E[0]->val, E[1]->val, temp, op_type);
             }
             break;
         
