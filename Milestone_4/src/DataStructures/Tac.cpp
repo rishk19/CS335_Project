@@ -374,13 +374,13 @@ int buildTAC(struct node* E[], int n, int flag){
 
                 E[0]->val.status = IS_VARIABLE;
                 E[0]->val.place = temp;
-                
-                if(isNumericType(op_type)){
-                    op_type = " "+string(E[3]->data)+op_type+" ";
-                }
-                else{
-                    op_type = " "+string(E[3]->data)+" ";
-                }
+                op_type = " "+string(E[3]->data)+op_type+" ";
+                // if(isNumericType(op_type)){
+                //     op_type = " "+string(E[3]->data)+op_type+" ";
+                // }
+                // else{
+                //     op_type = " "+string(E[3]->data)+" ";
+                // }
                 
                 genBinaryOperatorCode(E[0]->val, E[1]->val, E[2]->val, temp, op_type);
             
