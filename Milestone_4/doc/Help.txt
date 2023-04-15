@@ -34,3 +34,5 @@ All the output three address code generated in stored in output/ folder
 To create a pdf file of the graph use the following command :   
     dot −Tpdf "PATH TO INPUT FILE" −o "PATH TO OUTPUT FILE"
 
+
+-m64 -fno-asynchronous-unwind-tables -fno-exceptions

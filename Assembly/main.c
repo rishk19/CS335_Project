@@ -1,7 +1,4 @@
-#include <string>
 #include <stdio.h>
-
-using namespace std;
 
 int caller(int a, int b);
 int callee(int c);
@@ -19,9 +16,14 @@ int callee(int c)
 int main()
 {
     int a = 1;
-    int b = 'a';
-    char c = 'a';
-    string d = "abcd";
+    
+    if(a == 1)
+    {
+        caller(a,1);
+    }
+    else{
+        caller(a,2);
+    }
     //printf("%d\n", caller(a,b));
     return 0;
 }
