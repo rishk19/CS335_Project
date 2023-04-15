@@ -9,14 +9,14 @@ string view_quad(struct Quad* qd){
 
     string res = "";
     if(qd->result.status == IS_LABEL){
-        res = "goto line number: " + qd->result.label;
+        res = qd->result.label;
     }
     else if(qd->result.status == IS_LITERAL){
         res = "bad result not possible";
         return res;
     }
     else if(qd->result.status == IS_VARIABLE){
-        qd->result.symbol_entry = loc_lookup(qd->my_table,qd->result.literal);
+        qd->result.symbol_entry = check_scope(qd->my_table,qd->result.literal);
         //view_symbol(*qd->result.symbol_entry);
         if(qd->result.symbol_entry == NULL)
         {
@@ -41,9 +41,12 @@ string view_quad(struct Quad* qd){
         arg_1 = "#" + qd->arg_1.literal;
     }
     else if(qd->arg_1.status == IS_VARIABLE){
-        qd->arg_1.symbol_entry = loc_lookup(qd->my_table,qd->arg_1.literal);
+        qd->arg_1.symbol_entry = check_scope(qd->my_table,qd->arg_1.literal);
         if(qd->arg_1.symbol_entry == NULL)
         {
+            cout << qd->arg_1.literal << endl;
+            view_symbol_table_with_parent_hierarchy(qd->my_table);
+
             cout << "Argument 1 symbol table is NULL" <<endl;
         }
         else{
@@ -64,9 +67,13 @@ string view_quad(struct Quad* qd){
         
     }
     else if(qd->arg_2.status == IS_VARIABLE){
-        qd->arg_2.symbol_entry = loc_lookup(qd->my_table,qd->arg_2.literal);
+        qd->arg_2.symbol_entry = check_scope(qd->my_table,qd->arg_2.literal);
+        //view_symbol_table_with_parent_hierarchy(qd->my_table);
         if(qd->arg_2.symbol_entry == NULL)
         {
+            cout << qd->arg_2.literal << endl;
+            view_symbol_table_with_parent_hierarchy(qd->my_table);
+
             cout << "Argument 2 symbol table is NULL" <<endl;
         }
         else{

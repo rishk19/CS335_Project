@@ -177,41 +177,74 @@ int genIfElseCode(Value &S, Value &E1, Value &E2, Value &E3, string L1, string L
     
     string s_code = "if ";
     s_code.append(E1.place);
+    cout << E1.place;
     s_code.append(" goto ");
     s_code.append(L1);
     pushCode(S, s_code);
     s_code.clear();
+    
 
+    // First Quad
     struct Value * val = new struct Value;
     val->status = IS_LABEL;
-    val->label = L2;
-
-    //E1.status = IS_VARIABLE;
+    val->label = L1;
+    //cout << L1 <<endl;
 
     struct Quad * quad = new struct Quad;
     fill_arg(&quad->result, *val);
     fill_arg(&quad->arg_1, E1);
+    //cout << E2.place <<endl;
+    //cout << quad->arg_1.literal <<endl;
 
     val->status = IS_LITERAL;
-    val->place = "#0";
+    val->place = "0";
 
     fill_arg(&quad->arg_2, *val);
-    quad->my_table = curr;
-    quad->op.op = Compare_;
-
-    pushQuad(S, *quad);
     
+    quad->my_table = curr;
+    //view_symbol_table_with_parent_hierarchy(curr);
+    quad->op.op = Compare_;
+    quad->op.type = "int";
+
+    pushQuad(S, *quad); 
+
+    cout << "New Quad :" <<endl;
+    cout << view_quad(quad) <<endl;
+    
+    appendCode(S,E3);
+
+
     s_code = "goto ";
     s_code.append(L2);
-    appendCode(S,E3);
     pushCode(S, s_code);
-    s_code.clear();
-    pushCode(S,s_code);
+    //quad for goto
+    val->status = IS_LABEL;
+    val->label = L2;
+    struct Quad * quad1 = new struct Quad;
+    quad1->op.op = Jmp_;
+    quad1->op.type = "int";
+    quad1->my_table = curr;
+    fill_arg(&quad1->result, *val);
+    pushQuad(S,*quad1);
+    // s_code.clear();
+    // pushCode(S,s_code);
+    val->status=IS_LABEL;
+    val->label= L1;
+    struct Quad * quad2 = new struct Quad;
+    quad2->op.op = Label_;
+    quad2->op.type = "int";
+    fill_arg(&quad2->result, *val);
 
     pushCode(S, L1);
     
     appendCode(S,E2);
     
+    val->status=IS_LABEL;
+    val->label= L2;
+    struct Quad * quad3 = new struct Quad;
+    quad2->op.op = Label_;
+    quad2->op.type = "int";
+    fill_arg(&quad2->result, *val);
     pushCode(S, L2);
     
 

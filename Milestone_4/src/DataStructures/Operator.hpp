@@ -43,7 +43,10 @@ enum Op {
     TripleGreaterThanEqualTo_,
     GreaterThan_,
     LessThan_,
-    Compare_
+    Compare_,
+    Jne_,
+    Jmp_,
+    Label_
 };
 struct Operator {
     Op op;

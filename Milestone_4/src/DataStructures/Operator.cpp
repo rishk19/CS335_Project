@@ -297,6 +297,18 @@ string op_to_str(Op op){
         case LessThan_:
             return "<";
             break;
+        case Compare_:
+            return "cmp";
+            break;
+        case Jne_:
+            return "Jne";
+            break;
+        case Jmp_:
+            return "Jmp";
+            break;
+        case Label_:
+            return "Label";
+            break;
         default:
             break;
     }
