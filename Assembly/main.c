@@ -21,6 +21,16 @@ int main()
     {
         caller(a,1);
     }
+    else if(a == 6){
+        a = 1;
+
+    }
+    else if(a == 7){
+        a = 2;
+    }
+    else if(a == 1000000){
+        a = 123;
+    }
     else{
         caller(a,2);
     }
