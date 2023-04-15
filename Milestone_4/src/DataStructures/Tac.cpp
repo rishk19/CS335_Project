@@ -47,7 +47,7 @@ string makeNewLabel(long int i){
         return "L_ERROR";
     }
     
-    string t = "L";
+    string t = "#L";
     t.append(to_string(i));
     t.append(":");
     return t;

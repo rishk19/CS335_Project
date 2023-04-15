@@ -931,7 +931,7 @@ MethodDeclaration:
         }
         struct node* E[3];
         E[0] = $$;
-        string str = class_name + "::" + string(E[0]->symbol.name) +" : ";
+        string str = "#"+class_name + "::" + string(E[0]->symbol.name) +" : ";
         pushCode(E[0]->val,str);
         pushCode(E[0]->val,"begin_func");
         pushCode(E[0]->val,"$rsp = $rsp - 8");

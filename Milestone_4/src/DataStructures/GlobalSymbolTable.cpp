@@ -65,6 +65,8 @@ void generateTac(FILE* graph, struct GlobalSymbolTable* glob_table){
         cout<<endl;
         Value tac = glob_table->entries[i].tac;
         for(int j = 0; j<tac.code.size(); j++){
+            if(tac.code[j][0]!='#')
+                cout<<"\t";
             cout <<tac.code[j]<<endl;
             // fprintf(graph,"%s\n",&tac.code[j]);
         }
