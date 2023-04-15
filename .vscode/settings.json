@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "stdlib.h": "c",
+        "string": "cpp",
+        "iostream": "cpp",
+        "symboltable.hpp": "c",
+        "iosfwd": "cpp",
+        "vector": "cpp"
+    }
+}

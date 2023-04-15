@@ -1,0 +1,36 @@
+
+
+Welcome to Help Mode !!
+
+The flags availiable :
+    --verbose : Use to switch on the debugger of bison
+    --input= : Use to specify input file
+    --output= : Use to specify output file
+
+To compile the parser for the first time, on the Milestone_1 directory run the code
+    make parse
+    
+To compile the parser again first run :
+    make clean  
+    make parse
+
+If the last compilation had not failed, Parser can be compiled again :
+    make all
+
+The executable for the parser is in the bin folder. To parse a java file run :
+    cd bin
+    ./parser --input= "PATH TO INPUT FILE" --ouput= "PATH TO OUTPUT FILE"
+
+If you want to run our test suite then from the folder Milestone_1 run :
+    make test
+And then give the test_suite number and the output file would be in the output folder.
+
+If you wnat to test all the  test suite in one go, run:
+    make test_many
+You will be prompted to enter number of test cases to run in one go, so enter :
+    25 (to run 25 test cases)
+
+All the output three address code generated in stored in output/ folder
+To create a pdf file of the graph use the following command :   
+    dot −Tpdf "PATH TO INPUT FILE" −o "PATH TO OUTPUT FILE"
+
