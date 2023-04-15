@@ -177,7 +177,6 @@ int genIfElseCode(Value &S, Value &E1, Value &E2, Value &E3, string L1, string L
     
     string s_code = "if ";
     s_code.append(E1.place);
-    cout << E1.place;
     s_code.append(" goto ");
     s_code.append(L1);
     pushCode(S, s_code);
@@ -208,9 +207,6 @@ int genIfElseCode(Value &S, Value &E1, Value &E2, Value &E3, string L1, string L
 
     pushQuad(S, *quad); 
 
-    cout << "New Quad :" <<endl;
-    cout << view_quad(quad) <<endl;
-    
     appendCode(S,E3);
 
 
@@ -225,7 +221,11 @@ int genIfElseCode(Value &S, Value &E1, Value &E2, Value &E3, string L1, string L
     quad1->op.type = "int";
     quad1->my_table = curr;
     fill_arg(&quad1->result, *val);
+    quad1->arg_1.status = IS_EMPTY;
+    quad1->arg_2.status = IS_EMPTY;
+
     pushQuad(S,*quad1);
+
     // s_code.clear();
     // pushCode(S,s_code);
     val->status=IS_LABEL;
@@ -234,6 +234,10 @@ int genIfElseCode(Value &S, Value &E1, Value &E2, Value &E3, string L1, string L
     quad2->op.op = Label_;
     quad2->op.type = "int";
     fill_arg(&quad2->result, *val);
+    quad2->arg_1.status = IS_EMPTY;
+    quad2->arg_2.status = IS_EMPTY;
+    pushQuad(S,*quad2);
+
 
     pushCode(S, L1);
     
@@ -242,10 +246,14 @@ int genIfElseCode(Value &S, Value &E1, Value &E2, Value &E3, string L1, string L
     val->status=IS_LABEL;
     val->label= L2;
     struct Quad * quad3 = new struct Quad;
-    quad2->op.op = Label_;
-    quad2->op.type = "int";
-    fill_arg(&quad2->result, *val);
+    quad3->op.op = Label_;
+    quad3->op.type = "int";
+    fill_arg(&quad3->result, *val);
+    quad3->arg_1.status = IS_EMPTY;
+    quad3->arg_2.status = IS_EMPTY;
     pushCode(S, L2);
+    pushQuad(S,*quad3);
+
     
 
     return 0;

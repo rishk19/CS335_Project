@@ -1640,16 +1640,16 @@ Statement:
     | LabeledStatement {
         $$ = $1;
     }
-    | IfThenStatement{
+    | IfThenStatement Symbol_Table_Back{
         $$ = $1;
     }
-    | IfThenElseStatement {
+    | IfThenElseStatement Symbol_Table_Back{
         $$ = $1;
     }
-    | WhileStatement {
+    | WhileStatement Symbol_Table_Back{
         $$ = $1;
     }
-    | ForStatement {
+    | ForStatement Symbol_Table_Back{
         $$ = $1;
     }
 
@@ -1660,13 +1660,13 @@ StatementNoShortIf:
     | LabeledStatementNoShortIf {
         $$ = $1;
     }
-    | IfThenElseStatementNoShortIf {
+    | IfThenElseStatementNoShortIf Symbol_Table_Back{
         $$ = $1;
     }
-    | WhileStatementNoShortIf {
+    | WhileStatementNoShortIf Symbol_Table_Back{
         $$ = $1;
     }
-    | ForStatementNoShortIf {
+    | ForStatementNoShortIf Symbol_Table_Back{
         $$ = $1;
     }
 
@@ -1770,7 +1770,7 @@ StatementExpression:
     }
 
 IfThenStatement: 
-    If Symbol_Table_Change LeftParanthesis Expression RightParanthesis Statement Symbol_Table_Back {
+    If Symbol_Table_Change LeftParanthesis Expression RightParanthesis Statement {
         struct node* memArr[2];
         memArr[0] = $4;
         memArr[1] = $6;
@@ -1783,7 +1783,7 @@ IfThenStatement:
     }
 
 IfThenElseStatement: 
-    If Symbol_Table_Change LeftParanthesis Expression RightParanthesis StatementNoShortIf Else Statement Symbol_Table_Back{
+    If Symbol_Table_Change LeftParanthesis Expression RightParanthesis StatementNoShortIf Else Statement{
         
         struct node* memArr[3];
         memArr[0] = $4;
@@ -1801,7 +1801,7 @@ IfThenElseStatement:
     }
 
 IfThenElseStatementNoShortIf: 
-    If Symbol_Table_Change LeftParanthesis Expression RightParanthesis StatementNoShortIf Else StatementNoShortIf Symbol_Table_Back {
+    If Symbol_Table_Change LeftParanthesis Expression RightParanthesis StatementNoShortIf Else StatementNoShortIf {
         
         struct node* memArr[3];
         memArr[0] = $4;
@@ -1819,7 +1819,7 @@ IfThenElseStatementNoShortIf:
     }
 
 WhileStatement: 
-    While Symbol_Table_Change LeftParanthesis Expression RightParanthesis Statement Symbol_Table_Back {
+    While Symbol_Table_Change LeftParanthesis Expression RightParanthesis Statement {
         
         struct node* memArr[2];
         memArr[0] = $4;
@@ -1835,7 +1835,7 @@ WhileStatement:
     }
 
 WhileStatementNoShortIf: 
-    While Symbol_Table_Change LeftParanthesis Expression RightParanthesis StatementNoShortIf Symbol_Table_Back {
+    While Symbol_Table_Change LeftParanthesis Expression RightParanthesis StatementNoShortIf{
         struct node* memArr[2];
         memArr[0] = $4;
         memArr[1] = $6;
@@ -1849,7 +1849,7 @@ WhileStatementNoShortIf:
     }
 
 ForStatement: 
-    For Symbol_Table_Change LeftParanthesis ForInit_opt Semicolon Expression_opt Semicolon ForUpdate_opt RightParanthesis Statement Symbol_Table_Back{
+    For Symbol_Table_Change LeftParanthesis ForInit_opt Semicolon Expression_opt Semicolon ForUpdate_opt RightParanthesis Statement{
         
         struct node* memArr[4];
         memArr[0] = $4;
@@ -1870,7 +1870,7 @@ ForStatement:
     }
 
 ForStatementNoShortIf: 
-    For Symbol_Table_Change LeftParanthesis ForInit_opt Semicolon Expression_opt Semicolon ForUpdate_opt RightParanthesis StatementNoShortIf Symbol_Table_Back{
+    For Symbol_Table_Change LeftParanthesis ForInit_opt Semicolon Expression_opt Semicolon ForUpdate_opt RightParanthesis StatementNoShortIf{
         
         struct node* memArr[4];
         memArr[0] = $4;

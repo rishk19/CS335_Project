@@ -23,12 +23,7 @@ string view_quad(struct Quad* qd){
             cout << "Result symbol table is NULL" <<endl;
         }
         else{
-            //cout << "I am here (res) pspsps" <<endl;
-            //view_symbol(*qd->result.symbol_entry);
             res = qd->result.symbol_entry->name;
-            //cout << res << endl;
-            //res = qd->result.symbol_entry->name;
-            //cout << res;
         }
     }
 
@@ -44,15 +39,12 @@ string view_quad(struct Quad* qd){
         qd->arg_1.symbol_entry = check_scope(qd->my_table,qd->arg_1.literal);
         if(qd->arg_1.symbol_entry == NULL)
         {
-            cout << qd->arg_1.literal << endl;
-            view_symbol_table_with_parent_hierarchy(qd->my_table);
+            //cout << qd->arg_1.literal << endl;
+            //view_symbol_table_with_parent_hierarchy(qd->my_table);
 
             cout << "Argument 1 symbol table is NULL" <<endl;
         }
         else{
-            //cout << "I am here (1) pspsps" <<endl;
-    
-            //cout << qd->arg_1.symbol_entry->name << endl;
             arg_1 = qd->arg_1.symbol_entry->name;
         }
     }
@@ -72,18 +64,27 @@ string view_quad(struct Quad* qd){
         if(qd->arg_2.symbol_entry == NULL)
         {
             cout << qd->arg_2.literal << endl;
-            view_symbol_table_with_parent_hierarchy(qd->my_table);
+            //view_symbol_table_with_parent_hierarchy(qd->my_table);
 
             cout << "Argument 2 symbol table is NULL" <<endl;
         }
         else{
-            //cout << "I am here (2) pspsps" <<endl;
-            //cout << qd->arg_2.symbol_entry->name <<endl;
             arg_2 = qd->arg_2.symbol_entry->name;
         }
     }
 
-    ans = res + " = " + arg_1 + " " + op +  " "  +  arg_2 ;
+    ans = "    " + res + " = " + arg_1 + " " + op +  " "  +  arg_2 ;
+
+    if(qd->op.op == Jmp_){
+        ans  = "    " + string("jmp ") + res;
+    }
+    else if(qd->op.op == Label_){
+        ans = res;
+    }
+    else if(qd->op.op == Compare_){
+        ans = "    " + string("cmp ") + arg_1 + " " + arg_2 + "\n" + "    jne " + res;
+    }
+
     return ans;
 
 
