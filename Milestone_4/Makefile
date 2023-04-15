@@ -1,4 +1,7 @@
-CC = g++
+CC = g++-12
+ifeq ($(shell uname),Linux)
+	CC = g++
+endif
 TEST_DIR = tests
 OUTPUT_DIR = output
 BIN_DIR = bin
