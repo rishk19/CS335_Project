@@ -105,7 +105,7 @@ int genAssignCode(Value &S, Value &E){
     s_code.append(E.place);
 
     struct Quad* quad = new struct Quad;
-    quad->op.op = Empty;
+    quad->op.op = Empty_;
     quad->op.type = "int";
     fill_arg(&quad->result, S);
     fill_arg(&quad->arg_1, E);
@@ -473,7 +473,7 @@ int genArrayAccess(struct node* E_1, struct node* E_2, struct node* E_3)
 
     insert_temp(E_1->symbol, temp1, E_3->symbol.type.name);
     struct Quad quad;
-    quad.op.op = Mul;
+    quad.op.op = Product_;
     quad.op.type = "int";
     fill_arg(&quad.result, E_1->val);
     fill_arg(&quad.arg_1, E_3->val);
@@ -506,7 +506,7 @@ int genArrayAccess2(struct node* E_1, struct node* E_2, struct node* E_3)
 
     insert_temp(E_1->symbol, temp1, E_3->symbol.type.name);
     struct Quad quad;
-    quad.op.op = Mul;
+    quad.op.op = Product_;
     quad.op.type = "int";
     fill_arg(&quad.result, E_1->val);
     fill_arg(&quad.arg_1, E_3->val);
@@ -525,7 +525,7 @@ int genArrayAccess2(struct node* E_1, struct node* E_2, struct node* E_3)
     pushCode(E_1->val,s_code2);
 
     insert_temp(E_1->symbol, temp2, max_type(E_2->symbol.type.name, E_3->symbol.type.name));
-    quad.op.op = Mul;
+    quad.op.op = Product_;
     quad.op.type = "int";
     fill_arg(&quad.result, E_1->val);
     fill_arg(&quad.arg_1, E_2->val);

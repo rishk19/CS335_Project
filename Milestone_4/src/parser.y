@@ -141,13 +141,15 @@ Literal:
         $$ = makeleaf($1);
         $$->symbol.type.name = "boolean";
         $$->symbol.size = 1;
-        buildVal($$,0);
         if($1[0]=='t'){
+            cout << $1 <<endl;
             $$->val.place = "1";
         }
         else if($1[0] =='f'){
+            cout << $1 <<endl;
             $$->val.place = "0";
         }
+        buildVal($$,0);
     }
     | CharacterLiteral {
         $$ = makeleaf($1);
