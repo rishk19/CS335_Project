@@ -12,10 +12,16 @@ class short_circuit{
         //     k = true;
         // }
         // i = 0;
-        while(i == 0){
-            j = 1; 
+        // while(i == 0){
+        //     j = 1; 
+        // }
+        // j = 2;
+
+        for (i = 0; i <j ; i = j-1){
+            j = j - 1;
         }
-        j = 2;
+
+        j = 100;
     }
 
  }

@@ -355,6 +355,20 @@ int genForCode(Value &S, Value &E1, Value &E2, Value &E3, Value &E4, string L1, 
 
         appendCode(S, E1);
         pushCode(S, L1);
+
+        struct Value * val = new struct Value;
+        val->status = IS_LABEL;
+        val->label = L1;
+
+        struct Quad * quad = new struct Quad;
+        fill_arg(&quad->result,*val);
+        quad->arg_1.status = IS_EMPTY;
+        quad->arg_2.status = IS_EMPTY;
+        quad->my_table = curr;
+        quad->op.op = Label_;
+        quad->op.type = "int";
+        pushQuad(S,*quad);
+
         appendCode(S, E2);
 
         string s_code = "if ";
@@ -364,15 +378,53 @@ int genForCode(Value &S, Value &E1, Value &E2, Value &E3, Value &E4, string L1, 
         pushCode(S, s_code);
         s_code.clear();
 
+        val->label = L2;
+        struct Quad * quad2 = new struct Quad;
+        fill_arg(&quad2->result, *val);
+        fill_arg(&quad2->arg_1, E2);
+        
+        val->status = IS_LITERAL;
+        val->place = "0";
+
+        fill_arg(&quad2->arg_2, *val);
+        quad2->my_table = curr;
+        quad2->op.op = Compare_and_Je_;
+
+        pushQuad(S, *quad2);
+
         appendCode(S, E4);
         appendCode(S, E3);
         
         s_code = "goto ";
         s_code.append(L1);
         pushCode(S, s_code);
+
+        val->status = IS_LABEL;
+        val->label = L1;
+
+        fill_arg(&quad->result,*val);
+        quad->arg_1.status = IS_EMPTY;
+        quad->arg_2.status = IS_EMPTY;
+        quad->my_table = curr;
+        quad->op.op = Jmp_;
+        quad->op.type = "int";
+        pushQuad(S,*quad);
+
         s_code.clear();
 
         pushCode(S, L2);
+
+        val->status = IS_LABEL;
+        val->label = L2;
+
+        fill_arg(&quad->result,*val);
+        quad->arg_1.status = IS_EMPTY;
+        quad->arg_2.status = IS_EMPTY;
+        quad->my_table = curr;
+        quad->op.op = Label_;
+        quad->op.type = "int";
+        pushQuad(S,*quad);
+
 
         return 0;
 }
@@ -474,20 +526,53 @@ int buildTAC(struct node* E[], int n, int flag){
                     string temp2 = makeNewTemp(newTempLabel);
                     newTempLabel = newTempLabel + 1;
                     pushCode(E[0]->val, temp2 + " = " + "cast_to_" + op_type + " " + E[1]->val.place);
+
+                    struct Value * val = new struct Value;
+
+                    val->status = E[1]->val.status;
+                    val->place = E[1]->val.place;
+
+
                     E[1]->val.place = temp2;
+                    E[1]->val.status - IS_VARIABLE;
 
                     insert_temp(E[1]->symbol, temp2, op_type);
-                    E[1]->val.status = IS_VARIABLE;
+                    struct Quad * quad = new struct Quad;
+                    fill_arg(&quad->result , E[1]->val);
+                    fill_arg(&quad->arg_1, *val);
+                    quad->arg_2.status = IS_EMPTY;
+                    quad->my_table = curr;
+                    quad->op.op = Empty_;
+                    quad->op.type = E[1]->symbol.type.name;
+                    pushQuad(E[0]->val, *quad);
+
+                    //E[1]->val.status = IS_VARIABLE;
                 }
                 
                 if(op_type!=E[2]->symbol.type.name){
                     string temp2 = makeNewTemp(newTempLabel);
                     newTempLabel = newTempLabel + 1;
                     pushCode(E[0]->val, temp2 + " = " + "cast_to_"+op_type+" "+E[2]->val.place);
+
+                    struct Value * val = new struct Value;
+
+                    val->status = E[2]->val.status;
+                    val->place = E[2]->val.place;
+
                     E[2]->val.place = temp2;
                     
                     insert_temp(E[2]->symbol, temp2, op_type);
                     E[2]->val.status = IS_VARIABLE;
+
+                    struct Quad* quad = new struct Quad;
+                    quad->my_table = curr;
+                    quad->arg_2.status = IS_EMPTY;
+                    quad->op.op = Empty_;
+                    quad->op.type = E[2]->symbol.type.name;
+                    fill_arg(&quad->result, E[2]->val);
+                    fill_arg(&quad->arg_1, *val);
+
+                    pushQuad(E[0]->val, *quad);
                 }
 
                 temp = makeNewTemp(newTempLabel);
