@@ -1682,6 +1682,7 @@ StatementWithoutTrailingSubstatement:
     }
     | ExpressionStatement {
         $$ = $1;
+
         // for(int i = 0; i < $$->val.code.size(); i++){
         //     cout <<"line: 1625 "<<$$->val.code[i] << " "<<endl;
         // }
@@ -1741,14 +1742,15 @@ LabeledStatementNoShortIf:
 ExpressionStatement: 
     StatementExpression Semicolon {
         $$ = $1;
-        // for(int i = 0; i < $$->val.code.size(); i++){
-        //     cout <<"line: 1684 "<<$$->val.code[i] << " "<<endl;
-        // }
+        appendCode($$->val, $$->post_fix_val);
+        $$->post_fix_val.code.clear();
+        $$->post_fix_val.quad.clear();
     }
 
 StatementExpression:  
     Assignment {
         $$ = $1;
+        //cout << "Hmmm" << endl;
     }
     | PreIncrementExpression {
         $$ = $1;
@@ -1972,6 +1974,9 @@ StatementExpressionList:
         E[0] = $$;
         E[1] = $1;
         buildTAC(E, 2, COPY_CODE);
+        appendCode($$->val,$$->post_fix_val);
+        $$->post_fix_val.code.clear();
+        $$->post_fix_val.quad.clear();
     }
     | StatementExpressionList Comma StatementExpression {
         struct node * memArr[2];
@@ -2142,6 +2147,7 @@ PrimaryNoNewArray:
         string temp = makeNewTemp(newTempLabel);
         newTempLabel++;
         pushCode($$->val,string(temp + " = " + $1->symbol.name + "[" + $1->val.place + "]") );
+        
         // $$->val.place = $1->symbol.name + "[" + $1->val.place + "]";
         $$->val.place = temp;
     }
@@ -2202,8 +2208,7 @@ ArgumentList:
         E[0] = $$;
         E[1] = $1;
         buildTAC(E, 2, COPY_CODE);
-        // cout << "Expression argumentlist: \n";
-        // printThreeAC($1->val) ;
+
     }
     | ArgumentList Comma Expression {
         struct node * memArr[2];
@@ -2445,11 +2450,6 @@ ArrayAccess:
             $$->symbol.size = $$->symbol.size/$$->symbol.type.dims[0];
             $$->symbol.type.dims.erase($$->symbol.type.dims.begin());
         }   
-        
-        struct node* E[3];
-        E[0] = $$;
-        E[1] = $1;
-        E[2] = $3;
 
         genArrayAccess($$,$1,$3);
         // buildTAC(E, 3, ARRAY_ACCESS);
@@ -2529,6 +2529,7 @@ PostIncrementExpression:
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("++", memArr, 1, 1);
+
         struct node* E[4];
         E[0] = $$;
         E[1] = $1;
@@ -2540,6 +2541,7 @@ PostIncrementExpression:
         E[2] = &tempNode;
         E[3] = makeleaf("+");
 
+
         if(isPrimitiveType($1->symbol.type.name) && $1->symbol.type.name != "boolean")
         {
             $$->symbol.type.name = $1->symbol.type.name;
@@ -2549,9 +2551,16 @@ PostIncrementExpression:
         }
 
         buildTAC(E,4,BINARY_CODE);
+        pushCode($$->post_fix_val, E[0]->val.code.back());
+        E[0]->val.code.pop_back();
+        pushQuad($$->post_fix_val, E[0]->val.quad.back());
+        E[0]->val.quad.pop_back();
 
-        pushCode($$->val, string($1->data) + " = " + $$->val.place);
+
+        pushCode($$->post_fix_val, string($1->data) + " = " + $$->val.place);
         
+
+
         struct Quad* quad = new struct Quad;
         quad->op.op = Empty_;
         quad->op.type = $1->symbol.type.name;
@@ -2559,7 +2568,12 @@ PostIncrementExpression:
         fill_arg(&quad->arg_1,$$->val);
         fill_arg(&quad->result,$1->val);
         quad->arg_2.status = IS_EMPTY;
-        pushQuad($$->val, *quad);
+        pushQuad($$->post_fix_val, *quad);
+
+        $$->post_fix_val.place = $1->val.place;
+        $$->val.place = $1->val.place;
+        //cout <<  $$->post_fix_val.code.size() <<endl;
+        
     } 
 
 PostDecrementExpression: 
@@ -2588,7 +2602,13 @@ PostDecrementExpression:
 
         buildTAC(E,4,BINARY_CODE);
 
-        pushCode($$->val, string($1->data) + " = " + $$->val.place);
+
+        pushCode($$->post_fix_val, E[0]->val.code.back());
+        E[0]->val.code.pop_back();
+        pushQuad($$->post_fix_val, E[0]->val.quad.back());
+        E[0]->val.quad.pop_back();
+
+        pushCode($$->post_fix_val, string($1->data) + " = " + $$->val.place);
 
         struct Quad* quad = new struct Quad;
         quad->op.op = Empty_;
@@ -2597,8 +2617,10 @@ PostDecrementExpression:
         fill_arg(&quad->arg_1,$$->val);
         fill_arg(&quad->result,$1->val);
         quad->arg_2.status = IS_EMPTY;
-        pushQuad($$->val, *quad);
+        pushQuad($$->post_fix_val, *quad);
 
+        $$->post_fix_val.place = $1->val.place;
+        $$->val.place = $1->val.place;
     } 
 
 UnaryExpression:
@@ -2676,7 +2698,10 @@ PreIncrementExpression:
             semantic_error("Bad operand types ["  + $2->symbol.type.name + "] for operator " + string($1) + " at line number " +  to_string(line_number) + ".");
         }
         buildTAC(E,4,BINARY_CODE);
+        
         pushCode($$->val, string($2->data) + " = " + $$->val.place);
+        
+        $$->val.place = $2->val.place;
         struct Quad* quad = new struct Quad;
         quad->op.op = Empty_;
         quad->op.type = $2->symbol.type.name;
@@ -2685,6 +2710,7 @@ PreIncrementExpression:
         fill_arg(&quad->result,$2->val);
         quad->arg_2.status = IS_EMPTY;
         pushQuad($$->val, *quad);
+        //$$->val.place = $1->val.place;
     } 
 
 PreDecrementExpression: 
@@ -2713,7 +2739,11 @@ PreDecrementExpression:
         }
 
         buildTAC(E,4,BINARY_CODE);
+        
         pushCode($$->val, string($2->data) + " = " + $$->val.place);
+        
+        $$->val.place = $2->val.place;
+        
         struct Quad* quad = new struct Quad;
         quad->op.op = Empty_;
         quad->op.type = $2->symbol.type.name;
@@ -2951,6 +2981,7 @@ AdditiveExpression:
         }
 
         buildTAC(E,4,BINARY_CODE);
+
     }
 
 ShiftExpression: 
@@ -2980,8 +3011,8 @@ ShiftExpression:
             semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
         }
 
-
         buildTAC(E,4,BINARY_CODE);
+
     }
     | ShiftExpression RightShift AdditiveExpression {
         struct node* memArr[2];
@@ -3003,6 +3034,7 @@ ShiftExpression:
         }
 
         buildTAC(E,4,BINARY_CODE);
+        
     }
     | ShiftExpression TripleGreaterThan AdditiveExpression {
         struct node* memArr[2];
@@ -3460,8 +3492,23 @@ LeftHandSide:
             //cout << "The identifier "  <<  $1->symbol.name <<" at line number " << line_number << " has been declared at line number "<< lookup_entry->line_num << endl <<endl;
             //$$->symbol.type = lookup_entry->type;
         }
-        $$->symbol.type.name = $1->symbol.type.name;
-        $$->val.place = $1->symbol.name + "[" + $1->val.place + "]";
+        $$->symbol.type.name = $1->symbol.type.name;        
+        $$->symbol.name = $1->symbol.name;
+        //$$->val.place = $1->symbol.name + "[" + $1->val.place + "]";
+        $$->val.place = $1->val.place;
+
+
+        // struct Quad * quad = new struct Quad;
+        // struct Value * val = new struct Value;
+
+        // val->status = IS_VARIABLE;
+        // val->place = $1->symbol.name;
+        // quad->my_table = curr;
+
+        // fill_arg(&quad->result, *val);
+        // fill_arg(&quad->arg_1, $1->val);
+        // fill_arg(&quad->arg_2, )
+
         //cout << $$->symbol.type.name <<endl;
     }
 

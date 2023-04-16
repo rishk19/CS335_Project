@@ -11,7 +11,7 @@ test:
 	clear
 	@read -p "Enter Serial Number of Test Case : " IMAGE;\
 	./$(BIN_DIR)/parser --input= ./$(TEST_DIR)/test_$${IMAGE}.java --output = ./$(OUTPUT_DIR)/test_$${IMAGE}.3ac ;\
-	# dot -Tpdf ./$(OUTPUT_DIR)/test_$${IMAGE}.dot -o ./$(OUTPUT_DIR)/test_$${IMAGE}.pdf ;\
+	#dot -Tpdf ./$(OUTPUT_DIR)/test_$${IMAGE}.dot -o ./$(OUTPUT_DIR)/test_$${IMAGE}.pdf ;\
 
 clean:
 	rm -r $(BIN_DIR)

@@ -312,6 +312,9 @@ string op_to_str(Op op){
         case Label_:
             return "Label";
             break;
+        case ArrayAccess_:
+            return "ArrayAccess";
+            break;
         default:
             break;
     }

@@ -47,7 +47,8 @@ enum Op {
     Compare_and_Je_,
     Jne_,
     Jmp_,
-    Label_
+    Label_,
+    ArrayAccess_
 };
 struct Operator {
     Op op;

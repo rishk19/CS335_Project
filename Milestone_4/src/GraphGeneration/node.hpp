@@ -17,6 +17,7 @@ struct node{
     vector<node*> arr;
     Symbol symbol;
     Value val;
+    Value post_fix_val;
 };
 
 struct node* makeleaf(char nodeStr[100]);

@@ -495,8 +495,11 @@ int buildTAC(struct node* E[], int n, int flag){
 
     switch(flag){
         case COPY_CODE:
-            if(n == 2 && E[1]!=NULL)
-                copyValue(E[0]->val, E[1]->val);   // Updated
+            if(n == 2 && E[1]!=NULL){
+                copyValue(E[0]->val, E[1]->val);
+                copyValue(E[0]->post_fix_val, E[1]->post_fix_val);
+                //cout << E[0]->post_fix_val.code.size() <<endl;
+                }   // Updated
             break;
 
         case APPEND_CODE:
@@ -504,6 +507,7 @@ int buildTAC(struct node* E[], int n, int flag){
             for(int i = 1; i < n; i++){
                 if(E[i]!=NULL){
                     appendCode(E[0]->val, E[i]->val); //Updated
+                    appendCode(E[0]->val,E[i]->post_fix_val);
                 }
             }
 
@@ -512,7 +516,13 @@ int buildTAC(struct node* E[], int n, int flag){
         case ASSIGN_CODE:
             
             if(n == 2){
-                genAssignCode(E[0]->val, ((E[1]!=NULL)? E[1]->val : dummyVal)); 
+                if(E[1]!= NULL){
+                    genAssignCode(E[0]->val, E[1]->val); 
+                    appendCode(E[0]->post_fix_val, E[1]->post_fix_val);
+                }
+                else{
+                    genAssignCode(E[0]->val, dummyVal);
+                }
             }
 
         case BINARY_CODE:
@@ -591,6 +601,9 @@ int buildTAC(struct node* E[], int n, int flag){
                 // }
                 
                 genBinaryOperatorCode(E[0]->val, E[1]->val, E[2]->val, temp, op_type);
+                appendCode(E[1]->post_fix_val,E[2]->post_fix_val);
+                appendCode(E[0]->post_fix_val, E[1]->post_fix_val);
+    
             
             }
             break;
@@ -605,7 +618,8 @@ int buildTAC(struct node* E[], int n, int flag){
                 E[0]->val.status = IS_VARIABLE;
                 E[0]->val.place = temp;
                 string op_type = " "+string(E[2]->data)+E[1]->symbol.type.name+" ";
-                genUnaryOperatorCode(E[0]->val, E[1]->val, temp, op_type);
+                genUnaryOperatorCode(E[0]->val, E[1]->val, temp, op_type);\
+                appendCode(E[0]->post_fix_val, E[1]->post_fix_val);
             }
             break;
         

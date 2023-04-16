@@ -15,6 +15,8 @@ struct node* makeleaf(char nodeStr[100]){
     leaf->symbol.type.return_size = 0;
     leaf->val.code.clear();
     leaf->val.quad.clear();
+    leaf->post_fix_val.quad.clear();
+    leaf->post_fix_val.code.clear();
     return leaf;
 }
 
@@ -50,6 +52,8 @@ struct node* makeInternalNode(char rule[100], struct node* memArr[], int n, int 
     internalNode->symbol.type.return_size = 0;
     internalNode->val.code.clear();
     internalNode->val.quad.clear();
+    internalNode->post_fix_val.code.clear();
+    internalNode->post_fix_val.quad.clear();
     return internalNode;
 
 }

@@ -2,10 +2,8 @@ class short_circuit{
 
     public static void main()
     {                       //Postfix
-        int i,j;
-        i = 1;
-        j = i++;
-        j = i--;
+        int a[] = new int[5];
+        a[1] = 0+1;
     }
 
  }
