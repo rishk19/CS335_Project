@@ -202,7 +202,7 @@ int genIfElseCode(Value &S, Value &E1, Value &E2, Value &E3, string L1, string L
     
     quad->my_table = curr;
     //view_symbol_table_with_parent_hierarchy(curr);
-    quad->op.op = Compare_;
+    quad->op.op = Compare_and_Jne_;
     quad->op.type = "int";
 
     pushQuad(S, *quad); 
@@ -303,7 +303,7 @@ int genWhileCode(Value &S, Value &E1, Value &E2, string L1, string L2){     // Q
     fill_arg(&quad2->arg_2, *val);
     
     quad2->my_table = curr;
-    quad2->op.op = Compare_;
+    quad2->op.op = Compare_and_Je_;
     quad2->op.type = "int";
 
     pushQuad(S, *quad2);

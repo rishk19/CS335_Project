@@ -43,7 +43,8 @@ enum Op {
     TripleGreaterThanEqualTo_,
     GreaterThan_,
     LessThan_,
-    Compare_,
+    Compare_and_Jne_,
+    Compare_and_Je_,
     Jne_,
     Jmp_,
     Label_

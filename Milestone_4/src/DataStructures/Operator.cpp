@@ -297,7 +297,10 @@ string op_to_str(Op op){
         case LessThan_:
             return "<";
             break;
-        case Compare_:
+        case Compare_and_Jne_:
+            return "cmp";
+            break;
+        case Compare_and_Je_:
             return "cmp";
             break;
         case Jne_:

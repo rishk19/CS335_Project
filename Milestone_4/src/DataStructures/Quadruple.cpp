@@ -81,8 +81,11 @@ string view_quad(struct Quad* qd){
     else if(qd->op.op == Label_){
         ans = res;
     }
-    else if(qd->op.op == Compare_){
+    else if(qd->op.op == Compare_and_Jne_){
         ans = "    " + string("cmp ") + arg_1 + " " + arg_2 + "\n" + "    jne " + res;
+    }
+    else if(qd->op.op == Compare_and_Je_){
+        ans = "    " + string("cmp ") + arg_1 + " " + arg_2 + "\n" + "    je " + res;
     }
 
     return ans;
