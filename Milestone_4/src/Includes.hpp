@@ -48,6 +48,7 @@ using namespace std;
 #define IS_LITERAL 0
 #define IS_VARIABLE 1
 #define IS_EMPTY -1
+#define IS_ARRAYACESS 1000
 
 extern struct SymbolTable* curr;
 extern int newTempLabel;

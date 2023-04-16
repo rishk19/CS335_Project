@@ -87,6 +87,9 @@ string view_quad(struct Quad* qd){
     else if(qd->op.op == Compare_and_Je_){
         ans = "    " + string("cmp ") + arg_1 + " " + arg_2 + "\n" + "    je " + res;
     }
+    else if(qd->op.op == ArrayAccess_){
+        ans = "    " + res + "[" + arg_1 + "] = " + arg_2;  
+    }
 
     return ans;
 

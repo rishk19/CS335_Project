@@ -865,9 +865,11 @@ VariableDeclarator:
         $$->symbol.name = $1->symbol.name;
         
         struct node* E[2];
-        E[0] = $1;
-        E[1] = $3;
-        buildTAC(E, 2, ASSIGN_CODE);
+        if($3->t != ARRAY_ACCESS){
+            E[0] = $1;
+            E[1] = $3;
+            buildTAC(E, 2, ASSIGN_CODE);
+        }
         E[0] = $$;
         E[1] = $1;
         buildTAC(E, 2, COPY_CODE);
@@ -900,6 +902,7 @@ VariableInitializer:
     }
     | ArrayInitializer {
         $$ = $1;
+        $$->t = ARRAY_ACCESS;
     }
 
 MethodDeclaration: 
@@ -2249,6 +2252,7 @@ ArrayCreationExpression:
         //view_type($$->symbol.type);
 
         // buildVal($$);
+        $$->t = ARRAY_ACCESS;
     }
     | New ClassOrInterfaceType DimExprs Dims_opt {
 
@@ -3458,11 +3462,31 @@ Assignment:
     if(isAssignmentCompatible($1->symbol.type.name, $3->symbol.type.name) == 0){
             semantic_error("Possible lossy conversion from "  + $3->symbol.type.name + " to " + $1->symbol.type.name +" at line number " +  to_string(line_number) + ".");
     }
-    struct node* E[2];
-    E[0] = $1;
-    E[1] = $3;
-    buildTAC(E, 2, ASSIGN_CODE);
-    $$ = $1;
+    if($1->t != ARRAY_ACCESS){
+        struct node* E[2];
+        E[0] = $1;
+        E[1] = $3;
+        buildTAC(E, 2, ASSIGN_CODE);
+        $$ = $1;
+    }
+    else{
+        struct Quad * quad = new struct Quad;
+        struct Value * val = new struct Value;
+
+        fill_arg(&quad->arg_1, $1->val);
+        val->place = $1->symbol.name;
+        val->status = IS_VARIABLE;
+        fill_arg(&quad->result, *val);
+        fill_arg(&quad->arg_2, $3->val);
+
+        quad->my_table = curr;
+        quad->op.op = ArrayAccess_;
+        quad->op.type = $$->symbol.type.name;
+        appendCode($$->val, $1->val);
+        appendCode($$->val, $3->val);
+        pushQuad($$->val, *quad);
+        pushCode($$->val, $1->symbol.name + "[" + $1->val.place + "]" + " = " + $3->val.place);
+    }
 
     
 
@@ -3484,6 +3508,7 @@ LeftHandSide:
     }
     | ArrayAccess {
         $$ = $1;
+        $$->t = ARRAY_ACCESS;
         struct Symbol * lookup_entry = check_scope(curr , string($1->symbol.name));
         if(lookup_entry == NULL){
             semantic_error("The identifier " + string($1->symbol.name) + " at line number " + to_string(line_number) +  " has not been declared in the scope." );
@@ -3492,6 +3517,7 @@ LeftHandSide:
             //cout << "The identifier "  <<  $1->symbol.name <<" at line number " << line_number << " has been declared at line number "<< lookup_entry->line_num << endl <<endl;
             //$$->symbol.type = lookup_entry->type;
         }
+        //appendCode($$->val)
         $$->symbol.type.name = $1->symbol.type.name;        
         $$->symbol.name = $1->symbol.name;
         //$$->val.place = $1->symbol.name + "[" + $1->val.place + "]";
