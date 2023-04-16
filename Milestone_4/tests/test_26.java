@@ -4,6 +4,10 @@ class short_circuit{
     {
         int i,j;
         i = 1+4*7/9+9+0+1;
+        j = i--;
+        j =i++;
+        j = ++i;
+        j = --i;
         // boolean k = true && true ;
         // if(k == true){
         //     i = 1;
@@ -17,11 +21,11 @@ class short_circuit{
         // }
         // j = 2;
 
-        for (i = 0; i <j ; i = j-1){
-            j = j - 1;
-        }
+        // for (i = 0; i <j ; i = j-1){
+        //     j = j - 1;
+        // }
 
-        j = 100;
+        // j = 100;
     }
 
  }

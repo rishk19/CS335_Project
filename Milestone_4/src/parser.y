@@ -2532,8 +2532,11 @@ PostIncrementExpression:
         struct node* E[4];
         E[0] = $$;
         E[1] = $1;
-        struct node tempNode = *($1);
+        struct node tempNode = *makeleaf("1");
+        tempNode.symbol.type.name = $1->symbol.type.name;
+        tempNode.symbol.size = $1->symbol.size;
         tempNode.val.place = "1";
+        buildVal(&tempNode, 0);
         E[2] = &tempNode;
         E[3] = makeleaf("+");
 
@@ -2546,7 +2549,17 @@ PostIncrementExpression:
         }
 
         buildTAC(E,4,BINARY_CODE);
+
         pushCode($$->val, string($1->data) + " = " + $$->val.place);
+        
+        struct Quad* quad = new struct Quad;
+        quad->op.op = Empty_;
+        quad->op.type = $1->symbol.type.name;
+        quad->my_table = curr;
+        fill_arg(&quad->arg_1,$$->val);
+        fill_arg(&quad->result,$1->val);
+        quad->arg_2.status = IS_EMPTY;
+        pushQuad($$->val, *quad);
     } 
 
 PostDecrementExpression: 
@@ -2557,8 +2570,11 @@ PostDecrementExpression:
         struct node* E[4];
         E[0] = $$;
         E[1] = $1;
-        struct node tempNode = *($1);
+        struct node tempNode = *makeleaf("1");
+        tempNode.symbol.type.name = $1->symbol.type.name;
+        tempNode.symbol.size = $1->symbol.size;
         tempNode.val.place = "1";
+        buildVal(&tempNode, 0);
         E[2] = &tempNode;
         E[3] = makeleaf("-");
 
@@ -2571,7 +2587,17 @@ PostDecrementExpression:
         }
 
         buildTAC(E,4,BINARY_CODE);
+
         pushCode($$->val, string($1->data) + " = " + $$->val.place);
+
+        struct Quad* quad = new struct Quad;
+        quad->op.op = Empty_;
+        quad->op.type = $1->symbol.type.name;
+        quad->my_table = curr;
+        fill_arg(&quad->arg_1,$$->val);
+        fill_arg(&quad->result,$1->val);
+        quad->arg_2.status = IS_EMPTY;
+        pushQuad($$->val, *quad);
 
     } 
 
@@ -2634,8 +2660,11 @@ PreIncrementExpression:
         struct node* E[4];
         E[0] = $$;
         E[1] = $2;
-        struct node tempNode = *($2);
+        struct node tempNode = *makeleaf("1");
+        tempNode.symbol.type.name = $2->symbol.type.name;
+        tempNode.symbol.size = $2->symbol.size;
         tempNode.val.place = "1";
+        buildVal(&tempNode, 0);
         E[2] = &tempNode;
         E[3] = makeleaf("+");
 
@@ -2648,7 +2677,14 @@ PreIncrementExpression:
         }
         buildTAC(E,4,BINARY_CODE);
         pushCode($$->val, string($2->data) + " = " + $$->val.place);
-
+        struct Quad* quad = new struct Quad;
+        quad->op.op = Empty_;
+        quad->op.type = $2->symbol.type.name;
+        quad->my_table = curr;
+        fill_arg(&quad->arg_1,$$->val);
+        fill_arg(&quad->result,$2->val);
+        quad->arg_2.status = IS_EMPTY;
+        pushQuad($$->val, *quad);
     } 
 
 PreDecrementExpression: 
@@ -2660,8 +2696,11 @@ PreDecrementExpression:
         struct node* E[4];
         E[0] = $$;
         E[1] = $2;
-        struct node tempNode = *($2);
+        struct node tempNode = *makeleaf("1");
+        tempNode.symbol.type.name = $2->symbol.type.name;
+        tempNode.symbol.size = $2->symbol.size;
         tempNode.val.place = "1";
+        buildVal(&tempNode, 0);
         E[2] = &tempNode;
         E[3] = makeleaf("-");
 
@@ -2675,7 +2714,14 @@ PreDecrementExpression:
 
         buildTAC(E,4,BINARY_CODE);
         pushCode($$->val, string($2->data) + " = " + $$->val.place);
-
+        struct Quad* quad = new struct Quad;
+        quad->op.op = Empty_;
+        quad->op.type = $2->symbol.type.name;
+        quad->my_table = curr;
+        fill_arg(&quad->arg_1,$$->val);
+        fill_arg(&quad->result,$2->val);
+        quad->arg_2.status = IS_EMPTY;
+        pushQuad($$->val, *quad);
     } 
 
 UnaryExpressionNotPlusMinus: 
