@@ -49,7 +49,7 @@ string makeNewLabel(long int i){
     
     string t = "#L";
     t.append(to_string(i));
-    t.append(":");
+    //t.append(":");
     return t;
 }
 

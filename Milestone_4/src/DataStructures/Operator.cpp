@@ -318,6 +318,27 @@ string op_to_str(Op op){
         case LoadArray_:
             return "LoadArray";
             break;
+        case Pushq_:
+            return "Pushq";
+            break;
+        case Movq_:
+            return "Movq";
+            break;
+        case Popq_:
+            return "Popq";
+            break;
+        case Push_:
+            return "Push";
+            break;
+        case Mov_:
+            return "Mov";
+            break;
+        case Pop_:
+            return "Pop";
+            break;
+        case Retq_:
+            return "retq";
+            break;
         default:
             break;
     }

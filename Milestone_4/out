@@ -1,0 +1,155 @@
+//// The 3AC is the following : 
+#bubblesort::printInt : 
+	begin_func
+	pushq %rbp
+	movq %rsp %rbp
+	$rsp = $rsp - 8
+	push 0 (4)$rbp
+	movq %rbp %rsp
+	popq %rbp
+	retq
+	end_func
+
+
+#bubblesort::sort : 
+	begin_func
+	pushq %rbp
+	movq %rsp %rbp
+	$rsp = $rsp - 113
+	n = len
+	i = 0
+#L26:
+	%t0 = i <int n
+	if %t0 = 0 goto #L27:
+	j = 1
+#L24:
+	%t2 = n -int i
+	%t3 = j <int %t2
+	if %t3 = 0 goto #L25:
+	%t5 = cast_to_int 1
+	%t6 = j -int %t5
+	%t7 = %t6 * 4
+	%t8 = arr[%t7]
+	%t9 = j * 4
+	%t10 = arr[%t9]
+	%t11 = %t8 >int %t10
+	if %t11 goto #L22:
+	%t5 = cast_to_int 1
+	%t6 = j -int %t5
+	%t7 = %t6 * 4
+	%t8 = arr[%t7]
+	%t9 = j * 4
+	%t10 = arr[%t9]
+	%t11 = %t8 >int %t10
+	goto #L23:
+#L22:
+	%t12 = cast_to_int 1
+	%t13 = j -int %t12
+	%t14 = %t13 * 4
+	%t15 = arr[%t14]
+	temp = %t15
+	%t16 = cast_to_int 1
+	%t17 = j -int %t16
+	%t18 = %t17 * 4
+	%t19 = j * 4
+	%t20 = arr[%t19]
+	arr[%t18] = %t20
+	%t21 = j * 4
+	arr[%t21] = temp
+#L23:
+	%t4 = j +int 1
+	j = %t4
+	goto #L24:
+#L25:
+	%t1 = i +int 1
+	i = %t1
+	goto #L26:
+#L27:
+	movq %rbp %rsp
+	popq %rbp
+	retq
+	end_func
+
+
+#bubblesort::main : 
+	begin_func
+	pushq %rbp
+	movq %rsp %rbp
+	$rsp = $rsp - 205
+	%t28 = 0 * 4
+	arr[%t28] = 7
+	%t29 = 1 * 4
+	arr[%t29] = 6
+	%t30 = 2 * 4
+	arr[%t30] = 5
+	%t31 = 3 * 4
+	arr[%t31] = 4
+	%t32 = 4 * 4
+	arr[%t32] = 3
+	%t33 = 5 * 4
+	arr[%t33] = 2
+	%t34 = 6 * 4
+	arr[%t34] = 1
+	i = 0
+#L47:
+	%t35 = cast_to_int 7
+	%t36 = i <int %t35
+	if %t36 = 0 goto #L48:
+	%t38 = i * 4
+	%t39 = arr[%t38]
+	$rsp = $rsp - 4// stack space for actual parameters 
+	push %t39 (0)$rsp
+	$rsp = $rsp - 12 // stack space for return value, pc
+	push PC // pushin program counter 
+	call printInt2 
+	$rsp = $rsp + 8
+	load %t40 (0)$rsp 4
+	$rsp = $rsp - 8  // Popping return value and arguments
+	%t43 = cast_to_int 5
+	%t41 = i * 4
+	%t42 = arr[%t41]
+	%t44 = %t42 >int %t43
+	if %t44 goto #L45:
+	%t43 = cast_to_int 5
+	%t41 = i * 4
+	%t42 = arr[%t41]
+	%t44 = %t42 >int %t43
+	goto #L46:
+#L45:
+#L46:
+	%t37 = i +int 1
+	i = %t37
+	goto #L47:
+#L48:
+	$rsp = $rsp - 32// stack space for actual parameters 
+	push arr (0)$rsp
+	push 7 (28)$rsp
+	$rsp = $rsp - 8 // stack space for return value, pc
+	push PC // pushin program counter 
+	call sort2 
+	$rsp = $rsp + 8
+	$rsp = $rsp - 32  // Popping return value and arguments
+	i = 0
+#L56:
+	%t50 = cast_to_int 7
+	%t51 = i <int %t50
+	if %t51 = 0 goto #L57:
+	%t53 = i * 4
+	%t54 = arr[%t53]
+	$rsp = $rsp - 4// stack space for actual parameters 
+	push %t54 (0)$rsp
+	$rsp = $rsp - 12 // stack space for return value, pc
+	push PC // pushin program counter 
+	call printInt2 
+	$rsp = $rsp + 8
+	load %t55 (0)$rsp 4
+	$rsp = $rsp - 8  // Popping return value and arguments
+	%t52 = i +int 1
+	i = %t52
+	goto #L56:
+#L57:
+	movq %rbp %rsp
+	popq %rbp
+	retq
+	end_func
+

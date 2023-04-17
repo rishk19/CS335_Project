@@ -935,20 +935,73 @@ MethodDeclaration:
         struct node* E[3];
         E[0] = $$;
         string str = "#"+class_name + "::" + string(E[0]->symbol.name) +" : ";
+
+        struct Quad * quad = new struct Quad;
+        struct Value * val = new struct Value;
+        quad->my_table = curr;
+        quad->op.op = Label_;
+        quad->op.type = "int";
+        val->status = IS_LABEL;
+        val->label = "__" + class_name + "__" + string(E[0]->symbol.name);
+        fill_arg(&quad->result, *val);
+        quad->arg_1.status = IS_EMPTY;
+        quad->arg_2.status = IS_EMPTY;
+        pushQuad($$->val, *quad);
+        //view_quad(quad);
+
         pushCode(E[0]->val,str);
         pushCode(E[0]->val,"begin_func");
-        pushCode(E[0]->val,"$rsp = $rsp - 8");
-        pushCode(E[0]->val,"push $rbp (0)$rsp");
-        pushCode(E[0]->val,"$rbp = $rsp");
+        pushCode(E[0]->val,"pushq \%rbp");
+
+        val->status = IS_VARIABLE;
+        val->place = "\%rbp";
+
+        quad->my_table = curr;
+        quad->op.op = Pushq_;
+        quad->op.type = "int";
+
+        fill_arg(&quad->result, *val);
+        //cout << val->place <<endl;
+
+        quad->arg_1.status = IS_EMPTY;
+        quad->arg_2.status = IS_EMPTY;
+
+        pushQuad(E[0]->val,*quad);
+
+        pushCode(E[0]->val,"movq \%rsp \%rbp");
+
+        quad->op.op = Movq_;
+        quad->op.type = "int";
+
+        val->place = "\%rsp";
+        fill_arg(&quad->arg_1,*val);
+        val->place = "\%rbp";
+        fill_arg(&quad->result, *val);
+        quad->arg_2.status = IS_EMPTY;
+
+        pushQuad(E[0]->val, *quad);
+
         long long int stackOffset = getTotalStackOffset(curr);
         for(int  i = 0; i<$1->symbol.type.parameters_size.size(); i++){
             stackOffset -= $1->symbol.type.parameters_size[i];
         }
-        if(stackOffset!=0)
+        if(stackOffset!=0){
             pushCode(E[0]->val, "$rsp = $rsp - " + to_string(stackOffset));
+            val->place = "\%rsp";
+            quad->op.op = Substraction_;
+            quad->op.type = "long";
+
+            fill_arg(&quad->arg_1, *val);
+            fill_arg(&quad->result, *val);
+            val->status = IS_LITERAL;
+            val->place = to_string(stackOffset);
+            fill_arg(&quad->arg_2,*val);
+
+            pushQuad(E[0]->val, *quad);
+        }
         int controlOffset = 16 + $1->symbol.type.return_size;
         for(int i  = 0; i<$1->symbol.type.parameters.size(); i++){
-            pushCode(E[0]->val, "load " + $1->symbol.type.parameters[i] +" (" + to_string(controlOffset) + ")$rbp " + to_string($1->symbol.type.parameters_size[i]));
+            //pushCode(E[0]->val, "load " + $1->symbol.type.parameters[i] +" (" + to_string(controlOffset) + ")$rbp " + to_string($1->symbol.type.parameters_size[i]));
             controlOffset += $1->symbol.type.parameters_size[i];
         }
 
@@ -957,9 +1010,39 @@ MethodDeclaration:
         E[2] = $2;
         buildTAC(E, 3, APPEND_CODE);
 
-        pushCode(E[0]->val, "$load $rbp (0)$rbp 8 // loading old frame pointer value to rbp");
-        pushCode(E[0]->val, "$rsp = $rbp + 8");
-        pushCode(E[0]->val, "ret");
+        pushCode(E[0]->val, "movq \%rbp \%rsp");
+
+        quad->op.op = Movq_;
+        quad->op.type = "int";
+        
+        val->place = "\%rbp";
+        val->status = IS_VARIABLE;
+        fill_arg(&quad->arg_1, *val);
+        val->place = "\%rsp";
+        fill_arg(&quad->result, *val);
+        quad->arg_2.status = IS_EMPTY;
+
+        pushQuad(E[0]->val, *quad);
+        
+        pushCode(E[0]->val, "popq \%rbp");
+
+        quad->op.op = Popq_;
+        val->place = "\%rbp";
+        fill_arg(&quad->result, *val);
+        quad->arg_1.status = IS_EMPTY;
+        quad->arg_2.status = IS_EMPTY;
+
+        pushQuad(E[0]->val, *quad);
+
+        pushCode(E[0]->val, "retq");
+
+        quad->op.op = Retq_;
+        quad->result.status = IS_EMPTY;
+        quad->arg_1.status = IS_EMPTY;
+        quad->arg_2.status = IS_EMPTY;
+
+        pushQuad(E[0]->val, *quad);
+
         pushCode(E[0]->val, "end_func");
         struct GlobalSymbol* globEntry =  glob_lookup(class_name, $1->symbol.name, glob_table);
         if(globEntry == NULL){
@@ -2151,10 +2234,7 @@ PrimaryNoNewArray:
         insert_temp($$->symbol, temp, $$->symbol.type.name);
         newTempLabel++;
         pushCode($$->val,string(temp + " = " + $1->symbol.name + "[" + $1->val.place + "]") );
-        
         // $$->val.place = $1->symbol.name + "[" + $1->val.place + "]";
-        $$->val.place = temp;
-        $$->val.status = IS_VARIABLE;
 
         struct Value * val = new struct Value;
         struct Quad * quad = new struct Quad;
@@ -2162,12 +2242,15 @@ PrimaryNoNewArray:
         quad->op.op = LoadArray_;
         quad->op.type = $1->symbol.type.name;
 
-        fill_arg(&quad->result, $$->val);
+        fill_arg(&quad->arg_2, $1->val);
 
+        $$->val.place = temp;
+        $$->val.status = IS_VARIABLE;
+
+        fill_arg(&quad->result, $$->val);
         val->place = $1->symbol.name;
         val->status = IS_VARIABLE;
         fill_arg(&quad->arg_1, *val);
-        fill_arg(&quad->arg_2, $1->val);
 
         pushQuad($$->val, *quad);
 
@@ -3684,8 +3767,10 @@ int main(int argc , char** argv)
     // }
     
     //view_symbol_table_with_children_hierarchy(glob_class_scope);
-    // viewGlobal(glob_table);
+    //viewGlobal(glob_table);
     //viewGlobalTac(glob_table);
+
+
     FILE* graph = fopen(output_file,"w");
     if(err == 0){
         freopen(output_file,"w", stdout);

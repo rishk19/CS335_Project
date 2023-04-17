@@ -50,6 +50,13 @@ enum Op {
     Label_,
     ArrayAccess_,
     LoadArray_,
+    Pushq_,
+    Movq_,
+    Popq_,
+    Push_,
+    Mov_,
+    Pop_,
+    Retq_
 };
 struct Operator {
     Op op;

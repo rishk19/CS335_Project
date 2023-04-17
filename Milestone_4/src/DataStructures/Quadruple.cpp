@@ -18,12 +18,15 @@ string view_quad(struct Quad* qd){
     else if(qd->result.status == IS_VARIABLE){
         qd->result.symbol_entry = check_scope(qd->my_table,qd->result.literal);
         //view_symbol(*qd->result.symbol_entry);
+        res =qd->result.literal;
         if(qd->result.symbol_entry == NULL)
         {
-            cout << "Result symbol table is NULL" <<endl;
+            //cout << "Result symbol table is NULL" <<endl;
+
         }
         else{
             res = qd->result.symbol_entry->name;
+            //res = qd->result.literal;
         }
     }
 
@@ -37,15 +40,17 @@ string view_quad(struct Quad* qd){
     }
     else if(qd->arg_1.status == IS_VARIABLE){
         qd->arg_1.symbol_entry = check_scope(qd->my_table,qd->arg_1.literal);
+        arg_1 = qd->arg_1.literal;
         if(qd->arg_1.symbol_entry == NULL)
         {
             //cout << qd->arg_1.literal << endl;
             //view_symbol_table_with_parent_hierarchy(qd->my_table);
 
-            cout << "Argument 1 symbol table is NULL" <<endl;
+            //cout << "Argument 1 symbol table is NULL" <<endl;
         }
         else{
             arg_1 = qd->arg_1.symbol_entry->name;
+            //arg_1 = qd->arg_1.literal;
         }
     }
 
@@ -60,13 +65,13 @@ string view_quad(struct Quad* qd){
     }
     else if(qd->arg_2.status == IS_VARIABLE){
         qd->arg_2.symbol_entry = check_scope(qd->my_table,qd->arg_2.literal);
+        arg_2 = qd->arg_2.literal;
         //view_symbol_table_with_parent_hierarchy(qd->my_table);
         if(qd->arg_2.symbol_entry == NULL)
         {
-            cout << qd->arg_2.literal << endl;
             //view_symbol_table_with_parent_hierarchy(qd->my_table);
 
-            cout << "Argument 2 symbol table is NULL" <<endl;
+            //cout << "Argument 2 symbol table is NULL" <<endl;
         }
         else{
             arg_2 = qd->arg_2.symbol_entry->name;
@@ -79,7 +84,7 @@ string view_quad(struct Quad* qd){
         ans  = "    " + string("jmp ") + res;
     }
     else if(qd->op.op == Label_){
-        ans = res;
+        ans = res + ":";
     }
     else if(qd->op.op == Compare_and_Jne_){
         ans = "    " + string("cmp ") + arg_1 + " " + arg_2 + "\n" + "    jne " + res;
@@ -92,6 +97,27 @@ string view_quad(struct Quad* qd){
     }
     else if(qd->op.op == LoadArray_){
         ans = "    "+ res + " = " + arg_1 + "[" + arg_2 + "]";
+    }
+    else if(qd->op.op == Pushq_){
+        ans = "    pushq " + res;
+    }
+    else if(qd->op.op == Popq_){
+        ans = "    popq " + res;
+    }
+    else if(qd->op.op == Movq_){
+        ans = "    movq " + arg_1 + " " + res;
+    }
+    else if(qd->op.op == Push_){
+        ans = "    push " + res;
+    }
+    else if(qd->op.op == Pop_){
+        ans = "    pop " + res;
+    }
+    else if(qd->op.op == Mov_){
+        ans = "    mov " + arg_1 + " " + res;
+    }
+    else if(qd->op.op == Retq_){
+        ans = "    retq";
     }
     
     return ans;

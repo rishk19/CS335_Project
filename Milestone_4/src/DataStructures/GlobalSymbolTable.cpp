@@ -15,6 +15,7 @@ long long int glob_insert(long long int line_num, string scope, string methodNam
     entry.methodName = methodName;
     entry.type = type;
     entry.tac = tac;
+    entry.type.name = scope;
 
     glob->scope_hash[scope+"::"+methodName] = glob->entries.size();
     glob->entries.push_back(entry);
