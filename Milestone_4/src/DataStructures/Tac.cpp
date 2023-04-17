@@ -518,7 +518,7 @@ int buildTAC(struct node* E[], int n, int flag){
             if(n == 2){
                 if(E[1]!= NULL){
                     genAssignCode(E[0]->val, E[1]->val); 
-                    appendCode(E[0]->post_fix_val, E[1]->post_fix_val);
+                    appendCode(E[0]->val, E[1]->post_fix_val);
                 }
                 else{
                     genAssignCode(E[0]->val, dummyVal);
@@ -707,6 +707,9 @@ int genArrayAccess(struct node* E_1, struct node* E_2, struct node* E_3)
 
     //cout << E_3->symbol.type.name << endl; 
     pushCode(E_1->val, s_code);
+    //appendCode(E_1->val, E_1->post_fix_val);
+    appendCode(E_1->post_fix_val, E_2->post_fix_val);
+    appendCode(E_1->post_fix_val, E_3->post_fix_val);
 
     return 0;
 }
@@ -748,7 +751,7 @@ int genArrayAccess2(struct node* E_1, struct node* E_2, struct node* E_3)
     pushCode(E_1->val,s_code2);
 
     insert_temp(E_1->symbol, temp2, max_type(E_2->symbol.type.name, E_3->symbol.type.name));
-    quad.op.op = Product_;
+    quad.op.op = Addition_;
     quad.op.type = "int";
     fill_arg(&quad.result, E_1->val);
     fill_arg(&quad.arg_1, E_2->val);
@@ -756,6 +759,9 @@ int genArrayAccess2(struct node* E_1, struct node* E_2, struct node* E_3)
 
     quad.my_table = curr;
     pushQuad(E_1->val,quad);
+    appendCode(E_1->post_fix_val, E_2->post_fix_val);
+    appendCode(E_1->post_fix_val, E_3->post_fix_val);
+
 
     return 0;
 }

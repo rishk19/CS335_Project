@@ -48,7 +48,8 @@ enum Op {
     Jne_,
     Jmp_,
     Label_,
-    ArrayAccess_
+    ArrayAccess_,
+    LoadArray_,
 };
 struct Operator {
     Op op;

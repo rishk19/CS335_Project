@@ -315,6 +315,9 @@ string op_to_str(Op op){
         case ArrayAccess_:
             return "ArrayAccess";
             break;
+        case LoadArray_:
+            return "LoadArray";
+            break;
         default:
             break;
     }

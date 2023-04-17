@@ -90,7 +90,10 @@ string view_quad(struct Quad* qd){
     else if(qd->op.op == ArrayAccess_){
         ans = "    " + res + "[" + arg_1 + "] = " + arg_2;  
     }
-
+    else if(qd->op.op == LoadArray_){
+        ans = "    "+ res + " = " + arg_1 + "[" + arg_2 + "]";
+    }
+    
     return ans;
 
 

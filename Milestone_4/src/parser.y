@@ -2148,11 +2148,29 @@ PrimaryNoNewArray:
     | ArrayAccess {
         $$ = $1;
         string temp = makeNewTemp(newTempLabel);
+        insert_temp($$->symbol, temp, $$->symbol.type.name);
         newTempLabel++;
         pushCode($$->val,string(temp + " = " + $1->symbol.name + "[" + $1->val.place + "]") );
         
         // $$->val.place = $1->symbol.name + "[" + $1->val.place + "]";
         $$->val.place = temp;
+        $$->val.status = IS_VARIABLE;
+
+        struct Value * val = new struct Value;
+        struct Quad * quad = new struct Quad;
+        quad->my_table = curr;
+        quad->op.op = LoadArray_;
+        quad->op.type = $1->symbol.type.name;
+
+        fill_arg(&quad->result, $$->val);
+
+        val->place = $1->symbol.name;
+        val->status = IS_VARIABLE;
+        fill_arg(&quad->arg_1, *val);
+        fill_arg(&quad->arg_2, $1->val);
+
+        pushQuad($$->val, *quad);
+
     }
 
 ClassInstanceCreationExpression: 
@@ -2553,30 +2571,33 @@ PostIncrementExpression:
         else{
             semantic_error("Bad operand types ["  + $1->symbol.type.name + "] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
         }
+        if($1->val.status == IS_VARIABLE){
+            buildTAC(E,4,BINARY_CODE);
+            pushCode($$->post_fix_val, E[0]->val.code.back());
+            E[0]->val.code.pop_back();
+            pushQuad($$->post_fix_val, E[0]->val.quad.back());
+            E[0]->val.quad.pop_back();
 
-        buildTAC(E,4,BINARY_CODE);
-        pushCode($$->post_fix_val, E[0]->val.code.back());
-        E[0]->val.code.pop_back();
-        pushQuad($$->post_fix_val, E[0]->val.quad.back());
-        E[0]->val.quad.pop_back();
+            pushCode($$->post_fix_val, string($1->data) + " = " + $$->val.place);
+            
 
 
-        pushCode($$->post_fix_val, string($1->data) + " = " + $$->val.place);
-        
+            struct Quad* quad = new struct Quad;
+            quad->op.op = Empty_;
+            quad->op.type = $1->symbol.type.name;
+            quad->my_table = curr;
+            fill_arg(&quad->arg_1,$$->val);
+            fill_arg(&quad->result,$1->val);
+            quad->arg_2.status = IS_EMPTY;
+            pushQuad($$->post_fix_val, *quad);
 
-
-        struct Quad* quad = new struct Quad;
-        quad->op.op = Empty_;
-        quad->op.type = $1->symbol.type.name;
-        quad->my_table = curr;
-        fill_arg(&quad->arg_1,$$->val);
-        fill_arg(&quad->result,$1->val);
-        quad->arg_2.status = IS_EMPTY;
-        pushQuad($$->post_fix_val, *quad);
-
-        $$->post_fix_val.place = $1->val.place;
-        $$->val.place = $1->val.place;
+            $$->post_fix_val.place = $1->val.place;
+            $$->val.place = $1->val.place;
+        }
         //cout <<  $$->post_fix_val.code.size() <<endl;
+        else{
+            semantic_error("Unexpected type for post-increment at line number "+ to_string(line_number) + " .");
+        }
         
     } 
 
@@ -2604,6 +2625,8 @@ PostDecrementExpression:
             semantic_error("Bad operand types ["  + $1->symbol.type.name + "] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
         }
 
+        if($1->val.status == IS_VARIABLE)
+        {
         buildTAC(E,4,BINARY_CODE);
 
 
@@ -2625,6 +2648,10 @@ PostDecrementExpression:
 
         $$->post_fix_val.place = $1->val.place;
         $$->val.place = $1->val.place;
+        }
+    else{
+            semantic_error("Unexpected type for post-decrement at line number "+ to_string(line_number) + " .");
+        }
     } 
 
 UnaryExpression:
@@ -2701,20 +2728,25 @@ PreIncrementExpression:
         else{
             semantic_error("Bad operand types ["  + $2->symbol.type.name + "] for operator " + string($1) + " at line number " +  to_string(line_number) + ".");
         }
-        buildTAC(E,4,BINARY_CODE);
-        
-        pushCode($$->val, string($2->data) + " = " + $$->val.place);
-        
-        $$->val.place = $2->val.place;
-        struct Quad* quad = new struct Quad;
-        quad->op.op = Empty_;
-        quad->op.type = $2->symbol.type.name;
-        quad->my_table = curr;
-        fill_arg(&quad->arg_1,$$->val);
-        fill_arg(&quad->result,$2->val);
-        quad->arg_2.status = IS_EMPTY;
-        pushQuad($$->val, *quad);
-        //$$->val.place = $1->val.place;
+
+        if($2->val.status == IS_VARIABLE){
+            buildTAC(E,4,BINARY_CODE);
+            
+            pushCode($$->val, string($2->data) + " = " + $$->val.place);
+            
+            struct Quad* quad = new struct Quad;
+            quad->op.op = Empty_;
+            quad->op.type = $2->symbol.type.name;
+            quad->my_table = curr;
+            fill_arg(&quad->arg_1,$$->val);
+            fill_arg(&quad->result,$2->val);
+            quad->arg_2.status = IS_EMPTY;
+            pushQuad($$->val, *quad);
+            $$->val.place = $2->val.place;
+        }
+        else{
+            semantic_error("Unexpected type for pre-increment at line number "+ to_string(line_number) + " .");
+        }
     } 
 
 PreDecrementExpression: 
@@ -2741,21 +2773,26 @@ PreDecrementExpression:
         else{
             semantic_error("Bad operand types ["  + $2->symbol.type.name + "] for operator " + string($1) + " at line number " +  to_string(line_number) + ".");
         }
+        if($2->val.status == IS_VARIABLE){
+            buildTAC(E,4,BINARY_CODE);
+            
+            pushCode($$->val, string($2->data) + " = " + $$->val.place);
+            
+            
+            struct Quad* quad = new struct Quad;
+            quad->op.op = Empty_;
+            quad->op.type = $2->symbol.type.name;
+            quad->my_table = curr;
+            fill_arg(&quad->arg_1,$$->val);
+            fill_arg(&quad->result,$2->val);
+            quad->arg_2.status = IS_EMPTY;
+            pushQuad($$->val, *quad);
 
-        buildTAC(E,4,BINARY_CODE);
-        
-        pushCode($$->val, string($2->data) + " = " + $$->val.place);
-        
-        $$->val.place = $2->val.place;
-        
-        struct Quad* quad = new struct Quad;
-        quad->op.op = Empty_;
-        quad->op.type = $2->symbol.type.name;
-        quad->my_table = curr;
-        fill_arg(&quad->arg_1,$$->val);
-        fill_arg(&quad->result,$2->val);
-        quad->arg_2.status = IS_EMPTY;
-        pushQuad($$->val, *quad);
+            $$->val.place = $2->val.place;
+        }
+        else{
+            semantic_error("Unexpected type for pre-decrement at line number "+ to_string(line_number) + " .");
+        }
     } 
 
 UnaryExpressionNotPlusMinus: 
@@ -3486,6 +3523,8 @@ Assignment:
         appendCode($$->val, $3->val);
         pushQuad($$->val, *quad);
         pushCode($$->val, $1->symbol.name + "[" + $1->val.place + "]" + " = " + $3->val.place);
+        appendCode($$->val, $1->post_fix_val);
+        appendCode($$->val, $3->post_fix_val);
     }
 
     
