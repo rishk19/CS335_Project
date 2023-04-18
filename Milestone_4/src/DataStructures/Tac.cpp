@@ -477,7 +477,9 @@ int genMethodInvocationCode(struct node *E[], int n)
         fill_arg(&quad->result, *val); 
         quad->arg_1.status = IS_EMPTY;
         quad->arg_2.status = IS_EMPTY;
-        pushQuad(E[0]->val, *quad);  // passing all the parameters on stack
+        quad->op.op = Pushq_; 
+        pushQuad(E[0]->val, *quad); 
+        //view_quad()// passing all the parameters on stack
     }
     pushCode(E[0]->val, "$rsp = $rsp - " + to_string(parameterSize) + "// stack space for actual parameters ");
     int currSize = 0;
@@ -499,8 +501,9 @@ int genMethodInvocationCode(struct node *E[], int n)
     val->place = "\%rsp";
     fill_arg(&quad->result,*val);
     val->status = IS_LITERAL;
-    int return_size = (E[0]->symbol.type.return_size/8)*8;
-    if(E[0]->symbol.type.return_size % 8 != 0) return_size += 8;
+    int return_size = (E[0]->symbol.size/8)*8;
+    if(E[0]->symbol.size % 8 != 0) return_size += 8;
+    //cout << E[0]->symbol.type.return_size <<endl;
     val->place = to_string(return_size);
     fill_arg(&quad->arg_1, *val);
     quad->arg_2.status = IS_EMPTY;
@@ -532,7 +535,8 @@ int genMethodInvocationCode(struct node *E[], int n)
     s_code.append(" ");
     quad->op.op = Callq_;
     quad->op.type = E[0]->symbol.type.return_type;
-    val->place = string(E[0]->data);
+    //struct GlobalSymbol * glob = glob_lookup(,E[0]->data,glob_table);
+    val->place = "__" + E[0]->symbol.name + "__" +  string(E[0]->data);
     val->label = IS_LABEL;
     fill_arg(&quad->result, *val);
     quad->arg_1.status = IS_EMPTY;
@@ -562,7 +566,7 @@ int genMethodInvocationCode(struct node *E[], int n)
     fill_arg(&quad->arg_1, *val);
     quad->arg_2.status = IS_EMPTY;
     pushQuad(E[0]->val,*quad);
-    cout <<endl<<view_quad(quad)<<endl;
+   // cout <<endl<<view_quad(quad)<<endl;
 
     quad->op.op = Addq_;
     val->place = "\%rsp";

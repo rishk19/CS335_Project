@@ -51,6 +51,7 @@ using namespace std;
 #define IS_ARRAYACESS 1000
 
 extern struct SymbolTable* curr;
+extern struct GlobalSymbolTable* glob_table;
 extern int newTempLabel;
 extern Value dummyVal;
 

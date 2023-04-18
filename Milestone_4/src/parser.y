@@ -2478,6 +2478,7 @@ MethodInvocation:
                     }
                     $$->symbol.type.name = glob_entry->type.return_type;
                     $$->symbol.size = glob_entry->type.return_size;
+                    $$->symbol.name = glob_entry->type.name;
                 }
                 
             }
@@ -2488,6 +2489,7 @@ MethodInvocation:
         struct node * E[2];
         E[0] = $$;
         E[1] = $3;
+        
         genMethodInvocationCode(E, 2);
         // cout << "three ac for method invocation: \n";
         // printThreeAC($3->val);

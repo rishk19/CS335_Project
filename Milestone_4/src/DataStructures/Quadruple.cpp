@@ -6,14 +6,12 @@ string view_quad(struct Quad* qd){
 
     string op = "";
     op = op_to_str(qd->op.op);
-
     string res = "";
     if(qd->result.status == IS_LABEL){
         res = qd->result.label;
     }
     else if(qd->result.status == IS_LITERAL){
         res = qd->result.literal;
-        return res;
     }
     else if(qd->result.status == IS_VARIABLE){
         qd->result.symbol_entry = check_scope(qd->my_table,qd->result.literal);
@@ -127,6 +125,8 @@ string view_quad(struct Quad* qd){
     }
     else if(qd->op.op == Callq_){
         ans = "    callq " + res;
+    }
+    else{
     }
     return ans;
 
