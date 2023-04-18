@@ -14,17 +14,27 @@ test:
 	#dot -Tpdf ./$(OUTPUT_DIR)/test_$${IMAGE}.dot -o ./$(OUTPUT_DIR)/test_$${IMAGE}.pdf ;\
 
 clean:
-	rm -r $(BIN_DIR)
-	rm -r $(OUTPUT_DIR)
 	clear
+ifneq (,$(wildcard $(BIN_DIR)))
+	rm -r $(BIN_DIR)
+endif
+ifneq (,$(wildcard $(OUTPUT_DIR)))
+	rm -r $(OUTPUT_DIR)
+endif
+	clear
+
 
 parse:
 	clear
+ifeq (,$(wildcard $(BIN_DIR)))
 	mkdir $(BIN_DIR)
+endif
 	flex -o $(BIN_DIR)/lex.yy.c $(SRC_DIR)/tokenizer.l 
 	bison -d -t -o $(BIN_DIR)/parser.tab.cc $(SRC_DIR)/parser.y 
 	make parser
+ifeq (,$(wildcard $(OUTPUT_DIR)))
 	mkdir $(OUTPUT_DIR)
+endif
 	clear
 
 change:
