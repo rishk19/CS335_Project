@@ -339,6 +339,15 @@ string op_to_str(Op op){
         case Retq_:
             return "retq";
             break;
+        case Addq_:
+            return "addq";
+            break;
+        case Subq_:
+            return "subq";
+            break;
+        case Callq_:
+            return "callq";
+            break;
         default:
             break;
     }

@@ -56,7 +56,10 @@ enum Op {
     Push_,
     Mov_,
     Pop_,
-    Retq_
+    Retq_,
+    Addq_,
+    Subq_,
+    Callq_,
 };
 struct Operator {
     Op op;

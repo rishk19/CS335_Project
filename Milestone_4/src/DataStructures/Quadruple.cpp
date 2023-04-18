@@ -12,7 +12,7 @@ string view_quad(struct Quad* qd){
         res = qd->result.label;
     }
     else if(qd->result.status == IS_LITERAL){
-        res = "bad result not possible";
+        res = qd->result.literal;
         return res;
     }
     else if(qd->result.status == IS_VARIABLE){
@@ -119,7 +119,15 @@ string view_quad(struct Quad* qd){
     else if(qd->op.op == Retq_){
         ans = "    retq";
     }
-    
+    else if(qd->op.op == Addq_){
+        ans = "    addq " + arg_1 + " " + res;
+    }
+    else if(qd->op.op == Subq_){
+        ans = "    subq " + arg_1 + " " + res;
+    }
+    else if(qd->op.op == Callq_){
+        ans = "    callq " + res;
+    }
     return ans;
 
 
