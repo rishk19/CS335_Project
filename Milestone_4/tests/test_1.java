@@ -1,5 +1,5 @@
 class short_circuit{
-   int printInt(int n){
+   long printInt(int n, int y){
     return 1;
    }
 
@@ -10,7 +10,7 @@ class short_circuit{
        int arr[] = new int[5];
        int charr[] = new int[10];
        arr[j+1] = 1;
-       int k = printInt(5);
+       long k = printInt(5, 2);
        k = 1;
        
       //  if(arr == charr)

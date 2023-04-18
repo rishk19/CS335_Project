@@ -572,7 +572,7 @@ int genMethodInvocationCode(struct node *E[], int n)
     val->place = "\%rsp";
     val->status = IS_VARIABLE;
     fill_arg(&quad->result, *val);
-    val->place = to_string(return_size);
+    val->place = to_string(return_size+parameterSize);
     val->status = IS_LITERAL;
     fill_arg(&quad->arg_1, *val);
     pushQuad(E[0]->val, *quad);
