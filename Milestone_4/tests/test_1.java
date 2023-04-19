@@ -1,7 +1,8 @@
 class short_circuit{
-   long printInt(int n, int y){
+   int printInt(int n){
     return 1;
    }
+
 
    public static void main(){
        float x = 9.0;

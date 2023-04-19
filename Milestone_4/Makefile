@@ -114,7 +114,10 @@ Argument.o : $(SRC_DIR)/DataStructures/Argument.cpp $(SRC_DIR)/Includes.hpp
 Operator.o : $(SRC_DIR)/DataStructures/Operator.cpp $(SRC_DIR)/Includes.hpp
 	$(CC) -c $(SRC_DIR)/DataStructures/Operator.cpp -o $(BIN_DIR)/Operator.o
 
-all: clean parse
+all: 
+	make clean
+	make parse
+	clear
 
 
 list: $(TEST_DIR)/*

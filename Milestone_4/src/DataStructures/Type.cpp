@@ -86,3 +86,15 @@ int type_size(string type)
     return -1;
 }
 
+int is_static(struct Type &head)
+{
+    int count = 0;
+    for(int i = 0; i< head.modifier.size(); i++){
+        if(head.modifier[i] == "static"){
+            count = 1;
+            break;
+        }
+    }
+    return count;
+}
+

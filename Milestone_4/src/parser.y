@@ -31,6 +31,7 @@ int assign_flag = 0;
 string src_file = "";
 int err = 0;
 int hasReturned = 0;
+int static_context = 0;
 
 %}
 
@@ -506,8 +507,9 @@ Class_Name_Extractor : Modifiers_opt Class Identifier ClassExtend_opt Interfaces
     $$ = makeInternalNode("ClassDeclaration", memArr , 5, 1);
     if($1!=NULL){
         for(int i = 0; i<$1->arr.size(); i++){
-            if($1->arr[i]!=NULL)
+            if($1->arr[i]!=NULL){
                 $$->symbol.type.modifier.push_back(string($1->arr[i]->data));
+            }
        }
     }
     $$->symbol.name = string($3);
@@ -670,7 +672,8 @@ FieldDeclaration:
 
         if($1 != NULL)
         {
-
+            int modifier_count = 0;
+            int static_count = 0;
             for(int j = 0 ; j< $3->arr.size(); j++)
             {
                 $$->symbol.size += $2->symbol.size;
@@ -694,7 +697,23 @@ FieldDeclaration:
 
                 for(int i=0 ; i< $1->arr.size();i++)
                 {
-                    $$->symbol.type.modifier.push_back($1->arr[i]->data);
+                    if(string($1->arr[i]->data) != "static"){
+                        modifier_count +=1;
+                        
+                    }
+                    else{
+                        static_count +=1;
+                        if(static_count <= 1)
+                        $$->symbol.type.modifier.push_back($1->arr[i]->data);
+                    }
+                    if(modifier_count > 1 || static_count > 1){
+                        semantic_error("Incorrect numbert of modifiers added at line number " + to_string(line_number));
+                        break;
+                    }
+                    else{
+                        $$->symbol.type.modifier.push_back($1->arr[i]->data);
+                    }
+
                 }
                 
 
@@ -1051,6 +1070,7 @@ MethodDeclaration:
         globEntry->tac = $$->val;
 
         view_quadruple($$->val.quad);
+        static_context = 0;
     }
 
 MethodHeader:
@@ -1064,10 +1084,29 @@ MethodHeader:
         $$ = makeInternalNode($3->data, memArr, 4, 0);
 
         if($1 != NULL){
+            int static_count = 0;
+            int modifier_count = 0;
             for(int i=0; i< $1->arr.size();i ++)
             {
                 string temp = string($1->arr[i]->data);
-                $$->symbol.type.modifier.push_back(temp);
+                if(temp == "static"){
+                    static_count += 1;
+                    static_context =1;
+                    if(static_count <= 1){
+                        $$->symbol.type.modifier.push_back(temp);
+                    }
+                }
+                else{
+                    modifier_count +=1;
+                    if(modifier_count <= 1){
+                        $$->symbol.type.modifier.push_back(temp);
+                    }
+                }
+                if(modifier_count > 1 || static_count > 1){
+                    semantic_error("Incorrect numbert of modifiers added at line number " + to_string(line_number));
+                    break;
+                }
+                
             }
         }
         $$->symbol.type.return_type = $2->symbol.type.name;
@@ -1105,11 +1144,31 @@ MethodHeader:
         $$ = makeInternalNode($3->data, memArr, 4, 0);
         if($1 != NULL)
         {   
+            int static_count = 0;
+            int modifier_count = 0;
             for(int i=0; i< $1->arr.size();i ++)
             {
                 string temp = string($1->arr[i]->data);
-                $$->symbol.type.modifier.push_back(temp);
-            
+
+
+                if(temp == "static"){
+                    static_count += 1;
+                    static_context = 1;
+                    if(static_count <= 1){
+                        $$->symbol.type.modifier.push_back(temp);
+                    }
+                }
+                else{
+                    modifier_count +=1;
+                    if(modifier_count <= 1){
+                        $$->symbol.type.modifier.push_back(temp);
+                    }
+                }
+                if(modifier_count > 1 || static_count > 1){
+                    semantic_error("Incorrect numbert of modifiers added at line number " + to_string(line_number));
+                    break;
+                }
+                
             }
         }
         $$->symbol.type.return_type = "void";
@@ -1273,6 +1332,7 @@ ClassTypeList:
         memArr[1] = $3;
         $$ = makeInternalNode("class", memArr, 2, 0);
     }
+
 
 MethodBody: 
     Block Symbol_Table_Back{
@@ -2215,6 +2275,9 @@ PrimaryNoNewArray:
         $$->symbol.type.name = class_name;
         $$->val.place = temp;
         pushCode($$->val,temp + " = poparam");
+        if(static_context == 1){
+            semantic_error("Non-static variable this cannot be referenced from a static context at line number " + to_string(line_number));
+        }
     }
     | LeftParanthesis Expression RightParanthesis  {
         $$ = $2;
@@ -2485,12 +2548,17 @@ MethodInvocation:
 
         }
 
+        if( (static_context== 1) && (is_static(glob_entry->type) == 0)){
+            semantic_error("Calling a non-static function from a static context at line number " + to_string(line_number));
+        }
+        else {
+            struct node * E[2];
+            E[0] = $$;
+            E[1] = $3;
+            genMethodInvocationCode(E, 2);
+        }
 
-        struct node * E[2];
-        E[0] = $$;
-        E[1] = $3;
-        
-        genMethodInvocationCode(E, 2);
+
         // cout << "three ac for method invocation: \n";
         // printThreeAC($3->val);
     } 
