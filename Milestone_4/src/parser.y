@@ -33,6 +33,8 @@ int err = 0;
 int hasReturned = 0;
 int static_context = 0;
 
+struct Value * class_declaration_code = new struct Value;
+
 %}
 
 %token Exports Opens Requires Uses Module Permits Sealed Var Non_sealed Provides To With Open Record Transitive Yield Abstract Continue For New Switch Assert Default If Package Synchronized Boolean Do Goto Private This Break Double Implements Protected THROW Byte Else Import Public THROWS Case Enum Instanceof Return Transient Catch Extends Int Short Try Char Final Interface Static Void Class FINALLY Long Strictfp Volatile Const Float Native Super While
@@ -609,6 +611,8 @@ ClassBodyDeclarations_opt : {
         E[0] = $$;
         E[1] = $1;
         buildTAC(E, 2, COPY_CODE);
+        view_quadruple(class_declaration_code->quad);
+        //view_quadruple($1->val.quad);
         
     }
 
@@ -653,6 +657,7 @@ ClassMemberDeclaration:
         if(class_entry != NULL){
             class_entry->size += $$->symbol.size;
         }
+        appendCode(*class_declaration_code,$1->val);
 
     }
     | MethodDeclaration {
@@ -834,8 +839,6 @@ FieldDeclaration:
         E[0] = $$;
         E[1] = $3;
         buildTAC(E, 2, COPY_CODE);  
-
-
 
     }
 
@@ -1069,7 +1072,7 @@ MethodDeclaration:
         }
         globEntry->tac = $$->val;
 
-        view_quadruple($$->val.quad);
+        //view_quadruple($$->val.quad);
         static_context = 0;
     }
 
@@ -1283,6 +1286,7 @@ FormalParameter:
         $$ = makeleaf(concatenate_string($1->data, concatenate_string(" ", $2->data)));
         $$->symbol.size = $1->symbol.size;
         $$->symbol.type.name = $1->symbol.type.name;
+        //cout << $1->symbol.type.name << endl;
         $$->symbol.type.t = $1->symbol.type.t;
         string txt = $2->symbol.name;
         string name = "";
@@ -1365,7 +1369,7 @@ ConstructorDeclaration:
         $$ = makeInternalNode($2->data, memArr, 4, 1);
         $$->isDeclaration = DECLARATION;
         $$->symbol = $2->symbol;
-        //view_symbol($2->symbol);
+
         if($1 != NULL)
         {
             for(int i = 0; i<$1->arr.size(); i++)
@@ -1401,15 +1405,16 @@ ConstructorDeclarator:
         {
             $$->symbol.type = class_scope_entry->type;
         }
-        $$->symbol.type.t = 3;
+        $$->symbol.type.t = 2;
 
         if($4 != NULL){
-            for(int i=0; i< $4->symbol.type.parameters.size(); i++)
+            //cout << $4->arr.size() <<endl;
+            for(int i=0; i< $4->arr.size(); i++)
             {
-
-                $$->symbol.type.parameters.push_back($4->symbol.type.parameters[i]);
-                $$->symbol.type.parameters_type.push_back($4->symbol.type.parameters_type[i]);
+                $$->symbol.type.parameters.push_back($4->arr[i]->symbol.name);
+                $$->symbol.type.parameters_type.push_back($4->arr[i]->symbol.type.name);
             }
+            
         
         }
         $$->symbol.line_num = line_number;
@@ -2327,7 +2332,7 @@ ClassInstanceCreationExpression:
         memArr[2] =$4;
         $$ = makeInternalNode("ClassInstance", memArr, 3, 1);
         $$->isDeclaration = DECLARATION;
-        $$->symbol.name = $2->symbol.name;
+        $$->symbol.type.name = $2->symbol.name;
 
         struct GlobalSymbol * glob_entry = glob_lookup($2->symbol.name,$2->symbol.name,glob_table);
 
@@ -2338,12 +2343,13 @@ ClassInstanceCreationExpression:
         else{
             if($4 == NULL){
                 //cout << glob_entry->type.parameters_type.size() <<endl;
+                view_type(glob_entry->type);
                 if(glob_entry->type.parameters_type.size() != 0){
                     semantic_error("Constructor " + string($2->data) +  " invocation at line number " + to_string(line_number) + " has wrong number of parameters passed.");
                 }
+
             }
             else{
-                //cout << $3->arr.size() <<endl;
                 if($4->arr.size()!= glob_entry->type.parameters_type.size()){
                     semantic_error("Constructor " + string($2->data) +  " invocation at line number " + to_string(line_number) + " has wrong number of parameters passed.");
                 }
@@ -2352,7 +2358,8 @@ ClassInstanceCreationExpression:
                     for (int i = 0; i< $4->arr.size(); i++)
                     {   
                         //view_symbol($3->arr[i]->symbol);
-                        if(glob_entry->type.parameters_type[i] != $4->arr[i]->symbol.type.name)
+
+                        if(!isAssignmentCompatible(glob_entry->type.parameters_type[i], $4->arr[i]->symbol.type.name))
                         {
                             semantic_error("Constructor " + string($2->data) +  " invocation at line number " + to_string(line_number) + " has wrong type of parameter passed at position " + to_string(i+1) + "." );          
                         }
@@ -3792,6 +3799,7 @@ int yyerror(string s)
 {
     cout << s << " at [ line number: " << line_number << " ] \nExiting...\n";
     err = 1;
+    return 1;
     //exit(1);
 }
 
@@ -3799,6 +3807,7 @@ int semantic_error(string s)
 {
     cout << s <<endl <<endl;
     err = 1;
+    return 1;
     //exit(1);
 }
 
@@ -3839,6 +3848,7 @@ int main(int argc , char** argv)
     //view_symbol_table_with_children_hierarchy(glob_class_scope);
     //viewGlobal(glob_table);
     //viewGlobalTac(glob_table);
+    //view_symbol_table_with_children_hierarchy(glob_class_scope);
 
 
     FILE* graph = fopen(output_file,"w");
