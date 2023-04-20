@@ -43,7 +43,7 @@ void view_symbol_table_with_children_hierarchy(struct SymbolTable *symboltable )
 void view_symbol_table_with_parent_hierarchy(struct SymbolTable *symboltable );
 
 struct Symbol * check_scope(struct SymbolTable* , string);
-long long int getTotalStackOffset(struct SymbolTable* curr);
+long long int getTotalStackOffset(struct SymbolTable* curr, long long int base_offset);
 
 
 #endif

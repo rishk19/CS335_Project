@@ -278,6 +278,12 @@ ReferenceType:
 ClassOrInterfaceType: 
     Name {
         $$ = $1;
+        struct Symbol * symb = loc_lookup(glob_class_scope,$1->symbol.name);
+        if(symb == NULL){
+            semantic_error("Incorrect declaration at line number " + to_string(line_number));
+        }
+        $$->symbol = *symb;
+        //view_symbol(*symb);
     }
 
 ClassType: 
@@ -653,10 +659,12 @@ ClassBodyDeclaration:
 ClassMemberDeclaration: 
     FieldDeclaration {
         $$ = $1;
-        struct Symbol* class_entry = loc_lookup(glob_class_scope,class_name);
-        if(class_entry != NULL){
-            class_entry->size += $$->symbol.size;
-        }
+        // struct Symbol* class_entry = loc_lookup(glob_class_scope,class_name);
+        // if(class_entry != NULL){
+        //     $$->symbol.size = -class_entry->size;
+        //     class_entry->size += $$->symbol.size;
+
+        // }
         appendCode(*class_declaration_code,$1->val);
 
     }
@@ -667,6 +675,10 @@ ClassMemberDeclaration:
 
 FieldDeclaration: 
     Modifiers_opt Type VariableDeclarators Semicolon {
+        struct Symbol* class_entry = loc_lookup(glob_class_scope,class_name);
+        if(class_entry == NULL){
+            semantic_error("Class entry not added to symbol table !");
+        }
         struct node * memArr[3];
         memArr[0] = $1;
         memArr[1] = $2;
@@ -681,7 +693,9 @@ FieldDeclaration:
             int static_count = 0;
             for(int j = 0 ; j< $3->arr.size(); j++)
             {
-                $$->symbol.size += $2->symbol.size;
+                $$->symbol.offset = -class_entry->size;
+                class_entry->size += $2->symbol.size;
+                $$->symbol.size = $2->symbol.size;
                 $$->symbol.type = $2->symbol.type;
                 string txt = $3->arr[j]->symbol.name;
                 string name = "";
@@ -730,7 +744,7 @@ FieldDeclaration:
                         {
                             //$$->symbol.type.name = $1->symbol.type.name;
                             $$->symbol.type = $3->arr[j]->symbol.type;
-                            $$->symbol.size = $3->arr[j]->symbol.size;
+                            //$$->symbol.size = $3->arr[j]->symbol.size;
                             long long int x  = loc_insert(curr,$$->symbol);
                             if(x < 0)
                             {
@@ -770,7 +784,9 @@ FieldDeclaration:
             //cout << $3->arr.size() <<endl;
             for(int j =0; j< $3->arr.size(); j++)
             {
-                $$->symbol.size += $2->symbol.size;
+                $$->symbol.offset = - class_entry->size;
+                class_entry->size += $2->symbol.size;
+                $$->symbol.size = $2->symbol.size;
                 $$->symbol.type = $2->symbol.type;
                 string txt = $3->arr[j]->symbol.name;
                 string name = "";
@@ -795,7 +811,7 @@ FieldDeclaration:
                         if($$->symbol.type.name == $3->arr[j]->symbol.type.name)
                         {   
                             $$->symbol.type= $3->arr[j]->symbol.type;
-                            $$->symbol.size = $3->arr[j]->symbol.size;
+                            //$$->symbol.size = $3->arr[j]->symbol.size;
                             //view_type($$->symbol.type);
                             //view_symbol($$->symbol);
                             long long int x  = loc_insert(curr,$$->symbol);
@@ -1002,11 +1018,13 @@ MethodDeclaration:
         quad->arg_2.status = IS_EMPTY;
 
         pushQuad(E[0]->val, *quad);
-
-        long long int stackOffset = getTotalStackOffset(curr);
+        struct SymbolTable * symb_table ;
+        symb_table = glob_lookup(class_name,$1->symbol.name, glob_table)->LocalSymbolTable;
+        long long int stackOffset = 0;
         for(int  i = 0; i<$1->symbol.type.parameters_size.size(); i++){
             stackOffset -= $1->symbol.type.parameters_size[i];
         }
+        stackOffset += getTotalStackOffset(symb_table,stackOffset);
         if(stackOffset!=0){
             pushCode(E[0]->val, "$rsp = $rsp - " + to_string(stackOffset));
             val->place = "\%rsp";
@@ -1709,15 +1727,15 @@ LocalVariableDeclaration:
         $$->isDeclaration = DECLARATION;
         for(int j = 0 ; j< $2->arr.size(); j++)
             {   
-                
                 //view_symbol($2->arr[j]->symbol);
-
+                //view_symbol($1->symbol);
                 $$->symbol.type = $1->symbol.type;
                 $$->symbol.name= $2->arr[j]->symbol.name;
-                $$->symbol.size += $1->symbol.size;
+                $$->symbol.size = $1->symbol.size;
                 $$->symbol.source_file = $2->arr[j]->symbol.source_file;
                 $$->symbol.offset = $2->arr[j]->symbol.offset;
                 $$->symbol.type.modifier.clear();
+                //cout << $$->symbol.size << endl;
                 
                 string txt = $2->arr[j]->symbol.name;
                 string name = "";
@@ -1743,7 +1761,7 @@ LocalVariableDeclaration:
                     //view_symbol($2->arr[j]);
                     if($$->symbol.type.name == $2->arr[j]->symbol.type.name){
                         $$->symbol.type = $2->arr[j]->symbol.type;
-                        $$->symbol.size = $2->arr[j]->symbol.size;
+                        //$$->symbol.size = $2->arr[j]->symbol.size;
                         //view_symbol($$->symbol);
                         long long int x = loc_insert(curr,$$->symbol);
                         if(x<0)
@@ -3845,7 +3863,7 @@ int main(int argc , char** argv)
     //         cout << root->val.code[iter]<<endl; 
     // }
     
-    //view_symbol_table_with_children_hierarchy(glob_class_scope);
+    view_symbol_table_with_children_hierarchy(glob_class_scope);
     //viewGlobal(glob_table);
     //viewGlobalTac(glob_table);
     //view_symbol_table_with_children_hierarchy(glob_class_scope);

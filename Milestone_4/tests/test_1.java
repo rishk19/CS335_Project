@@ -11,7 +11,7 @@ class short_circuit{
 
    public static void main(String Arg[]){
        float x = 9.0;
-       int i=1;
+       int i=1, j =1;
        int j = 1;
        int arr[] = new int[5];
        int charr[] = new int[10];
