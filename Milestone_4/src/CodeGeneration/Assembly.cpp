@@ -6,28 +6,22 @@ using namespace std;
 string getOperator(Op op){
     switch (op){
         case NotOperator_:
-            return "!";
+            return "notq";
             break;
         case Tilde_:
-            return "~";
-            break;
-        case QuestionMark_:
-            return "?";
+            return "notq";
             break;
         case Empty_:
             return "";
-            break;
-        case Colon_:
-            return ":";
             break;
         case RightArrow_:
             return "->";
             break;
         case EqualToEqualTo_:
-            return "==";
+            return "cmp";
             break;
         case GreaterThanEqualTo_:
-            return ">=";
+            return "";
             break;
         case LessThanEqualTo_:
             return "<=";
@@ -48,7 +42,7 @@ string getOperator(Op op){
             return "--";
             break;
         case Addition_:
-            return "+";
+            return "addq";
             break;
         case Substraction_:
             return "-";
