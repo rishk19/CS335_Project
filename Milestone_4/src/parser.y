@@ -1415,7 +1415,7 @@ ConstructorDeclarator:
         memArr[0] = $4;
         $$ = makeInternalNode($1->data, memArr, 1, 0);
         if(string($1->data) != class_name){
-            semantic_error("Constructor Declaration at line number " + to_string(line_number) +  " is not declared properly." );
+            semantic_error("Constructor Declaration at line number " + to_string(line_number) +  " is not declared properly as no class of name " + $1->data + " delared in the scope."  );
         }
         $$->symbol.name = $1->data;
         struct Symbol * class_scope_entry = loc_lookup(glob_class_scope,class_name);
@@ -3863,7 +3863,7 @@ int main(int argc , char** argv)
     //         cout << root->val.code[iter]<<endl; 
     // }
     
-    view_symbol_table_with_children_hierarchy(glob_class_scope);
+    //view_symbol_table_with_children_hierarchy(glob_class_scope);
     //viewGlobal(glob_table);
     //viewGlobalTac(glob_table);
     //view_symbol_table_with_children_hierarchy(glob_class_scope);
