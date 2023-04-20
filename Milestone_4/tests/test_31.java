@@ -3,6 +3,7 @@
 
 class Test {
     int x = 1;
+    int y;
 
     public void method_1(){
         this.x = 2;
@@ -14,6 +15,6 @@ class Test {
             y = z;
         }
         Test a = new Test();
-        a.method_1();
+        //a.method_1();
     }
 }

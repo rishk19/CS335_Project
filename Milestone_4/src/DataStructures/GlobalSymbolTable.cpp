@@ -64,11 +64,12 @@ void viewGlobalTac(struct GlobalSymbolTable* glob_table){
 void generateTac(FILE* graph, struct GlobalSymbolTable* glob_table){
     for(int i = 0; i<glob_table->entries.size(); i++){
         cout<<endl;
-        Value tac = glob_table->entries[i].tac;
-        for(int j = 0; j<tac.code.size(); j++){
-            if(tac.code[j][0]!='#')
-                cout<<"\t";
-            cout <<tac.code[j]<<endl;
+        vector<string> quad = view_quadruple(glob_table->entries[i].tac.quad);
+        //Value tac = glob_table->entries[i].tac;
+        for(int j = 0; j<quad.size(); j++){
+            // if(tac.code[j][0]!='#')
+            //     cout<<"\t";
+            cout <<quad[j]<<endl;
             // fprintf(graph,"%s\n",&tac.code[j]);
         }
         cout<<endl;

@@ -137,13 +137,13 @@ Literal:
     | FloatingPointLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "float";
-        $$->symbol.size = 4;
+        $$->symbol.size = 8;
         buildVal($$,0);
     }
     | BooleanLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "boolean";
-        $$->symbol.size = 1;
+        $$->symbol.size = 8;
         buildVal($$,0);
         if($1[0]=='t'){
             $$->val.place = "1";
@@ -155,7 +155,7 @@ Literal:
     | CharacterLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "char";
-        $$->symbol.size = 2;
+        $$->symbol.size = 8;
         buildVal($$,0);
         $$->val.place = to_string(int($1[0]));
     }
@@ -177,20 +177,20 @@ IntegerLiteral:
     DecimalIntegerLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "byte";
-        $$->symbol.size = 4;
+        $$->symbol.size = 8;
 
         buildVal($$,0);
     }
     | HexIntegerLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "byte";
-        $$->symbol.size = 4;
+        $$->symbol.size = 8;
         buildVal($$,0);
     }
     | OctalIntegerLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "byte";
-        $$->symbol.size = 4;
+        $$->symbol.size = 8;
         buildVal($$,0);
     }
 
@@ -210,7 +210,7 @@ PrimitiveType:
         $$ = makeleaf($1);
         $$->symbol.type.name = "boolean";
         $$->symbol.type.t = 0;
-        $$->symbol.size = 1;
+        $$->symbol.size = 8;
     }
 
 NumericType: 
@@ -226,19 +226,19 @@ IntegralType:
         $$ = makeleaf($1);
         $$->symbol.type.name = "byte";
         $$->symbol.type.t = 0;
-        $$->symbol.size = 1;
+        $$->symbol.size = 8;
     }
     | Short {
         $$ = makeleaf($1);
         $$->symbol.type.name = "short";
         $$->symbol.type.t = 0;
-        $$->symbol.size = 2;
+        $$->symbol.size = 8;
     }
     | Int {
         $$ = makeleaf($1);
         $$->symbol.type.name = "int";
         $$->symbol.type.t = 0;
-        $$-> symbol.size = 4;
+        $$-> symbol.size =8;
     }
     | Long {
         $$ = makeleaf($1);
@@ -250,7 +250,7 @@ IntegralType:
         $$ = makeleaf($1);
         $$->symbol.type.name = "char";
         $$->symbol.type.t = 0;
-        $$->symbol.size = 2;
+        $$->symbol.size = 8;
     }
 
 FloatingPointType: 
@@ -258,7 +258,7 @@ FloatingPointType:
         $$ = makeleaf($1);
         $$->symbol.type.t = 0;
         $$->symbol.type.name = "float";
-        $$->symbol.size = 4;
+        $$->symbol.size = 8;
     }
     | Double {
         $$ = makeleaf($1);
@@ -282,7 +282,9 @@ ClassOrInterfaceType:
         if(symb == NULL){
             semantic_error("Incorrect declaration at line number " + to_string(line_number));
         }
-        $$->symbol = *symb;
+        else{
+            $$->symbol = *symb;
+        }
         //view_symbol(*symb);
     }
 
@@ -811,9 +813,6 @@ FieldDeclaration:
                         if($$->symbol.type.name == $3->arr[j]->symbol.type.name)
                         {   
                             $$->symbol.type= $3->arr[j]->symbol.type;
-                            //$$->symbol.size = $3->arr[j]->symbol.size;
-                            //view_type($$->symbol.type);
-                            //view_symbol($$->symbol);
                             long long int x  = loc_insert(curr,$$->symbol);
                             if(x < 0)
                             {
@@ -2571,16 +2570,17 @@ MethodInvocation:
                 
             }
 
-        }
 
-        if( (static_context== 1) && (is_static(glob_entry->type) == 0)){
-            semantic_error("Calling a non-static function from a static context at line number " + to_string(line_number));
-        }
-        else {
-            struct node * E[2];
-            E[0] = $$;
-            E[1] = $3;
-            genMethodInvocationCode(E, 2);
+
+            if( (static_context== 1) && (is_static(glob_entry->type) == 0)){
+                semantic_error("Calling a non-static function from a static context at line number " + to_string(line_number));
+            }
+            else {
+                struct node * E[2];
+                E[0] = $$;
+                E[1] = $3;
+                genMethodInvocationCode(E, 2);
+            }
         }
 
 
@@ -3866,7 +3866,7 @@ int main(int argc , char** argv)
     //view_symbol_table_with_children_hierarchy(glob_class_scope);
     //viewGlobal(glob_table);
     //viewGlobalTac(glob_table);
-    //view_symbol_table_with_children_hierarchy(glob_class_scope);
+    view_symbol_table_with_children_hierarchy(glob_class_scope);
 
 
     FILE* graph = fopen(output_file,"w");

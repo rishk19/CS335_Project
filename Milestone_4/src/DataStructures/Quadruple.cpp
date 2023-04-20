@@ -138,8 +138,8 @@ vector<string> view_quadruple(vector<Quad> quad){
     vector<string> printQuad;
     printQuad.clear();
     for(int i = 0; i<quad.size(); i++){
-        //printQuad.push_back(view_quad(&quad[i]));
-        cout << view_quad(&quad[i]) << endl;
+        printQuad.push_back(view_quad(&quad[i]));
+        //cout << view_quad(&quad[i]) << endl;
     }
     
 

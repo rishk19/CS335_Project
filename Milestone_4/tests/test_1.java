@@ -4,12 +4,12 @@ class short_circuit{
    int j = i;
    int k = 1;
 
-   int printInt(int n){
+   int printInt(String n){
     return 1;
    }
 
 
-   public static void main(String Arg[]){
+   public static void main(int Arg[]){
        float x = 9.0;
        int i=1, j =1;
        int j = 1;
