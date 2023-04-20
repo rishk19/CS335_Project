@@ -20,6 +20,8 @@
 
 #include "TypeSystem/TypeChecking.hpp"
 
+#include "CodeGeneration/Assembly.hpp"
+
 //#include "../bin/parser.tab.hh"
 
 #include <bits/stdc++.h>
