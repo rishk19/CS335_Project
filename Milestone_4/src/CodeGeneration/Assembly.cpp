@@ -264,12 +264,8 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         assembly_template.push_back("\tcall putchar");
         break;
     case Printchar_:
-        assembly_template.push_back(load_inst(quad->result,rax, quad->my_table));
-        assembly_template.push_back(gen_new_inst("movq", rax, rsi));
-        assembly_template.push_back("\tmovl \$.LC_CHAR ,\%edi");
-        assembly_template.push_back("\tmovl \$0 ,\%eax");
-        assembly_template.push_back("\tcall printf");
-        assembly_template.push_back("\tmovl \$10 ,\%edi");
+        assembly_template.push_back(movsbl_inst(quad->result,eax, quad->my_table));
+        assembly_template.push_back("\tmovl \%eax ,\%edi");
         assembly_template.push_back("\tcall putchar");
         break;
     case Printlong_:
@@ -442,6 +438,23 @@ string pp_inst(struct Argument arg, string pp_type, struct SymbolTable* my_table
     else{
         return "\nError in push/pop instruction\n";
     }
+    return assembly;
+}
+
+string movsbl_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
+{
+    string assembly = "\tmovsbl ";
+    if(arg.status == IS_LITERAL){
+        assembly += "$" + arg.literal + " ,";
+    }
+    else if(arg.status == IS_VARIABLE){
+        struct Symbol * symb = check_scope(my_table, arg.literal);
+        assembly += to_string(symb->offset)+"(\%rbp) ,";
+    }
+    else if(arg.status == IS_REGISTER){
+        assembly+=arg.literal + " ,";
+    }
+    assembly += " " + reg;
     return assembly;
 }
 
