@@ -1088,7 +1088,7 @@ MethodDeclaration:
         }
         globEntry->tac = $$->val;
 
-        //view_quadruple($$->val.quad);
+        view_quadruple($$->val.quad);
         static_context = 0;
         hasReturned = 0;
     }

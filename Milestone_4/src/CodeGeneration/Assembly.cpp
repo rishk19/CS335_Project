@@ -309,13 +309,15 @@ string division_inst(struct Argument arg, struct SymbolTable *my_table){
     return assembly;
 }
 string cmpq_inst(struct Argument arg, string literal, struct SymbolTable* my_table){
-    string assembly = "\tcmpq "+literal + " ,";
+    string assembly = "";
     if(arg.status == IS_VARIABLE){
+        assembly += "\tcmpq "+literal + " ,";
         struct Symbol * symb = check_scope(my_table, arg.literal);
         assembly += to_string(symb->offset) +"(\%rbp)";
     }
     else if(arg.status == IS_LITERAL){
-        assembly += " $"+arg.literal;
+        assembly+= "\tmovq $"+arg.literal+" , %rax";
+        assembly+="\n\tcmpq "+literal+" , %rax";
     }
     return assembly;
 }
