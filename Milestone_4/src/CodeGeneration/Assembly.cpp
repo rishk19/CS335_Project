@@ -14,14 +14,11 @@ string getOperator(Op op){
         case Empty_:
             return "";
             break;
-        case RightArrow_:
-            return "->";
-            break;
         case EqualToEqualTo_:
             return "cmp";
             break;
         case GreaterThanEqualTo_:
-            return "";
+            return "setge";
             break;
         case LessThanEqualTo_:
             return "<=";
@@ -171,14 +168,42 @@ string getOperator(Op op){
 }
 
 
-int quad_to_assembly(struct Quad* quad ){
-    
+vector<string> quad_to_assembly(struct Quad* quad ){
+    vector<string> assembly_template;
+    string r12 = "%r12";
+    string r13 = "%r13";
     switch (quad->op.op)
     {
     case Addition_:
-        return binary_to_assembly(quad);
-        break;
+        assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
+        if(quad->arg_2.status != IS_EMPTY){
+            assembly_template.push_back(load_inst(quad->arg_2, r13, quad->my_table));
+            assembly_template.push_back("addq " + r12 + " " + r13);
+            assembly_template.push_back(store_inst(quad->result, r13, quad->my_table));
+        }
+        else{
+            assembly_template.push_back(store_inst(quad->result, r12, quad->my_table));
+        }
+        
     
+    case Substraction_:
+        assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
+        if(quad->arg_2.status != IS_EMPTY){
+            assembly_template.push_back(load_inst(quad->arg_2, r13, quad->my_table));
+            assembly_template.push_back("subq " + r12 + " " + r13);
+            assembly_template.push_back(store_inst(quad->result, r13, quad->my_table));
+        }
+        else{
+            assembly_template.push_back("negq r12" );
+            assembly_template.push_back(store_inst(quad->result, r12, quad->my_table));
+
+        }
+        break;
+    case NotOperator_:
+        assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
+        
+
+
     default:
         break;
     }
@@ -187,56 +212,30 @@ int quad_to_assembly(struct Quad* quad ){
     return 0;
 }
 
-
-int binary_to_assembly(struct Quad* quad){
-    //op.op binary operator
-    //x, y, z
-    vector<string> res;
-    string assemble = "";
-    struct Symbol * symb = NULL;
-    if(quad->arg_1.status == IS_VARIABLE){
-        symb = check_scope(quad->my_table, quad->arg_1.literal);
-        if(symb==NULL) return ASSEMBLER_ERROR;
-        assemble ="movq " +to_string(symb->offset)+"(%rbp)" +" %r12";
+string load_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
+{
+    // Assume Argument is of the type
+    assembly = "movq ";
+    if(arg->status= IS_LITERAL){
+        assembly += "$" + arg->literal;
     }
-    else{
-        assemble +="movq $" +quad->arg_1.literal+" %r12";
+    elseif(arg->status= IS_VARIABLE){
+        symb = check_scope(my_tablem, arg->literal);
+        assembly += to_string(symb->offset)+"(%rbp)";
     }
-    res.push_back(assemble);
-    symb = NULL;
-    assemble = "";
+    assembly += " " + reg;
+    return assembly;
+}
 
-    if(quad->arg_2.status == IS_VARIABLE){
-        
-        symb = check_scope(quad->my_table, quad->arg_1.literal);
-        
-        if(symb==NULL) return ASSEMBLER_ERROR;
-        
-        assemble = "movq " +to_string(symb->offset)+"(%rbp)" +" %r13";
-
+string store_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
+{
+    assembly = "movq " + reg + " ";
+    if(arg->status= IS_LITERAL){
+        assembly += "$" + arg->literal;
     }
-    else{
-        
-        assemble +="movq $" +quad->arg_2.literal+" %r13";
-    
+    elseif(arg->status= IS_VARIABLE){
+        symb = check_scope(my_tablem, arg->literal);
+        assembly += to_string(symb->offset)+"(%rbp)";
     }
-    
-    res.push_back(assemble);
-    symb = NULL;
-    assemble = "";
-
-    res.push_back(getOperator(quad->op.op)+" "+" %r12" +" %r13");
-
-    if(quad->result.status == IS_VARIABLE){
-        
-        symb = check_scope(quad->my_table, quad->result.literal);
-        
-        if(symb==NULL) return ASSEMBLER_ERROR;
-        
-        assemble = "movq %r13 " +to_string(symb->offset)+"(%rbp)";
-    
-    }
-
-    return 0;
-
+    return assembly;
 }

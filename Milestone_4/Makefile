@@ -57,6 +57,7 @@ parser: \
 	Quadruple.o \
 	Argument.o \
 	Operator.o \
+	Assembly.o\
 	Main.o 
 
 	$(CC) \
@@ -73,6 +74,7 @@ parser: \
 	$(BIN_DIR)/Quadruple.o \
 	$(BIN_DIR)/Argument.o \
 	$(BIN_DIR)/Operator.o \
+	$(BIN_DIR)/Assembly.o \
 	-o $(BIN_DIR)/parser
 
 Type.o: $(SRC_DIR)/DataStructures/Type.cpp $(SRC_DIR)/DataStructures/Type.hpp $(SRC_DIR)/Includes.hpp
@@ -113,6 +115,9 @@ Argument.o : $(SRC_DIR)/DataStructures/Argument.cpp $(SRC_DIR)/Includes.hpp
 
 Operator.o : $(SRC_DIR)/DataStructures/Operator.cpp $(SRC_DIR)/Includes.hpp
 	$(CC) -c $(SRC_DIR)/DataStructures/Operator.cpp -o $(BIN_DIR)/Operator.o
+
+Assembly.o : $(SRC_DIR)/CodeGeneration/Assembly.cpp $(SRC_DIR)/Includes.hpp
+	$(CC) -c $(SRC_DIR)/CodeGeneration/Assembly.cpp -o $(BIN_DIR)/Assembly.o
 
 all: 
 	make clean
