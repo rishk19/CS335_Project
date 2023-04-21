@@ -35,14 +35,14 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         break;
         
     case Substraction_:
-        assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
+        assembly_template.push_back(load_inst(quad->arg_1, r13, quad->my_table));
         if(quad->arg_2.status != IS_EMPTY){
-            assembly_template.push_back(load_inst(quad->arg_2, r13, quad->my_table));
+            assembly_template.push_back(load_inst(quad->arg_2, r12, quad->my_table));
             assembly_template.push_back("\tsubq " + r12 + " ," + r13);
             assembly_template.push_back(store_inst(quad->result, r13, quad->my_table));
         }
         else{
-            assembly_template.push_back("\tnegq r12" );
+            assembly_template.push_back("\tnegq \%r12" );
             assembly_template.push_back(store_inst(quad->result, r12, quad->my_table));
 
         }
@@ -257,10 +257,10 @@ vector<string> quad_to_assembly(struct Quad* quad ){
     case Printint_:
         assembly_template.push_back(load_inst(quad->result,rax, quad->my_table));
         assembly_template.push_back(gen_new_inst("movq", rax, rsi));
-        assembly_template.push_back("\tmovl \$.LC_INT ,\$edi");
+        assembly_template.push_back("\tmovl \$.LC_INT ,\%edi");
         assembly_template.push_back("\tmovl \$0 ,\%eax");
         assembly_template.push_back("\tcall printf");
-        assembly_template.push_back("\tmovl \$10 .\%edi");
+        assembly_template.push_back("\tmovl \$10 ,\%edi");
         assembly_template.push_back("\tcall putchar");
         break;
     case Printchar_:
