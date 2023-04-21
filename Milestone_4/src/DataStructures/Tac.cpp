@@ -760,7 +760,6 @@ int buildTAC(struct node *E[], int n, int flag)
             newTempLabel = newTempLabel + 1;
             L2 = makeNewLabel(newTempLabel);
             newTempLabel = newTempLabel + 1;
-            cout << "L1: " <<L1<< " L2: "<<L2<<endl;
             genIfElseCode(E[0]->val, ((E[1] != NULL) ? E[1]->val : dummyVal), ((E[2] != NULL) ? E[2]->val : dummyVal), ((E[3] != NULL) ? E[3]->val : dummyVal), L1, L2);
         }
         break;

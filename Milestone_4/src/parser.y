@@ -3902,6 +3902,15 @@ int main(int argc , char** argv)
         cout <<"//// There are errors in the code and thus 3AC generation failed";
         // ofseam cout(output_file);
     }
+    char * assembly_file = NULL;
+    assembly_file = "output/a.s";
+    
+    if(err ==0){
+        freopen(assembly_file,"w",stdout);
+        if(glob_table != NULL);
+        generateAssembly(glob_table);
+    }
+
     // fprintf(graph, "digraph AST{ \n");
     // if(err == 0){
     //     generateGraph(root, graph);
