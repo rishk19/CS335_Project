@@ -17,7 +17,8 @@ class uminus_bminus{
         
     }
 
-    public static void main(int k){
+    public static void main(){
+        int k;
         boolean a = true;
         boolean b = true;
         boolean c = false;

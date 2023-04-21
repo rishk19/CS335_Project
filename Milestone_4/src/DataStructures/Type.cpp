@@ -82,6 +82,9 @@ int type_size(string type)
     if(type == "char") return 8;
     if(type == "float") return 8;
     if(type == "double") return 8;
+    if(type == "boolean") return 8;
+
+    //cout << type << endl;
 
     return -1;
 }

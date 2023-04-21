@@ -3926,7 +3926,7 @@ int main(int argc , char** argv)
     // }
     
     //view_symbol_table_with_children_hierarchy(glob_class_scope);
-    //viewGlobal(glob_table);
+    viewGlobal(glob_table);
     //viewGlobalTac(glob_table);
     // view_symbol_table_with_children_hierarchy(glob_class_scope);
 
