@@ -24,6 +24,7 @@ class uminus_bminus{
         i = 5;
         //printInt(i--);
         i = 5;
+        boolean x = true && false;
         //printInt(i-1);
         boolean f = !true;
         //printInt(i-10);
