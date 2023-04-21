@@ -209,18 +209,17 @@ vector<string> quad_to_assembly(struct Quad* quad ){
     }
 
 
-    return 0;
+    return assembly_template;
 }
 
 string load_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 {
-    // Assume Argument is of the type
-    assembly = "movq ";
-    if(arg->status= IS_LITERAL){
-        assembly += "$" + arg->literal;
+    string assembly = "movq ";
+    if(arg.status= IS_LITERAL){
+        assembly += "$" + arg.literal;
     }
-    elseif(arg->status= IS_VARIABLE){
-        symb = check_scope(my_tablem, arg->literal);
+    else if(arg.status= IS_VARIABLE){
+        struct Symbol * symb = check_scope(my_table, arg.literal);
         assembly += to_string(symb->offset)+"(%rbp)";
     }
     assembly += " " + reg;
@@ -229,12 +228,12 @@ string load_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 
 string store_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 {
-    assembly = "movq " + reg + " ";
-    if(arg->status= IS_LITERAL){
-        assembly += "$" + arg->literal;
+    string assembly = "movq " + reg + " ";
+    if(arg.status= IS_LITERAL){
+        assembly += "$" + arg.literal;
     }
-    elseif(arg->status= IS_VARIABLE){
-        symb = check_scope(my_tablem, arg->literal);
+    else if(arg.status= IS_VARIABLE){
+        struct Symbol * symb = check_scope(my_table, arg.literal);
         assembly += to_string(symb->offset)+"(%rbp)";
     }
     return assembly;
