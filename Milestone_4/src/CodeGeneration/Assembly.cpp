@@ -457,6 +457,6 @@ void generateAssembly(struct GlobalSymbolTable * glob_table)
             cout << "\t.size\t" << "__" + class_name + "__"  + func_name + ", .-" + "__" + class_name + "__"  + func_name <<endl;
         }
     }
-    cout << ".end" <<endl;
+    cout << '\x1A' <<endl;
     return;
 }
