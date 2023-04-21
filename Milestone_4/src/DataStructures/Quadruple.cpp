@@ -27,6 +27,10 @@ string view_quad(struct Quad* qd){
             //res = qd->result.literal;
         }
     }
+    else if(qd->result.status == IS_REGISTER){
+        res = qd->result.literal;
+    }
+    
 
     string arg_1 = "";
     if(qd->arg_1.status == IS_LABEL){
@@ -51,6 +55,9 @@ string view_quad(struct Quad* qd){
             //arg_1 = qd->arg_1.literal;
         }
     }
+    else if(qd->arg_1.status == IS_REGISTER){
+        arg_1 = qd->result.literal;
+    }
 
     string arg_2 = "";
     if(qd->arg_2.status == IS_LABEL){
@@ -74,6 +81,9 @@ string view_quad(struct Quad* qd){
         else{
             arg_2 = qd->arg_2.symbol_entry->name;
         }
+    }
+    else if(qd->arg_2.status == IS_REGISTER){
+        arg_2 = qd->result.literal;
     }
 
     ans = "    " + res + " = " + arg_1 + " " + op +  " "  +  arg_2 ;

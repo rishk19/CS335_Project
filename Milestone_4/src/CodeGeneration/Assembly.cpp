@@ -19,7 +19,6 @@ vector<string> quad_to_assembly(struct Quad* quad ){
     string ecx = "\%ecx";
     string cl = "\%cl";
 
-    cout << quad->op.op << endl;
     switch (quad->op.op)
     {
     case Addition_:
@@ -37,18 +36,15 @@ vector<string> quad_to_assembly(struct Quad* quad ){
     case Substraction_:
         assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
         if(quad->arg_2.status != IS_EMPTY){
-            cout << "Branch 1" <<endl;
             assembly_template.push_back(load_inst(quad->arg_2, r13, quad->my_table));
             assembly_template.push_back("subq " + r12 + " " + r13);
             assembly_template.push_back(store_inst(quad->result, r13, quad->my_table));
         }
         else{
-            cout << "Branch 2" <<endl;
             assembly_template.push_back("negq r12" );
             assembly_template.push_back(store_inst(quad->result, r12, quad->my_table));
 
         }
-        cout << "Substraction "<< endl;
         break;
     case Product_:
         assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
@@ -223,10 +219,10 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         assembly_template.push_back(store_inst(quad->arg_1, rax, quad->my_table));
         assembly_template.push_back(store_inst(quad->result, rax, quad->my_table));
     case Empty_:
-        cout << "Empty" <<endl;
+        //cout << "Empty" <<endl;
         break;
     default:
-        cout << "Default" <<endl;
+        //cout << "Default" <<endl;
         break;
 
     }
@@ -388,7 +384,8 @@ void generateAssembly(struct GlobalSymbolTable * glob_table)
             // cout << glob_entry.tac.quad[j].op.op<<endl;
             code =quad_to_assembly(&glob_entry.tac.quad[j]);
             for (int k =0; k<code.size() ; k++){
-                 cout << code[j] << endl;
+                if(code[j].size() !=0)
+                cout << code[j] << endl;
             }
         }
     }
