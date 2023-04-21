@@ -945,7 +945,7 @@ VariableInitializer:
 MethodDeclaration: 
     MethodHeader MethodBody{
         
-        if(hasReturned == 0){
+        if(hasReturned != 1){
             if($1->symbol.type.return_type != "void"){
                 semantic_error("Non-Void Function " + $1->symbol.name + " must return some value!");
             }
@@ -955,7 +955,6 @@ MethodDeclaration:
                 semantic_error("Void Function " + $1->symbol.name + " cannot return any value!");
             }
         }
-        hasReturned = 0;
         
         struct node * memArr[2];
         memArr[0] = $1;
@@ -1052,29 +1051,31 @@ MethodDeclaration:
         E[2] = $2;
         buildTAC(E, 3, APPEND_CODE);
 
-        // pushCode(E[0]->val, "movq \%rbp \%rsp");
+        // if(hasReturned == 0){
+        //     pushCode(E[0]->val, "movq \%rbp \%rsp");
 
-        // quad->op.op = Movq_;
-        // quad->op.type = "int";
-        
-        // val->place = "\%rbp";
-        // val->status = IS_VARIABLE;
-        // fill_arg(&quad->arg_1, *val);
-        // val->place = "\%rsp";
-        // fill_arg(&quad->result, *val);
-        // quad->arg_2.status = IS_EMPTY;
+        //     quad->op.op = Movq_;
+        //     quad->op.type = "int";
+            
+        //     val->place = "\%rbp";
+        //     val->status = IS_VARIABLE;
+        //     fill_arg(&quad->arg_1, *val);
+        //     val->place = "\%rsp";
+        //     fill_arg(&quad->result, *val);
+        //     quad->arg_2.status = IS_EMPTY;
 
-        // pushQuad(E[0]->val, *quad);
-        
-        
-        // pushCode(E[0]->val, "retq");
+        //     pushQuad(E[0]->val, *quad);
+            
+            
+        //     pushCode(E[0]->val, "retq");
 
-        // quad->op.op = Retq_;
-        // quad->result.status = IS_EMPTY;
-        // quad->arg_1.status = IS_EMPTY;
-        // quad->arg_2.status = IS_EMPTY;
+        //     quad->op.op = Retq_;
+        //     quad->result.status = IS_EMPTY;
+        //     quad->arg_1.status = IS_EMPTY;
+        //     quad->arg_2.status = IS_EMPTY;
 
-        // pushQuad(E[0]->val, *quad);
+        //     pushQuad(E[0]->val, *quad);
+        // }
 
         pushCode(E[0]->val, "end_func");
         struct GlobalSymbol* globEntry =  glob_lookup(class_name, $1->symbol.name, glob_table);
@@ -1085,6 +1086,7 @@ MethodDeclaration:
 
         //view_quadruple($$->val.quad);
         static_context = 0;
+        hasReturned = 0;
     }
 
 MethodHeader:
@@ -2193,6 +2195,7 @@ ReturnStatement:
 
 
         if($2 != NULL){
+            hasReturned = 1;
             if(ret_size == 0){
                 semantic_error("Function of type void returning value at line number " + to_string(line_number));
             }
@@ -2232,9 +2235,38 @@ ReturnStatement:
                 pushCode($$->val,"retq");
             }
         }
-        hasReturned = 1;
-        //string str = "ret";
-        //pushCode($$->val,str);
+        else{
+            hasReturned = 0;
+            struct Quad* quad = new struct Quad;
+            quad->op.op = Movq_;
+            quad->op.type = "int";
+            struct Value * val = new struct Value;
+            val->place = "\%rax";
+            val->status = IS_REGISTER;
+            pushCode($$->val, "popq \%rbp");
+
+            quad->op.op = Popq_;
+            val->status = IS_REGISTER;
+
+            val->place = "\%rbp";
+            fill_arg(&quad->result, *val);
+            quad->arg_1.status = IS_EMPTY;
+            quad->arg_2.status = IS_EMPTY;
+
+            pushQuad($$->val, *quad);
+
+            
+            quad->arg_1.status = IS_EMPTY;
+            quad->arg_2.status = IS_EMPTY;
+            quad->result.status = IS_EMPTY;
+            quad->op.op = Retq_;
+            quad->op.type = "int";
+            pushQuad($$->val, *quad);
+            pushCode($$->val,"retq");
+
+            string str = "ret";
+            pushCode($$->val,str);
+        }
     }
 
 ThrowStatement: 
@@ -3908,11 +3940,12 @@ int main(int argc , char** argv)
         // ofseam cout(output_file);
     }
     char * assembly_file = NULL;
-    assembly_file = "output/a.s";
+    assembly_file = "output/output.s";
 
     if(err ==0){
         freopen(assembly_file,"w",stdout);
-        cout << "Beginning Code Generation" <<endl;
+        cout << endl;
+        //cout << "Beginning Code Generation" <<endl;
         if(glob_table != NULL);
         generateAssembly(glob_table);
     }
