@@ -86,7 +86,7 @@ int type_size(string type)
 
     //cout << type << endl;
 
-    return -1;
+    return 8;
 }
 
 int is_static(struct Type &head)

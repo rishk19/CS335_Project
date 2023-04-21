@@ -34,5 +34,6 @@ class uminus_bminus{
         // boolean f = !true;
         // //printInt(i-10);
         // return;
+        return;
     }
 }

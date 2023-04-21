@@ -1088,7 +1088,7 @@ MethodDeclaration:
         }
         globEntry->tac = $$->val;
 
-        view_quadruple($$->val.quad);
+        //view_quadruple($$->val.quad);
         static_context = 0;
         hasReturned = 0;
     }
@@ -3926,7 +3926,7 @@ int main(int argc , char** argv)
     // }
     
     //view_symbol_table_with_children_hierarchy(glob_class_scope);
-    viewGlobal(glob_table);
+    //viewGlobal(glob_table);
     //viewGlobalTac(glob_table);
     // view_symbol_table_with_children_hierarchy(glob_class_scope);
 
