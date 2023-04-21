@@ -420,9 +420,10 @@ void generateAssembly(struct GlobalSymbolTable * glob_table)
         cout << "Empty Global Table" << endl;
     }
     struct GlobalSymbol glob_entry;
+    cout << "\t.file\t \"main.c\"" <<endl;
+    cout << "\t.text" <<endl;
     for (int i = 0; i< glob_table->entries.size(); i++)
     {   
-        cout << endl;
         struct Quad quad;
         vector<string>code;
         glob_entry = glob_table->entries[i];
@@ -430,9 +431,13 @@ void generateAssembly(struct GlobalSymbolTable * glob_table)
         string func_name = glob_entry.methodName;
         string class_name = glob_entry.scope;
         if(func_name == "main"){
+            cout << "\t.globl\t" << func_name <<endl;
+            cout << "\t.type\t" << func_name << ", \@function" <<endl;
             cout << func_name + ":" <<endl;
         }
         else{
+            cout << "\t.globl\t" << "__" + class_name + "__"  + func_name <<endl;
+            cout << "\t.type\t" << "__" + class_name + "__"  + func_name << ", \@function" <<endl;
             cout << "__" + class_name + "__"  + func_name + ":" << endl;
         }
         for (int j = 0; j< glob_entry.tac.quad.size(); j++)
@@ -445,6 +450,13 @@ void generateAssembly(struct GlobalSymbolTable * glob_table)
                 cout << code[k] << endl;
             }
         }
+        if(func_name == "main"){
+            cout << "\t.size\t" << func_name + ", .-" + func_name <<endl;
+        }
+        else{
+            cout << "\t.size\t" << "__" + class_name + "__"  + func_name + ", .-" + "__" + class_name + "__"  + func_name <<endl;
+        }
     }
+    cout << ".end" <<endl;
     return;
 }
