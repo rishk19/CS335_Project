@@ -1029,6 +1029,9 @@ MethodDeclaration:
             stackOffset -= $1->symbol.type.parameters_size[i];
         }
         stackOffset += getTotalStackOffset(symb_table,stackOffset);
+        if(stackOffset %16 != 0){
+            stackOffset += (16 - (stackOffset%16));
+        }
         if(stackOffset!=0){
             pushCode(E[0]->val, "$rsp = $rsp - " + to_string(stackOffset));
             val->status = IS_REGISTER;
