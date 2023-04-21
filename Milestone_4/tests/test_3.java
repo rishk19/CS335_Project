@@ -1,16 +1,19 @@
 class uminus_bminus{
-    void printInt(int n){ 
+    int printInt(int n){ 
         //int x = 3;
         
         if(n == 1)
             {
                 n = n+1;
-                return;
+                return 0;
             }
         else if(1 > 0){
+            return 1;
         }
         else{
+            return 2;
         }
+        return 3;
         
     }
 

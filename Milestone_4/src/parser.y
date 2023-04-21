@@ -974,15 +974,19 @@ MethodDeclaration:
 
         struct Quad * quad = new struct Quad;
         struct Value * val = new struct Value;
-        quad->my_table = curr;
-        quad->op.op = Label_;
-        quad->op.type = "int";
-        val->status = IS_LABEL;
-        val->label = "__" + class_name + "__" + string(E[0]->symbol.name);
-        fill_arg(&quad->result, *val);
-        quad->arg_1.status = IS_EMPTY;
-        quad->arg_2.status = IS_EMPTY;
-        pushQuad($$->val, *quad);
+        // quad->my_table = curr;
+        // quad->op.op = Label_;
+        // quad->op.type = "int";
+        // val->status = IS_LABEL;
+        // if(string(E[0]->symbol.name) != "main")
+        //     val->label = "__" + class_name + "__" + string(E[0]->symbol.name);
+        // else{
+        //     val->label = string(E[0]->symbol.name);
+        // }
+        // fill_arg(&quad->result, *val);
+        // quad->arg_1.status = IS_EMPTY;
+        // quad->arg_2.status = IS_EMPTY;
+        // pushQuad($$->val, *quad);
         //view_quad(quad);
 
         pushCode(E[0]->val,str);

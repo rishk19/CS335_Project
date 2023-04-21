@@ -1,5 +1,4 @@
 //// The 3AC is the following : 
-__uminus_bminus__printInt:
     pushq %rbp
     movq %rbp %rbp
     %rsp = %rsp - #14
@@ -10,20 +9,29 @@ __uminus_bminus__printInt:
     %t4 = #1 > #0
     cmp %t4 #0
     jne L5
+    movq #2 %rax
+    popq %rbp
+    retq
     jmp L6
 L5:
+    movq #1 %rax
+    popq %rbp
+    retq
 L6:
     jmp L8
 L7:
     %t2 = #1  
     %t3 = n + %t2
     n = %t3  
+    movq #0 %rax
     popq %rbp
     retq
 L8:
+    movq #3 %rax
+    popq %rbp
+    retq
 
 
-__uminus_bminus__main:
     pushq %rbp
     movq %rbp %rbp
     %rsp = %rsp - #14

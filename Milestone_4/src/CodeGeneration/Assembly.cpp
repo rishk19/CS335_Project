@@ -25,7 +25,7 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
         if(quad->arg_2.status != IS_EMPTY){
             assembly_template.push_back(load_inst(quad->arg_2, r13, quad->my_table));
-            assembly_template.push_back("\taddq " + r12 + " " + r13);
+            assembly_template.push_back("\taddq " + r12 + " ," + r13);
             assembly_template.push_back(store_inst(quad->result, r13, quad->my_table));
         }
         else{
@@ -37,7 +37,7 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
         if(quad->arg_2.status != IS_EMPTY){
             assembly_template.push_back(load_inst(quad->arg_2, r13, quad->my_table));
-            assembly_template.push_back("\tsubq " + r12 + " " + r13);
+            assembly_template.push_back("\tsubq " + r12 + " ," + r13);
             assembly_template.push_back(store_inst(quad->result, r13, quad->my_table));
         }
         else{
@@ -49,7 +49,7 @@ vector<string> quad_to_assembly(struct Quad* quad ){
     case Product_:
         assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
         assembly_template.push_back(load_inst(quad->arg_2, r13, quad->my_table));
-        assembly_template.push_back("\timulq " + r12 + " " + r13);
+        assembly_template.push_back("\timulq " + r12 + " ," + r13);
         assembly_template.push_back(store_inst(quad->result, r13, quad->my_table));
         break;
     case Divide_:
@@ -264,14 +264,14 @@ string load_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 {
     string assembly = "\tmovq ";
     if(arg.status == IS_LITERAL){
-        assembly += "$" + arg.literal;
+        assembly += "$" + arg.literal + " ,";
     }
     else if(arg.status == IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
-        assembly += to_string(symb->offset)+"(\%rbp)";
+        assembly += to_string(symb->offset)+"(\%rbp) ,";
     }
     else if(arg.status == IS_REGISTER){
-        assembly+=arg.literal;
+        assembly+=arg.literal + " ,";
     }
     assembly += " " + reg;
     return assembly;
@@ -279,7 +279,7 @@ string load_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 
 string store_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 {
-    string assembly = "\tmovq " + reg + " ";
+    string assembly = "\tmovq " + reg + " ,";
     if(arg.status== IS_LITERAL){
         assembly += "$" + arg.literal;
     }
@@ -309,7 +309,7 @@ string division_inst(struct Argument arg, struct SymbolTable *my_table){
     return assembly;
 }
 string cmpq_inst(struct Argument arg, string literal, struct SymbolTable* my_table){
-    string assembly = "\tcmpq "+literal + " ";
+    string assembly = "\tcmpq "+literal + " ,";
     if(arg.status == IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
         assembly += to_string(symb->offset) +"(\%rbp)";
@@ -329,17 +329,17 @@ string set_inst(string set_type, string reg){
 }
 
 string gen_new_inst(string inst, string reg_1, string reg_2){
-    return "\t" + inst+" "+reg_1+" "+reg_2;
+    return "\t" + inst+" "+reg_1+" , "+reg_2;
 }
 string and_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 {
     string assembly = "\tandq ";
     if(arg.status== IS_LITERAL){
-        assembly += "$" + arg.literal;
+        assembly += "$" + arg.literal + " ,";
     }
     else if(arg.status== IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
-        assembly += to_string(symb->offset)+"(\%rbp) ";
+        assembly += to_string(symb->offset)+"(\%rbp) ,";
     }
     assembly+=reg;
     return assembly;
@@ -348,11 +348,11 @@ string or_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 {
     string assembly = "\torq ";
     if(arg.status== IS_LITERAL){
-        assembly += "$" + arg.literal;
+        assembly += "$" + arg.literal + " ,";
     }
     else if(arg.status== IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
-        assembly += to_string(symb->offset)+"(\%rbp) ";
+        assembly += to_string(symb->offset)+"(\%rbp) ,";
     }
     assembly+=reg;
     return assembly;
@@ -361,11 +361,11 @@ string xor_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 {
     string assembly = "\txorq ";
     if(arg.status== IS_LITERAL){
-        assembly += "$" + arg.literal;
+        assembly += "$" + arg.literal + " ,";
     }
     else if(arg.status == IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
-        assembly += to_string(symb->offset)+"(\%rbp) ";
+        assembly += to_string(symb->offset)+"(\%rbp) ,";
     }
     assembly+=reg;
     return assembly;
@@ -375,11 +375,11 @@ string salq_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 {
     string assembly = "\tsalq "+reg;
     if(arg.status== IS_LITERAL){
-        assembly += "$" + arg.literal;
+        assembly += "$" + arg.literal + " ,";
     }
     else if(arg.status== IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
-        assembly += to_string(symb->offset)+"(\%rbp) ";
+        assembly += to_string(symb->offset)+"(\%rbp) ,";
     }
     return assembly;
 }
@@ -387,11 +387,11 @@ string sarq_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 {
     string assembly = "\tsalq "+reg;
     if(arg.status== IS_LITERAL){
-        assembly += "$" + arg.literal;
+        assembly += "$" + arg.literal + " ,";
     }
     else if(arg.status== IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
-        assembly += to_string(symb->offset)+"(\%rbp) ";
+        assembly += to_string(symb->offset)+"(\%rbp) ,";
     }
     return assembly;
 }
@@ -427,6 +427,14 @@ void generateAssembly(struct GlobalSymbolTable * glob_table)
         vector<string>code;
         glob_entry = glob_table->entries[i];
         //view_quadruple(glob_entry.tac.quad);
+        string func_name = glob_entry.methodName;
+        string class_name = glob_entry.scope;
+        if(func_name == "main"){
+            cout << func_name + ":" <<endl;
+        }
+        else{
+            cout << "__" + class_name + "__"  + func_name + ":" << endl;
+        }
         for (int j = 0; j< glob_entry.tac.quad.size(); j++)
         {
             //cout << view_quad(&glob_entry.tac.quad[j]) << endl;
