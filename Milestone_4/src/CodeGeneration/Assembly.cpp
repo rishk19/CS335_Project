@@ -239,11 +239,11 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         assembly_template.push_back(jump_inst("jne",quad->result.label));
         break;
     case Compare_and_Je_:
-        assembly_template.push_back(cmpq_inst(quad->arg_1,quad->arg_2.literal,quad->my_table));
+        assembly_template.push_back(cmpq_inst(quad->arg_1,"$" + quad->arg_2.literal,quad->my_table));
         assembly_template.push_back(jump_inst("je",quad->result.label));
         break;
     case Compare_and_Jne_:
-        assembly_template.push_back(cmpq_inst(quad->arg_1,quad->arg_2.literal,quad->my_table));
+        assembly_template.push_back(cmpq_inst(quad->arg_1,"$" + quad->arg_2.literal,quad->my_table));
         assembly_template.push_back(jump_inst("jne",quad->result.label));
         break;
     case Retq_:
@@ -457,6 +457,6 @@ void generateAssembly(struct GlobalSymbolTable * glob_table)
             cout << "\t.size\t" << "__" + class_name + "__"  + func_name + ", .-" + "__" + class_name + "__"  + func_name <<endl;
         }
     }
-    cout << '\x1A' <<endl;
+    cout << ".end" <<endl;
     return;
 }
