@@ -297,6 +297,57 @@ string op_to_str(Op op){
         case LessThan_:
             return "<";
             break;
+        case Compare_and_Jne_:
+            return "cmp";
+            break;
+        case Compare_and_Je_:
+            return "cmp";
+            break;
+        case Jne_:
+            return "Jne";
+            break;
+        case Jmp_:
+            return "Jmp";
+            break;
+        case Label_:
+            return "Label";
+            break;
+        case ArrayAccess_:
+            return "ArrayAccess";
+            break;
+        case LoadArray_:
+            return "LoadArray";
+            break;
+        case Pushq_:
+            return "Pushq";
+            break;
+        case Movq_:
+            return "Movq";
+            break;
+        case Popq_:
+            return "Popq";
+            break;
+        case Push_:
+            return "Push";
+            break;
+        case Mov_:
+            return "Mov";
+            break;
+        case Pop_:
+            return "Pop";
+            break;
+        case Retq_:
+            return "retq";
+            break;
+        case Addq_:
+            return "addq";
+            break;
+        case Subq_:
+            return "subq";
+            break;
+        case Callq_:
+            return "callq";
+            break;
         default:
             break;
     }

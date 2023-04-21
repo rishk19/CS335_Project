@@ -119,17 +119,20 @@ struct Symbol* check_scope(struct SymbolTable* curr, string name)
     }
 }
 
-long long int getTotalStackOffset(struct SymbolTable* curr){
+long long int getTotalStackOffset(struct SymbolTable* curr, long long int base_offset){
 
     if(curr == NULL)
         return 0;
     
-    long long int offset = 0;
+    long long int offset = base_offset;
     for(int i = 0; i<curr->entries.size(); i++){
+        curr->entries[i].offset = -offset;
         offset += curr->entries[i].size;
     }
+    base_offset = offset;
     for(int k = 0; k<curr->children.size(); k++){
-        offset += getTotalStackOffset(curr->children[k]);
+        offset = getTotalStackOffset(curr->children[k], base_offset);
+        base_offset = offset;
     }
 
     return offset;

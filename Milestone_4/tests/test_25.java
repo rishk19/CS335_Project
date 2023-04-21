@@ -22,7 +22,7 @@ class short_circuit{
         int arr2[] = new int [6];
         arr2[1] = 1;
         int i = arr2[2]+2;
-        printInt(a,3);
+        printInt(a);
         return 46;
     }
  }

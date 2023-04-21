@@ -17,10 +17,12 @@ struct node{
     vector<node*> arr;
     Symbol symbol;
     Value val;
+    Value post_fix_val;
 };
 
 struct node* makeleaf(char nodeStr[100]);
 struct node* makeInternalNode(char rule[100], struct node* memArr[], int n, int isParent);
+
 
 extern long long int line_number;
 extern string src_file;

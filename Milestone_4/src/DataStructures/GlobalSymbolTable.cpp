@@ -15,6 +15,7 @@ long long int glob_insert(long long int line_num, string scope, string methodNam
     entry.methodName = methodName;
     entry.type = type;
     entry.tac = tac;
+    entry.type.name = scope;
 
     glob->scope_hash[scope+"::"+methodName] = glob->entries.size();
     glob->entries.push_back(entry);
@@ -63,9 +64,12 @@ void viewGlobalTac(struct GlobalSymbolTable* glob_table){
 void generateTac(FILE* graph, struct GlobalSymbolTable* glob_table){
     for(int i = 0; i<glob_table->entries.size(); i++){
         cout<<endl;
-        Value tac = glob_table->entries[i].tac;
-        for(int j = 0; j<tac.code.size(); j++){
-            cout <<tac.code[j]<<endl;
+        vector<string> quad = view_quadruple(glob_table->entries[i].tac.quad);
+        //Value tac = glob_table->entries[i].tac;
+        for(int j = 0; j<quad.size(); j++){
+            // if(tac.code[j][0]!='#')
+            //     cout<<"\t";
+            cout <<quad[j]<<endl;
             // fprintf(graph,"%s\n",&tac.code[j]);
         }
         cout<<endl;

@@ -20,6 +20,10 @@
 
 #include "TypeSystem/TypeChecking.hpp"
 
+#include "CodeGeneration/Assembly.hpp"
+
+//#include "../bin/parser.tab.hh"
+
 #include <bits/stdc++.h>
 
 
@@ -48,8 +52,10 @@ using namespace std;
 #define IS_LITERAL 0
 #define IS_VARIABLE 1
 #define IS_EMPTY -1
+#define IS_ARRAYACESS 1000
 
 extern struct SymbolTable* curr;
+extern struct GlobalSymbolTable* glob_table;
 extern int newTempLabel;
 extern Value dummyVal;
 

@@ -1,9 +1,11 @@
 class short_circuit{
 
     public static void main()
-    {
+    {                       //Postfix
         int i,j;
-        i = 1+4*7/9+9+0+1;
-        boolean k = true && true ;
+        i = 1;
+        j = i++;
+        j = i--;
     }
+
  }

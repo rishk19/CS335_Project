@@ -31,6 +31,9 @@ int assign_flag = 0;
 string src_file = "";
 int err = 0;
 int hasReturned = 0;
+int static_context = 0;
+
+struct Value * class_declaration_code = new struct Value;
 
 %}
 
@@ -134,13 +137,13 @@ Literal:
     | FloatingPointLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "float";
-        $$->symbol.size = 4;
+        $$->symbol.size = 8;
         buildVal($$,0);
     }
     | BooleanLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "boolean";
-        $$->symbol.size = 1;
+        $$->symbol.size = 8;
         buildVal($$,0);
         if($1[0]=='t'){
             $$->val.place = "1";
@@ -152,7 +155,7 @@ Literal:
     | CharacterLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "char";
-        $$->symbol.size = 2;
+        $$->symbol.size = 8;
         buildVal($$,0);
         $$->val.place = to_string(int($1[0]));
     }
@@ -174,20 +177,20 @@ IntegerLiteral:
     DecimalIntegerLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "byte";
-        $$->symbol.size = 4;
+        $$->symbol.size = 8;
 
         buildVal($$,0);
     }
     | HexIntegerLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "byte";
-        $$->symbol.size = 4;
+        $$->symbol.size = 8;
         buildVal($$,0);
     }
     | OctalIntegerLiteral {
         $$ = makeleaf($1);
         $$->symbol.type.name = "byte";
-        $$->symbol.size = 4;
+        $$->symbol.size = 8;
         buildVal($$,0);
     }
 
@@ -207,7 +210,7 @@ PrimitiveType:
         $$ = makeleaf($1);
         $$->symbol.type.name = "boolean";
         $$->symbol.type.t = 0;
-        $$->symbol.size = 1;
+        $$->symbol.size = 8;
     }
 
 NumericType: 
@@ -223,19 +226,19 @@ IntegralType:
         $$ = makeleaf($1);
         $$->symbol.type.name = "byte";
         $$->symbol.type.t = 0;
-        $$->symbol.size = 1;
+        $$->symbol.size = 8;
     }
     | Short {
         $$ = makeleaf($1);
         $$->symbol.type.name = "short";
         $$->symbol.type.t = 0;
-        $$->symbol.size = 2;
+        $$->symbol.size = 8;
     }
     | Int {
         $$ = makeleaf($1);
         $$->symbol.type.name = "int";
         $$->symbol.type.t = 0;
-        $$-> symbol.size = 4;
+        $$-> symbol.size =8;
     }
     | Long {
         $$ = makeleaf($1);
@@ -247,7 +250,7 @@ IntegralType:
         $$ = makeleaf($1);
         $$->symbol.type.name = "char";
         $$->symbol.type.t = 0;
-        $$->symbol.size = 2;
+        $$->symbol.size = 8;
     }
 
 FloatingPointType: 
@@ -255,7 +258,7 @@ FloatingPointType:
         $$ = makeleaf($1);
         $$->symbol.type.t = 0;
         $$->symbol.type.name = "float";
-        $$->symbol.size = 4;
+        $$->symbol.size = 8;
     }
     | Double {
         $$ = makeleaf($1);
@@ -275,6 +278,14 @@ ReferenceType:
 ClassOrInterfaceType: 
     Name {
         $$ = $1;
+        struct Symbol * symb = loc_lookup(glob_class_scope,$1->symbol.name);
+        if(symb == NULL){
+            semantic_error("Incorrect declaration at line number " + to_string(line_number));
+        }
+        else{
+            $$->symbol = *symb;
+        }
+        //view_symbol(*symb);
     }
 
 ClassType: 
@@ -506,8 +517,9 @@ Class_Name_Extractor : Modifiers_opt Class Identifier ClassExtend_opt Interfaces
     $$ = makeInternalNode("ClassDeclaration", memArr , 5, 1);
     if($1!=NULL){
         for(int i = 0; i<$1->arr.size(); i++){
-            if($1->arr[i]!=NULL)
+            if($1->arr[i]!=NULL){
                 $$->symbol.type.modifier.push_back(string($1->arr[i]->data));
+            }
        }
     }
     $$->symbol.name = string($3);
@@ -607,6 +619,8 @@ ClassBodyDeclarations_opt : {
         E[0] = $$;
         E[1] = $1;
         buildTAC(E, 2, COPY_CODE);
+        view_quadruple(class_declaration_code->quad);
+        //view_quadruple($1->val.quad);
         
     }
 
@@ -647,10 +661,13 @@ ClassBodyDeclaration:
 ClassMemberDeclaration: 
     FieldDeclaration {
         $$ = $1;
-        struct Symbol* class_entry = loc_lookup(glob_class_scope,class_name);
-        if(class_entry != NULL){
-            class_entry->size += $$->symbol.size;
-        }
+        // struct Symbol* class_entry = loc_lookup(glob_class_scope,class_name);
+        // if(class_entry != NULL){
+        //     $$->symbol.size = -class_entry->size;
+        //     class_entry->size += $$->symbol.size;
+
+        // }
+        appendCode(*class_declaration_code,$1->val);
 
     }
     | MethodDeclaration {
@@ -660,6 +677,10 @@ ClassMemberDeclaration:
 
 FieldDeclaration: 
     Modifiers_opt Type VariableDeclarators Semicolon {
+        struct Symbol* class_entry = loc_lookup(glob_class_scope,class_name);
+        if(class_entry == NULL){
+            semantic_error("Class entry not added to symbol table !");
+        }
         struct node * memArr[3];
         memArr[0] = $1;
         memArr[1] = $2;
@@ -670,10 +691,13 @@ FieldDeclaration:
 
         if($1 != NULL)
         {
-
+            int modifier_count = 0;
+            int static_count = 0;
             for(int j = 0 ; j< $3->arr.size(); j++)
             {
-                $$->symbol.size += $2->symbol.size;
+                $$->symbol.offset = -class_entry->size;
+                class_entry->size += $2->symbol.size;
+                $$->symbol.size = $2->symbol.size;
                 $$->symbol.type = $2->symbol.type;
                 string txt = $3->arr[j]->symbol.name;
                 string name = "";
@@ -694,7 +718,23 @@ FieldDeclaration:
 
                 for(int i=0 ; i< $1->arr.size();i++)
                 {
-                    $$->symbol.type.modifier.push_back($1->arr[i]->data);
+                    if(string($1->arr[i]->data) != "static"){
+                        modifier_count +=1;
+                        
+                    }
+                    else{
+                        static_count +=1;
+                        if(static_count <= 1)
+                        $$->symbol.type.modifier.push_back($1->arr[i]->data);
+                    }
+                    if(modifier_count > 1 || static_count > 1){
+                        semantic_error("Incorrect numbert of modifiers added at line number " + to_string(line_number));
+                        break;
+                    }
+                    else{
+                        $$->symbol.type.modifier.push_back($1->arr[i]->data);
+                    }
+
                 }
                 
 
@@ -706,7 +746,7 @@ FieldDeclaration:
                         {
                             //$$->symbol.type.name = $1->symbol.type.name;
                             $$->symbol.type = $3->arr[j]->symbol.type;
-                            $$->symbol.size = $3->arr[j]->symbol.size;
+                            //$$->symbol.size = $3->arr[j]->symbol.size;
                             long long int x  = loc_insert(curr,$$->symbol);
                             if(x < 0)
                             {
@@ -746,7 +786,9 @@ FieldDeclaration:
             //cout << $3->arr.size() <<endl;
             for(int j =0; j< $3->arr.size(); j++)
             {
-                $$->symbol.size += $2->symbol.size;
+                $$->symbol.offset = - class_entry->size;
+                class_entry->size += $2->symbol.size;
+                $$->symbol.size = $2->symbol.size;
                 $$->symbol.type = $2->symbol.type;
                 string txt = $3->arr[j]->symbol.name;
                 string name = "";
@@ -771,9 +813,6 @@ FieldDeclaration:
                         if($$->symbol.type.name == $3->arr[j]->symbol.type.name)
                         {   
                             $$->symbol.type= $3->arr[j]->symbol.type;
-                            $$->symbol.size = $3->arr[j]->symbol.size;
-                            //view_type($$->symbol.type);
-                            //view_symbol($$->symbol);
                             long long int x  = loc_insert(curr,$$->symbol);
                             if(x < 0)
                             {
@@ -815,8 +854,6 @@ FieldDeclaration:
         E[0] = $$;
         E[1] = $3;
         buildTAC(E, 2, COPY_CODE);  
-
-
 
     }
 
@@ -865,9 +902,11 @@ VariableDeclarator:
         $$->symbol.name = $1->symbol.name;
         
         struct node* E[2];
-        E[0] = $1;
-        E[1] = $3;
-        buildTAC(E, 2, ASSIGN_CODE);
+        if($3->t != ARRAY_ACCESS){
+            E[0] = $1;
+            E[1] = $3;
+            buildTAC(E, 2, ASSIGN_CODE);
+        }
         E[0] = $$;
         E[1] = $1;
         buildTAC(E, 2, COPY_CODE);
@@ -900,6 +939,7 @@ VariableInitializer:
     }
     | ArrayInitializer {
         $$ = $1;
+        $$->t = ARRAY_ACCESS;
     }
 
 MethodDeclaration: 
@@ -931,21 +971,77 @@ MethodDeclaration:
         }
         struct node* E[3];
         E[0] = $$;
-        string str = class_name + "::" + string(E[0]->symbol.name) +" : ";
+        string str = "#"+class_name + "::" + string(E[0]->symbol.name) +" : ";
+
+        struct Quad * quad = new struct Quad;
+        struct Value * val = new struct Value;
+        quad->my_table = curr;
+        quad->op.op = Label_;
+        quad->op.type = "int";
+        val->status = IS_LABEL;
+        val->label = "__" + class_name + "__" + string(E[0]->symbol.name);
+        fill_arg(&quad->result, *val);
+        quad->arg_1.status = IS_EMPTY;
+        quad->arg_2.status = IS_EMPTY;
+        pushQuad($$->val, *quad);
+        //view_quad(quad);
+
         pushCode(E[0]->val,str);
         pushCode(E[0]->val,"begin_func");
-        pushCode(E[0]->val,"$rsp = $rsp - 8");
-        pushCode(E[0]->val,"push $rbp (0)$rsp");
-        pushCode(E[0]->val,"$rbp = $rsp");
-        long long int stackOffset = getTotalStackOffset(curr);
+        pushCode(E[0]->val,"pushq \%rbp");
+
+        val->status = IS_LITERAL;
+        val->place = "\%rbp";
+
+        quad->my_table = curr;
+        quad->op.op = Pushq_;
+        quad->op.type = "int";
+
+        fill_arg(&quad->result, *val);
+        //cout << val->place <<endl;
+
+        quad->arg_1.status = IS_EMPTY;
+        quad->arg_2.status = IS_EMPTY;
+
+        pushQuad(E[0]->val,*quad);
+
+        pushCode(E[0]->val,"movq \%rsp \%rbp");
+
+        quad->op.op = Movq_;
+        quad->op.type = "int";
+
+        val->place = "\%rsp";
+        fill_arg(&quad->arg_1,*val);
+        val->place = "\%rbp";
+        fill_arg(&quad->result, *val);
+        quad->arg_2.status = IS_EMPTY;
+
+        pushQuad(E[0]->val, *quad);
+        struct SymbolTable * symb_table ;
+        symb_table = glob_lookup(class_name,$1->symbol.name, glob_table)->LocalSymbolTable;
+        long long int stackOffset = 0;
         for(int  i = 0; i<$1->symbol.type.parameters_size.size(); i++){
             stackOffset -= $1->symbol.type.parameters_size[i];
         }
-        if(stackOffset!=0)
+        stackOffset += getTotalStackOffset(symb_table,stackOffset);
+        if(stackOffset!=0){
             pushCode(E[0]->val, "$rsp = $rsp - " + to_string(stackOffset));
+            val->place = "\%rsp";
+            quad->op.op = Substraction_;
+            quad->op.type = "long";
+            val->status = IS_LITERAL;
+
+            fill_arg(&quad->arg_1, *val);
+            fill_arg(&quad->result, *val);
+            val->status = IS_LITERAL;
+            val->place = to_string(stackOffset);
+            fill_arg(&quad->arg_2,*val);
+
+            pushQuad(E[0]->val, *quad);
+        }
         int controlOffset = 16 + $1->symbol.type.return_size;
         for(int i  = 0; i<$1->symbol.type.parameters.size(); i++){
-            pushCode(E[0]->val, "load " + $1->symbol.type.parameters[i] +" (" + to_string(controlOffset) + ")$rbp " + to_string($1->symbol.type.parameters_size[i]));
+            //pushCode(E[0]->val, "load " + $1->symbol.type.parameters[i] +" (" + to_string(controlOffset) + ")$rbp " + to_string($1->symbol.type.parameters_size[i]));
             controlOffset += $1->symbol.type.parameters_size[i];
         }
 
@@ -954,9 +1050,30 @@ MethodDeclaration:
         E[2] = $2;
         buildTAC(E, 3, APPEND_CODE);
 
-        pushCode(E[0]->val, "$load $rbp (0)$rbp 8 // loading old frame pointer value to rbp");
-        pushCode(E[0]->val, "$rsp = $rbp + 8");
-        pushCode(E[0]->val, "ret");
+        // pushCode(E[0]->val, "movq \%rbp \%rsp");
+
+        // quad->op.op = Movq_;
+        // quad->op.type = "int";
+        
+        // val->place = "\%rbp";
+        // val->status = IS_VARIABLE;
+        // fill_arg(&quad->arg_1, *val);
+        // val->place = "\%rsp";
+        // fill_arg(&quad->result, *val);
+        // quad->arg_2.status = IS_EMPTY;
+
+        // pushQuad(E[0]->val, *quad);
+        
+        
+        // pushCode(E[0]->val, "retq");
+
+        // quad->op.op = Retq_;
+        // quad->result.status = IS_EMPTY;
+        // quad->arg_1.status = IS_EMPTY;
+        // quad->arg_2.status = IS_EMPTY;
+
+        // pushQuad(E[0]->val, *quad);
+
         pushCode(E[0]->val, "end_func");
         struct GlobalSymbol* globEntry =  glob_lookup(class_name, $1->symbol.name, glob_table);
         if(globEntry == NULL){
@@ -964,7 +1081,8 @@ MethodDeclaration:
         }
         globEntry->tac = $$->val;
 
-        view_quadruple($$->val.quad);
+        //view_quadruple($$->val.quad);
+        static_context = 0;
     }
 
 MethodHeader:
@@ -978,10 +1096,29 @@ MethodHeader:
         $$ = makeInternalNode($3->data, memArr, 4, 0);
 
         if($1 != NULL){
+            int static_count = 0;
+            int modifier_count = 0;
             for(int i=0; i< $1->arr.size();i ++)
             {
                 string temp = string($1->arr[i]->data);
-                $$->symbol.type.modifier.push_back(temp);
+                if(temp == "static"){
+                    static_count += 1;
+                    static_context =1;
+                    if(static_count <= 1){
+                        $$->symbol.type.modifier.push_back(temp);
+                    }
+                }
+                else{
+                    modifier_count +=1;
+                    if(modifier_count <= 1){
+                        $$->symbol.type.modifier.push_back(temp);
+                    }
+                }
+                if(modifier_count > 1 || static_count > 1){
+                    semantic_error("Incorrect numbert of modifiers added at line number " + to_string(line_number));
+                    break;
+                }
+                
             }
         }
         $$->symbol.type.return_type = $2->symbol.type.name;
@@ -1019,11 +1156,31 @@ MethodHeader:
         $$ = makeInternalNode($3->data, memArr, 4, 0);
         if($1 != NULL)
         {   
+            int static_count = 0;
+            int modifier_count = 0;
             for(int i=0; i< $1->arr.size();i ++)
             {
                 string temp = string($1->arr[i]->data);
-                $$->symbol.type.modifier.push_back(temp);
-            
+
+
+                if(temp == "static"){
+                    static_count += 1;
+                    static_context = 1;
+                    if(static_count <= 1){
+                        $$->symbol.type.modifier.push_back(temp);
+                    }
+                }
+                else{
+                    modifier_count +=1;
+                    if(modifier_count <= 1){
+                        $$->symbol.type.modifier.push_back(temp);
+                    }
+                }
+                if(modifier_count > 1 || static_count > 1){
+                    semantic_error("Incorrect numbert of modifiers added at line number " + to_string(line_number));
+                    break;
+                }
+                
             }
         }
         $$->symbol.type.return_type = "void";
@@ -1138,6 +1295,7 @@ FormalParameter:
         $$ = makeleaf(concatenate_string($1->data, concatenate_string(" ", $2->data)));
         $$->symbol.size = $1->symbol.size;
         $$->symbol.type.name = $1->symbol.type.name;
+        //cout << $1->symbol.type.name << endl;
         $$->symbol.type.t = $1->symbol.type.t;
         string txt = $2->symbol.name;
         string name = "";
@@ -1188,6 +1346,7 @@ ClassTypeList:
         $$ = makeInternalNode("class", memArr, 2, 0);
     }
 
+
 MethodBody: 
     Block Symbol_Table_Back{
         $$ = $1;
@@ -1219,7 +1378,7 @@ ConstructorDeclaration:
         $$ = makeInternalNode($2->data, memArr, 4, 1);
         $$->isDeclaration = DECLARATION;
         $$->symbol = $2->symbol;
-        //view_symbol($2->symbol);
+
         if($1 != NULL)
         {
             for(int i = 0; i<$1->arr.size(); i++)
@@ -1247,7 +1406,7 @@ ConstructorDeclarator:
         memArr[0] = $4;
         $$ = makeInternalNode($1->data, memArr, 1, 0);
         if(string($1->data) != class_name){
-            semantic_error("Constructor Declaration at line number " + to_string(line_number) +  " is not declared properly." );
+            semantic_error("Constructor Declaration at line number " + to_string(line_number) +  " is not declared properly as no class of name " + $1->data + " delared in the scope."  );
         }
         $$->symbol.name = $1->data;
         struct Symbol * class_scope_entry = loc_lookup(glob_class_scope,class_name);
@@ -1255,15 +1414,16 @@ ConstructorDeclarator:
         {
             $$->symbol.type = class_scope_entry->type;
         }
-        $$->symbol.type.t = 3;
+        $$->symbol.type.t = 2;
 
         if($4 != NULL){
-            for(int i=0; i< $4->symbol.type.parameters.size(); i++)
+            //cout << $4->arr.size() <<endl;
+            for(int i=0; i< $4->arr.size(); i++)
             {
-
-                $$->symbol.type.parameters.push_back($4->symbol.type.parameters[i]);
-                $$->symbol.type.parameters_type.push_back($4->symbol.type.parameters_type[i]);
+                $$->symbol.type.parameters.push_back($4->arr[i]->symbol.name);
+                $$->symbol.type.parameters_type.push_back($4->arr[i]->symbol.type.name);
             }
+            
         
         }
         $$->symbol.line_num = line_number;
@@ -1558,15 +1718,15 @@ LocalVariableDeclaration:
         $$->isDeclaration = DECLARATION;
         for(int j = 0 ; j< $2->arr.size(); j++)
             {   
-                
                 //view_symbol($2->arr[j]->symbol);
-
+                //view_symbol($1->symbol);
                 $$->symbol.type = $1->symbol.type;
                 $$->symbol.name= $2->arr[j]->symbol.name;
-                $$->symbol.size += $1->symbol.size;
+                $$->symbol.size = $1->symbol.size;
                 $$->symbol.source_file = $2->arr[j]->symbol.source_file;
                 $$->symbol.offset = $2->arr[j]->symbol.offset;
                 $$->symbol.type.modifier.clear();
+                //cout << $$->symbol.size << endl;
                 
                 string txt = $2->arr[j]->symbol.name;
                 string name = "";
@@ -1592,7 +1752,7 @@ LocalVariableDeclaration:
                     //view_symbol($2->arr[j]);
                     if($$->symbol.type.name == $2->arr[j]->symbol.type.name){
                         $$->symbol.type = $2->arr[j]->symbol.type;
-                        $$->symbol.size = $2->arr[j]->symbol.size;
+                        //$$->symbol.size = $2->arr[j]->symbol.size;
                         //view_symbol($$->symbol);
                         long long int x = loc_insert(curr,$$->symbol);
                         if(x<0)
@@ -1640,16 +1800,16 @@ Statement:
     | LabeledStatement {
         $$ = $1;
     }
-    | IfThenStatement{
+    | IfThenStatement Symbol_Table_Back{
         $$ = $1;
     }
-    | IfThenElseStatement {
+    | IfThenElseStatement Symbol_Table_Back{
         $$ = $1;
     }
-    | WhileStatement {
+    | WhileStatement Symbol_Table_Back{
         $$ = $1;
     }
-    | ForStatement {
+    | ForStatement Symbol_Table_Back{
         $$ = $1;
     }
 
@@ -1660,13 +1820,13 @@ StatementNoShortIf:
     | LabeledStatementNoShortIf {
         $$ = $1;
     }
-    | IfThenElseStatementNoShortIf {
+    | IfThenElseStatementNoShortIf Symbol_Table_Back{
         $$ = $1;
     }
-    | WhileStatementNoShortIf {
+    | WhileStatementNoShortIf Symbol_Table_Back{
         $$ = $1;
     }
-    | ForStatementNoShortIf {
+    | ForStatementNoShortIf Symbol_Table_Back{
         $$ = $1;
     }
 
@@ -1682,6 +1842,7 @@ StatementWithoutTrailingSubstatement:
     }
     | ExpressionStatement {
         $$ = $1;
+
         // for(int i = 0; i < $$->val.code.size(); i++){
         //     cout <<"line: 1625 "<<$$->val.code[i] << " "<<endl;
         // }
@@ -1741,14 +1902,15 @@ LabeledStatementNoShortIf:
 ExpressionStatement: 
     StatementExpression Semicolon {
         $$ = $1;
-        // for(int i = 0; i < $$->val.code.size(); i++){
-        //     cout <<"line: 1684 "<<$$->val.code[i] << " "<<endl;
-        // }
+        appendCode($$->val, $$->post_fix_val);
+        $$->post_fix_val.code.clear();
+        $$->post_fix_val.quad.clear();
     }
 
 StatementExpression:  
     Assignment {
         $$ = $1;
+        //cout << "Hmmm" << endl;
     }
     | PreIncrementExpression {
         $$ = $1;
@@ -1770,7 +1932,7 @@ StatementExpression:
     }
 
 IfThenStatement: 
-    If Symbol_Table_Change LeftParanthesis Expression RightParanthesis Statement Symbol_Table_Back {
+    If Symbol_Table_Change LeftParanthesis Expression RightParanthesis Statement {
         struct node* memArr[2];
         memArr[0] = $4;
         memArr[1] = $6;
@@ -1783,7 +1945,7 @@ IfThenStatement:
     }
 
 IfThenElseStatement: 
-    If Symbol_Table_Change LeftParanthesis Expression RightParanthesis StatementNoShortIf Else Statement Symbol_Table_Back{
+    If Symbol_Table_Change LeftParanthesis Expression RightParanthesis StatementNoShortIf Else Statement{
         
         struct node* memArr[3];
         memArr[0] = $4;
@@ -1801,7 +1963,7 @@ IfThenElseStatement:
     }
 
 IfThenElseStatementNoShortIf: 
-    If Symbol_Table_Change LeftParanthesis Expression RightParanthesis StatementNoShortIf Else StatementNoShortIf Symbol_Table_Back {
+    If Symbol_Table_Change LeftParanthesis Expression RightParanthesis StatementNoShortIf Else StatementNoShortIf {
         
         struct node* memArr[3];
         memArr[0] = $4;
@@ -1819,7 +1981,7 @@ IfThenElseStatementNoShortIf:
     }
 
 WhileStatement: 
-    While Symbol_Table_Change LeftParanthesis Expression RightParanthesis Statement Symbol_Table_Back {
+    While Symbol_Table_Change LeftParanthesis Expression RightParanthesis Statement {
         
         struct node* memArr[2];
         memArr[0] = $4;
@@ -1835,7 +1997,7 @@ WhileStatement:
     }
 
 WhileStatementNoShortIf: 
-    While Symbol_Table_Change LeftParanthesis Expression RightParanthesis StatementNoShortIf Symbol_Table_Back {
+    While Symbol_Table_Change LeftParanthesis Expression RightParanthesis StatementNoShortIf{
         struct node* memArr[2];
         memArr[0] = $4;
         memArr[1] = $6;
@@ -1849,7 +2011,7 @@ WhileStatementNoShortIf:
     }
 
 ForStatement: 
-    For Symbol_Table_Change LeftParanthesis ForInit_opt Semicolon Expression_opt Semicolon ForUpdate_opt RightParanthesis Statement Symbol_Table_Back{
+    For Symbol_Table_Change LeftParanthesis ForInit_opt Semicolon Expression_opt Semicolon ForUpdate_opt RightParanthesis Statement{
         
         struct node* memArr[4];
         memArr[0] = $4;
@@ -1870,7 +2032,7 @@ ForStatement:
     }
 
 ForStatementNoShortIf: 
-    For Symbol_Table_Change LeftParanthesis ForInit_opt Semicolon Expression_opt Semicolon ForUpdate_opt RightParanthesis StatementNoShortIf Symbol_Table_Back{
+    For Symbol_Table_Change LeftParanthesis ForInit_opt Semicolon Expression_opt Semicolon ForUpdate_opt RightParanthesis StatementNoShortIf{
         
         struct node* memArr[4];
         memArr[0] = $4;
@@ -1972,6 +2134,9 @@ StatementExpressionList:
         E[0] = $$;
         E[1] = $1;
         buildTAC(E, 2, COPY_CODE);
+        appendCode($$->val,$$->post_fix_val);
+        $$->post_fix_val.code.clear();
+        $$->post_fix_val.quad.clear();
     }
     | StatementExpressionList Comma StatementExpression {
         struct node * memArr[2];
@@ -2030,7 +2195,37 @@ ReturnStatement:
                 semantic_error("Function of type void returning value at line number " + to_string(line_number));
             }
             else{
+                struct Quad* quad = new struct Quad;
+                quad->op.op = Movq_;
+                quad->op.type = "int";
+                struct Value * val = new struct Value;
+                val->place = "\%rax";
+                val->status = IS_LITERAL;
+                fill_arg(&quad->result, *val);
+                fill_arg(&quad->arg_1, $2->val);
+                quad->arg_2.status = IS_EMPTY;
+                pushQuad($$->val, *quad);
                 pushCode($$->val, "push " + $2->val.place + " (" + to_string(ret_size) + ")$rbp");
+                
+
+                pushCode($$->val, "popq \%rbp");
+
+                quad->op.op = Popq_;
+                val->place = "\%rbp";
+                fill_arg(&quad->result, *val);
+                quad->arg_1.status = IS_EMPTY;
+                quad->arg_2.status = IS_EMPTY;
+
+                pushQuad($$->val, *quad);
+
+                
+                quad->arg_1.status = IS_EMPTY;
+                quad->arg_2.status = IS_EMPTY;
+                quad->result.status = IS_EMPTY;
+                quad->op.op = Retq_;
+                quad->op.type = "int";
+                pushQuad($$->val, *quad);
+                pushCode($$->val,"retq");
             }
         }
         hasReturned = 1;
@@ -2124,6 +2319,9 @@ PrimaryNoNewArray:
         $$->symbol.type.name = class_name;
         $$->val.place = temp;
         pushCode($$->val,temp + " = poparam");
+        if(static_context == 1){
+            semantic_error("Non-static variable this cannot be referenced from a static context at line number " + to_string(line_number));
+        }
     }
     | LeftParanthesis Expression RightParanthesis  {
         $$ = $2;
@@ -2140,10 +2338,29 @@ PrimaryNoNewArray:
     | ArrayAccess {
         $$ = $1;
         string temp = makeNewTemp(newTempLabel);
+        insert_temp($$->symbol, temp, $$->symbol.type.name);
         newTempLabel++;
         pushCode($$->val,string(temp + " = " + $1->symbol.name + "[" + $1->val.place + "]") );
         // $$->val.place = $1->symbol.name + "[" + $1->val.place + "]";
+
+        struct Value * val = new struct Value;
+        struct Quad * quad = new struct Quad;
+        quad->my_table = curr;
+        quad->op.op = LoadArray_;
+        quad->op.type = $1->symbol.type.name;
+
+        fill_arg(&quad->arg_2, $1->val);
+
         $$->val.place = temp;
+        $$->val.status = IS_VARIABLE;
+
+        fill_arg(&quad->result, $$->val);
+        val->place = $1->symbol.name;
+        val->status = IS_VARIABLE;
+        fill_arg(&quad->arg_1, *val);
+
+        pushQuad($$->val, *quad);
+
     }
 
 ClassInstanceCreationExpression: 
@@ -2154,7 +2371,7 @@ ClassInstanceCreationExpression:
         memArr[2] =$4;
         $$ = makeInternalNode("ClassInstance", memArr, 3, 1);
         $$->isDeclaration = DECLARATION;
-        $$->symbol.name = $2->symbol.name;
+        $$->symbol.type.name = $2->symbol.name;
 
         struct GlobalSymbol * glob_entry = glob_lookup($2->symbol.name,$2->symbol.name,glob_table);
 
@@ -2165,12 +2382,13 @@ ClassInstanceCreationExpression:
         else{
             if($4 == NULL){
                 //cout << glob_entry->type.parameters_type.size() <<endl;
+                view_type(glob_entry->type);
                 if(glob_entry->type.parameters_type.size() != 0){
                     semantic_error("Constructor " + string($2->data) +  " invocation at line number " + to_string(line_number) + " has wrong number of parameters passed.");
                 }
+
             }
             else{
-                //cout << $3->arr.size() <<endl;
                 if($4->arr.size()!= glob_entry->type.parameters_type.size()){
                     semantic_error("Constructor " + string($2->data) +  " invocation at line number " + to_string(line_number) + " has wrong number of parameters passed.");
                 }
@@ -2179,7 +2397,8 @@ ClassInstanceCreationExpression:
                     for (int i = 0; i< $4->arr.size(); i++)
                     {   
                         //view_symbol($3->arr[i]->symbol);
-                        if(glob_entry->type.parameters_type[i] != $4->arr[i]->symbol.type.name)
+
+                        if(!isAssignmentCompatible(glob_entry->type.parameters_type[i], $4->arr[i]->symbol.type.name))
                         {
                             semantic_error("Constructor " + string($2->data) +  " invocation at line number " + to_string(line_number) + " has wrong type of parameter passed at position " + to_string(i+1) + "." );          
                         }
@@ -2202,8 +2421,7 @@ ArgumentList:
         E[0] = $$;
         E[1] = $1;
         buildTAC(E, 2, COPY_CODE);
-        // cout << "Expression argumentlist: \n";
-        // printThreeAC($1->val) ;
+
     }
     | ArgumentList Comma Expression {
         struct node * memArr[2];
@@ -2244,6 +2462,7 @@ ArrayCreationExpression:
         //view_type($$->symbol.type);
 
         // buildVal($$);
+        $$->t = ARRAY_ACCESS;
     }
     | New ClassOrInterfaceType DimExprs Dims_opt {
 
@@ -2368,17 +2587,25 @@ MethodInvocation:
                     }
                     $$->symbol.type.name = glob_entry->type.return_type;
                     $$->symbol.size = glob_entry->type.return_size;
+                    $$->symbol.name = glob_entry->type.name;
                 }
                 
             }
 
+
+
+            if( (static_context== 1) && (is_static(glob_entry->type) == 0)){
+                semantic_error("Calling a non-static function from a static context at line number " + to_string(line_number));
+            }
+            else {
+                struct node * E[2];
+                E[0] = $$;
+                E[1] = $3;
+                genMethodInvocationCode(E, 2);
+            }
         }
 
 
-        struct node * E[2];
-        E[0] = $$;
-        E[1] = $3;
-        genMethodInvocationCode(E, 2);
         // cout << "three ac for method invocation: \n";
         // printThreeAC($3->val);
     } 
@@ -2445,11 +2672,6 @@ ArrayAccess:
             $$->symbol.size = $$->symbol.size/$$->symbol.type.dims[0];
             $$->symbol.type.dims.erase($$->symbol.type.dims.begin());
         }   
-        
-        struct node* E[3];
-        E[0] = $$;
-        E[1] = $1;
-        E[2] = $3;
 
         genArrayAccess($$,$1,$3);
         // buildTAC(E, 3, ARRAY_ACCESS);
@@ -2529,13 +2751,18 @@ PostIncrementExpression:
         struct node * memArr[1];
         memArr[0] = $1;
         $$ = makeInternalNode("++", memArr, 1, 1);
+
         struct node* E[4];
         E[0] = $$;
         E[1] = $1;
-        struct node tempNode = *($1);
+        struct node tempNode = *makeleaf("1");
+        tempNode.symbol.type.name = $1->symbol.type.name;
+        tempNode.symbol.size = $1->symbol.size;
         tempNode.val.place = "1";
+        buildVal(&tempNode, 0);
         E[2] = &tempNode;
         E[3] = makeleaf("+");
+
 
         if(isPrimitiveType($1->symbol.type.name) && $1->symbol.type.name != "boolean")
         {
@@ -2544,9 +2771,34 @@ PostIncrementExpression:
         else{
             semantic_error("Bad operand types ["  + $1->symbol.type.name + "] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
         }
+        if($1->val.status == IS_VARIABLE){
+            buildTAC(E,4,BINARY_CODE);
+            pushCode($$->post_fix_val, E[0]->val.code.back());
+            E[0]->val.code.pop_back();
+            pushQuad($$->post_fix_val, E[0]->val.quad.back());
+            E[0]->val.quad.pop_back();
 
-        buildTAC(E,4,BINARY_CODE);
-        pushCode($$->val, string($1->data) + " = " + $$->val.place);
+            pushCode($$->post_fix_val, string($1->data) + " = " + $$->val.place);
+            
+
+
+            struct Quad* quad = new struct Quad;
+            quad->op.op = Empty_;
+            quad->op.type = $1->symbol.type.name;
+            quad->my_table = curr;
+            fill_arg(&quad->arg_1,$$->val);
+            fill_arg(&quad->result,$1->val);
+            quad->arg_2.status = IS_EMPTY;
+            pushQuad($$->post_fix_val, *quad);
+
+            $$->post_fix_val.place = $1->val.place;
+            $$->val.place = $1->val.place;
+        }
+        //cout <<  $$->post_fix_val.code.size() <<endl;
+        else{
+            semantic_error("Unexpected type for post-increment at line number "+ to_string(line_number) + " .");
+        }
+        
     } 
 
 PostDecrementExpression: 
@@ -2557,8 +2809,11 @@ PostDecrementExpression:
         struct node* E[4];
         E[0] = $$;
         E[1] = $1;
-        struct node tempNode = *($1);
+        struct node tempNode = *makeleaf("1");
+        tempNode.symbol.type.name = $1->symbol.type.name;
+        tempNode.symbol.size = $1->symbol.size;
         tempNode.val.place = "1";
+        buildVal(&tempNode, 0);
         E[2] = &tempNode;
         E[3] = makeleaf("-");
 
@@ -2570,9 +2825,33 @@ PostDecrementExpression:
             semantic_error("Bad operand types ["  + $1->symbol.type.name + "] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
         }
 
+        if($1->val.status == IS_VARIABLE)
+        {
         buildTAC(E,4,BINARY_CODE);
-        pushCode($$->val, string($1->data) + " = " + $$->val.place);
 
+
+        pushCode($$->post_fix_val, E[0]->val.code.back());
+        E[0]->val.code.pop_back();
+        pushQuad($$->post_fix_val, E[0]->val.quad.back());
+        E[0]->val.quad.pop_back();
+
+        pushCode($$->post_fix_val, string($1->data) + " = " + $$->val.place);
+
+        struct Quad* quad = new struct Quad;
+        quad->op.op = Empty_;
+        quad->op.type = $1->symbol.type.name;
+        quad->my_table = curr;
+        fill_arg(&quad->arg_1,$$->val);
+        fill_arg(&quad->result,$1->val);
+        quad->arg_2.status = IS_EMPTY;
+        pushQuad($$->post_fix_val, *quad);
+
+        $$->post_fix_val.place = $1->val.place;
+        $$->val.place = $1->val.place;
+        }
+    else{
+            semantic_error("Unexpected type for post-decrement at line number "+ to_string(line_number) + " .");
+        }
     } 
 
 UnaryExpression:
@@ -2634,8 +2913,11 @@ PreIncrementExpression:
         struct node* E[4];
         E[0] = $$;
         E[1] = $2;
-        struct node tempNode = *($2);
+        struct node tempNode = *makeleaf("1");
+        tempNode.symbol.type.name = $2->symbol.type.name;
+        tempNode.symbol.size = $2->symbol.size;
         tempNode.val.place = "1";
+        buildVal(&tempNode, 0);
         E[2] = &tempNode;
         E[3] = makeleaf("+");
 
@@ -2646,9 +2928,25 @@ PreIncrementExpression:
         else{
             semantic_error("Bad operand types ["  + $2->symbol.type.name + "] for operator " + string($1) + " at line number " +  to_string(line_number) + ".");
         }
-        buildTAC(E,4,BINARY_CODE);
-        pushCode($$->val, string($2->data) + " = " + $$->val.place);
 
+        if($2->val.status == IS_VARIABLE){
+            buildTAC(E,4,BINARY_CODE);
+            
+            pushCode($$->val, string($2->data) + " = " + $$->val.place);
+            
+            struct Quad* quad = new struct Quad;
+            quad->op.op = Empty_;
+            quad->op.type = $2->symbol.type.name;
+            quad->my_table = curr;
+            fill_arg(&quad->arg_1,$$->val);
+            fill_arg(&quad->result,$2->val);
+            quad->arg_2.status = IS_EMPTY;
+            pushQuad($$->val, *quad);
+            $$->val.place = $2->val.place;
+        }
+        else{
+            semantic_error("Unexpected type for pre-increment at line number "+ to_string(line_number) + " .");
+        }
     } 
 
 PreDecrementExpression: 
@@ -2660,8 +2958,11 @@ PreDecrementExpression:
         struct node* E[4];
         E[0] = $$;
         E[1] = $2;
-        struct node tempNode = *($2);
+        struct node tempNode = *makeleaf("1");
+        tempNode.symbol.type.name = $2->symbol.type.name;
+        tempNode.symbol.size = $2->symbol.size;
         tempNode.val.place = "1";
+        buildVal(&tempNode, 0);
         E[2] = &tempNode;
         E[3] = makeleaf("-");
 
@@ -2672,10 +2973,26 @@ PreDecrementExpression:
         else{
             semantic_error("Bad operand types ["  + $2->symbol.type.name + "] for operator " + string($1) + " at line number " +  to_string(line_number) + ".");
         }
+        if($2->val.status == IS_VARIABLE){
+            buildTAC(E,4,BINARY_CODE);
+            
+            pushCode($$->val, string($2->data) + " = " + $$->val.place);
+            
+            
+            struct Quad* quad = new struct Quad;
+            quad->op.op = Empty_;
+            quad->op.type = $2->symbol.type.name;
+            quad->my_table = curr;
+            fill_arg(&quad->arg_1,$$->val);
+            fill_arg(&quad->result,$2->val);
+            quad->arg_2.status = IS_EMPTY;
+            pushQuad($$->val, *quad);
 
-        buildTAC(E,4,BINARY_CODE);
-        pushCode($$->val, string($2->data) + " = " + $$->val.place);
-
+            $$->val.place = $2->val.place;
+        }
+        else{
+            semantic_error("Unexpected type for pre-decrement at line number "+ to_string(line_number) + " .");
+        }
     } 
 
 UnaryExpressionNotPlusMinus: 
@@ -2905,6 +3222,7 @@ AdditiveExpression:
         }
 
         buildTAC(E,4,BINARY_CODE);
+
     }
 
 ShiftExpression: 
@@ -2934,8 +3252,8 @@ ShiftExpression:
             semantic_error("Bad operand types ["  + $1->symbol.type.name + ", " + $3->symbol.type.name  +"] for operator " + string($2) + " at line number " +  to_string(line_number) + ".");
         }
 
-
         buildTAC(E,4,BINARY_CODE);
+
     }
     | ShiftExpression RightShift AdditiveExpression {
         struct node* memArr[2];
@@ -2957,6 +3275,7 @@ ShiftExpression:
         }
 
         buildTAC(E,4,BINARY_CODE);
+        
     }
     | ShiftExpression TripleGreaterThan AdditiveExpression {
         struct node* memArr[2];
@@ -3380,11 +3699,33 @@ Assignment:
     if(isAssignmentCompatible($1->symbol.type.name, $3->symbol.type.name) == 0){
             semantic_error("Possible lossy conversion from "  + $3->symbol.type.name + " to " + $1->symbol.type.name +" at line number " +  to_string(line_number) + ".");
     }
-    struct node* E[2];
-    E[0] = $1;
-    E[1] = $3;
-    buildTAC(E, 2, ASSIGN_CODE);
-    $$ = $1;
+    if($1->t != ARRAY_ACCESS){
+        struct node* E[2];
+        E[0] = $1;
+        E[1] = $3;
+        buildTAC(E, 2, ASSIGN_CODE);
+        $$ = $1;
+    }
+    else{
+        struct Quad * quad = new struct Quad;
+        struct Value * val = new struct Value;
+
+        fill_arg(&quad->arg_1, $1->val);
+        val->place = $1->symbol.name;
+        val->status = IS_VARIABLE;
+        fill_arg(&quad->result, *val);
+        fill_arg(&quad->arg_2, $3->val);
+
+        quad->my_table = curr;
+        quad->op.op = ArrayAccess_;
+        quad->op.type = $$->symbol.type.name;
+        appendCode($$->val, $1->val);
+        appendCode($$->val, $3->val);
+        pushQuad($$->val, *quad);
+        pushCode($$->val, $1->symbol.name + "[" + $1->val.place + "]" + " = " + $3->val.place);
+        appendCode($$->val, $1->post_fix_val);
+        appendCode($$->val, $3->post_fix_val);
+    }
 
     
 
@@ -3406,6 +3747,7 @@ LeftHandSide:
     }
     | ArrayAccess {
         $$ = $1;
+        $$->t = ARRAY_ACCESS;
         struct Symbol * lookup_entry = check_scope(curr , string($1->symbol.name));
         if(lookup_entry == NULL){
             semantic_error("The identifier " + string($1->symbol.name) + " at line number " + to_string(line_number) +  " has not been declared in the scope." );
@@ -3414,8 +3756,24 @@ LeftHandSide:
             //cout << "The identifier "  <<  $1->symbol.name <<" at line number " << line_number << " has been declared at line number "<< lookup_entry->line_num << endl <<endl;
             //$$->symbol.type = lookup_entry->type;
         }
-        $$->symbol.type.name = $1->symbol.type.name;
-        $$->val.place = $1->symbol.name + "[" + $1->val.place + "]";
+        //appendCode($$->val)
+        $$->symbol.type.name = $1->symbol.type.name;        
+        $$->symbol.name = $1->symbol.name;
+        //$$->val.place = $1->symbol.name + "[" + $1->val.place + "]";
+        $$->val.place = $1->val.place;
+
+
+        // struct Quad * quad = new struct Quad;
+        // struct Value * val = new struct Value;
+
+        // val->status = IS_VARIABLE;
+        // val->place = $1->symbol.name;
+        // quad->my_table = curr;
+
+        // fill_arg(&quad->result, *val);
+        // fill_arg(&quad->arg_1, $1->val);
+        // fill_arg(&quad->arg_2, )
+
         //cout << $$->symbol.type.name <<endl;
     }
 
@@ -3481,6 +3839,7 @@ int yyerror(string s)
 {
     cout << s << " at [ line number: " << line_number << " ] \nExiting...\n";
     err = 1;
+    return 1;
     //exit(1);
 }
 
@@ -3488,6 +3847,7 @@ int semantic_error(string s)
 {
     cout << s <<endl <<endl;
     err = 1;
+    return 1;
     //exit(1);
 }
 
@@ -3526,20 +3886,33 @@ int main(int argc , char** argv)
     // }
     
     //view_symbol_table_with_children_hierarchy(glob_class_scope);
-    // viewGlobal(glob_table);
+    //viewGlobal(glob_table);
     //viewGlobalTac(glob_table);
+    // view_symbol_table_with_children_hierarchy(glob_class_scope);
+
+
     FILE* graph = fopen(output_file,"w");
     if(err == 0){
-        freopen(output_file,"w", stdout);
+        //freopen(output_file,"w", stdout);
         cout <<"//// The 3AC is the following : ";
         // ofseam cout(output_file);
         generateTac(graph, glob_table);
     }
     else{
-        freopen(output_file,"w", stdout);
+        //freopen(output_file,"w", stdout);
         cout <<"//// There are errors in the code and thus 3AC generation failed";
         // ofseam cout(output_file);
     }
+    char * assembly_file = NULL;
+    assembly_file = "output/a.s";
+
+    if(err ==0){
+        //freopen(assembly_file,"w",stdout);
+        cout << "Beginning Code Generation" <<endl;
+        if(glob_table != NULL);
+        generateAssembly(glob_table);
+    }
+
     // fprintf(graph, "digraph AST{ \n");
     // if(err == 0){
     //     generateGraph(root, graph);

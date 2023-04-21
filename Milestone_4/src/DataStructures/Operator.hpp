@@ -42,7 +42,24 @@ enum Op {
     RightShiftEqualTo_,
     TripleGreaterThanEqualTo_,
     GreaterThan_,
-    LessThan_
+    LessThan_,
+    Compare_and_Jne_,
+    Compare_and_Je_,
+    Jne_,
+    Jmp_,
+    Label_,
+    ArrayAccess_,
+    LoadArray_,
+    Pushq_,
+    Movq_,
+    Popq_,
+    Push_,
+    Mov_,
+    Pop_,
+    Retq_,
+    Addq_,
+    Subq_,
+    Callq_,
 };
 struct Operator {
     Op op;

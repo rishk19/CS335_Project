@@ -11,20 +11,30 @@ test:
 	clear
 	@read -p "Enter Serial Number of Test Case : " IMAGE;\
 	./$(BIN_DIR)/parser --input= ./$(TEST_DIR)/test_$${IMAGE}.java --output = ./$(OUTPUT_DIR)/test_$${IMAGE}.3ac ;\
-	# dot -Tpdf ./$(OUTPUT_DIR)/test_$${IMAGE}.dot -o ./$(OUTPUT_DIR)/test_$${IMAGE}.pdf ;\
+	#dot -Tpdf ./$(OUTPUT_DIR)/test_$${IMAGE}.dot -o ./$(OUTPUT_DIR)/test_$${IMAGE}.pdf ;\
 
 clean:
-	rm -r $(BIN_DIR)
-	rm -r $(OUTPUT_DIR)
 	clear
+ifneq (,$(wildcard $(BIN_DIR)))
+	rm -r $(BIN_DIR)
+endif
+ifneq (,$(wildcard $(OUTPUT_DIR)))
+	rm -r $(OUTPUT_DIR)
+endif
+	clear
+
 
 parse:
 	clear
+ifeq (,$(wildcard $(BIN_DIR)))
 	mkdir $(BIN_DIR)
+endif
 	flex -o $(BIN_DIR)/lex.yy.c $(SRC_DIR)/tokenizer.l 
 	bison -d -t -o $(BIN_DIR)/parser.tab.cc $(SRC_DIR)/parser.y 
 	make parser
+ifeq (,$(wildcard $(OUTPUT_DIR)))
 	mkdir $(OUTPUT_DIR)
+endif
 	clear
 
 change:
@@ -47,6 +57,7 @@ parser: \
 	Quadruple.o \
 	Argument.o \
 	Operator.o \
+	Assembly.o\
 	Main.o 
 
 	$(CC) \
@@ -63,6 +74,7 @@ parser: \
 	$(BIN_DIR)/Quadruple.o \
 	$(BIN_DIR)/Argument.o \
 	$(BIN_DIR)/Operator.o \
+	$(BIN_DIR)/Assembly.o \
 	-o $(BIN_DIR)/parser
 
 Type.o: $(SRC_DIR)/DataStructures/Type.cpp $(SRC_DIR)/DataStructures/Type.hpp $(SRC_DIR)/Includes.hpp
@@ -104,7 +116,13 @@ Argument.o : $(SRC_DIR)/DataStructures/Argument.cpp $(SRC_DIR)/Includes.hpp
 Operator.o : $(SRC_DIR)/DataStructures/Operator.cpp $(SRC_DIR)/Includes.hpp
 	$(CC) -c $(SRC_DIR)/DataStructures/Operator.cpp -o $(BIN_DIR)/Operator.o
 
-all: clean parse
+Assembly.o : $(SRC_DIR)/CodeGeneration/Assembly.cpp $(SRC_DIR)/Includes.hpp
+	$(CC) -c $(SRC_DIR)/CodeGeneration/Assembly.cpp -o $(BIN_DIR)/Assembly.o
+
+all: 
+	make clean
+	make parse
+	clear
 
 
 list: $(TEST_DIR)/*
