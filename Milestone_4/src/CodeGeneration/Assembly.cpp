@@ -219,9 +219,36 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         assembly_template.push_back(store_inst(quad->arg_1, rax, quad->my_table));
         assembly_template.push_back(store_inst(quad->result, rax, quad->my_table));
     case Empty_:
-        //cout << "Empty" <<endl;
+        assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
+        assembly_template.push_back(store_inst(quad->result, r12, quad->my_table));
         break;
-
+    case Pushq_:
+        assembly_template.push_back(pp_inst(quad->result, "pushq", quad->my_table));
+        break;
+    case Movq_:
+        assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
+        assembly_template.push_back(store_inst(quad->result, r12, quad->my_table));
+        break;
+    case Popq_:
+        assembly_template.push_back(pp_inst(quad->result, "popq", quad->my_table));
+        break;
+    case Jmp_:
+        assembly_template.push_back(jump_inst("jmp",quad->result.label));
+        break;
+    case Jne_:
+        assembly_template.push_back(jump_inst("jne",quad->result.label));
+        break;
+    case Compare_and_Je_:
+        assembly_template.push_back(cmpq_inst(quad->arg_1,quad->arg_2.literal,quad->my_table));
+        assembly_template.push_back(jump_inst("je",quad->result.label));
+        break;
+    case Compare_and_Jne_:
+        assembly_template.push_back(cmpq_inst(quad->arg_1,quad->arg_2.literal,quad->my_table));
+        assembly_template.push_back(jump_inst("jne",quad->result.label));
+        break;
+    case Retq_:
+        assembly_template.push_back("\tretq");
+        break;
     case Label_:
         assembly_template.push_back("." + quad->result.label + ":");
         break;
@@ -365,6 +392,24 @@ string sarq_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
     else if(arg.status== IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
         assembly += to_string(symb->offset)+"(\%rbp) ";
+    }
+    return assembly;
+}
+
+string pp_inst(struct Argument arg, string pp_type, struct SymbolTable* my_table){
+    string assembly = "\t"+pp_type+" ";
+    if(arg.status == IS_LITERAL && pp_type == "pushq"){
+        assembly+="$"+arg.literal;
+    }
+    else if(arg.status == IS_VARIABLE && pp_type == "pushq"){
+        struct Symbol * symb = check_scope(my_table, arg.literal);
+        assembly += to_string(symb->offset)+"(\%rbp) ";
+    }
+    else if(arg.status == IS_REGISTER){
+        assembly+=arg.literal;
+    }
+    else{
+        return "\nError in push/pop instruction\n";
     }
     return assembly;
 }
