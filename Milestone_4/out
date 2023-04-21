@@ -10,27 +10,17 @@ __uminus_bminus__printInt:
     %t4 = #1 > #0
     cmp %t4 #0
     jne L5
-    movq #1000000000000000 %rax
-    popq %rbp
-    retq
     jmp L6
 L5:
-    movq #5 %rax
-    popq %rbp
-    retq
 L6:
     jmp L8
 L7:
     %t2 = #1  
     %t3 = n + %t2
     n = %t3  
-    movq #4 %rax
     popq %rbp
     retq
 L8:
-    movq n %rax
-    popq %rbp
-    retq
 
 
 __uminus_bminus__main:
@@ -44,4 +34,6 @@ __uminus_bminus__main:
     x = %t9  
     %t10 = #1 ! 
     f = %t10  
+    popq %rbp
+    retq
 

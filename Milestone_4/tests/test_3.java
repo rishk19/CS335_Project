@@ -1,20 +1,17 @@
 class uminus_bminus{
-    int printInt(int n){ 
+    void printInt(int n){ 
         //int x = 3;
         
         if(n == 1)
             {
                 n = n+1;
-
-                return 4;
+                return;
             }
         else if(1 > 0){
-            return 5;
         }
         else{
-            return 1000000000000000;
         }
-        return n;
+        
     }
 
     public static void main(int k){
@@ -28,5 +25,6 @@ class uminus_bminus{
         //printInt(i-1);
         boolean f = !true;
         //printInt(i-10);
+        return;
     }
 }
