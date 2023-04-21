@@ -264,10 +264,22 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         assembly_template.push_back("\tcall putchar");
         break;
     case Printchar_:
-
+        assembly_template.push_back(load_inst(quad->result,rax, quad->my_table));
+        assembly_template.push_back(gen_new_inst("movq", rax, rsi));
+        assembly_template.push_back("\tmovl \$.LC_CHAR ,\%edi");
+        assembly_template.push_back("\tmovl \$0 ,\%eax");
+        assembly_template.push_back("\tcall printf");
+        assembly_template.push_back("\tmovl \$10 ,\%edi");
+        assembly_template.push_back("\tcall putchar");
         break;
     case Printlong_:
-
+        assembly_template.push_back(load_inst(quad->result,rax, quad->my_table));
+        assembly_template.push_back(gen_new_inst("movq", rax, rsi));
+        assembly_template.push_back("\tmovl \$.LC_LONG ,\%edi");
+        assembly_template.push_back("\tmovl \$0 ,\%eax");
+        assembly_template.push_back("\tcall printf");
+        assembly_template.push_back("\tmovl \$10 ,\%edi");
+        assembly_template.push_back("\tcall putchar");
         break;
     default:
         //cout << "Default" <<endl;
