@@ -18,11 +18,13 @@ class uminus_bminus{
     }
 
     public static void main(){
-        int k;
+        int k=10;
         boolean a = true;
         boolean b = true;
         boolean c = false;
         c = a&&true;
+        //int arr[][];
+        System.out.println(k);
         // int i;
         // k = 5;
         // // printInt(--i);

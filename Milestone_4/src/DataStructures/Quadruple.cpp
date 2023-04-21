@@ -136,6 +136,15 @@ string view_quad(struct Quad* qd){
     else if(qd->op.op == Callq_){
         ans = "    callq " + res;
     }
+    else if(qd->op.op == Printint_){
+        ans = "    printint(" + res + ")";
+    }
+    else if(qd->op.op == Printchar_){
+        ans = "    printchar(" + res + ")";
+    }
+    else if(qd->op.op == Printlong_){
+        ans = "    printlong(" + res + ")";
+    }
     else{
     }
     return ans;

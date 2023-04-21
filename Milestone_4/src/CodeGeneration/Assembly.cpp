@@ -18,6 +18,7 @@ vector<string> quad_to_assembly(struct Quad* quad ){
     string edx = "\%edx";
     string ecx = "\%ecx";
     string cl = "\%cl";
+    string rsi = "\%rsi";
 
     switch (quad->op.op)
     {
@@ -253,6 +254,21 @@ vector<string> quad_to_assembly(struct Quad* quad ){
     case Label_:
         assembly_template.push_back("." + quad->result.label + ":");
         break;
+    case Printint_:
+        assembly_template.push_back(load_inst(quad->result,rax, quad->my_table));
+        assembly_template.push_back(gen_new_inst("movq", rax, rsi));
+        assembly_template.push_back("\tmovl \$.LC_INT ,\$edi");
+        assembly_template.push_back("\tmovl \$0 ,\%eax");
+        assembly_template.push_back("\tcall printf");
+        assembly_template.push_back("\tmovl \$10 .\%edi");
+        assembly_template.push_back("\tcall putchar");
+        break;
+    case Printchar_:
+
+        break;
+    case Printlong_:
+
+        break;
     default:
         //cout << "Default" <<endl;
         break;
@@ -425,6 +441,14 @@ void generateAssembly(struct GlobalSymbolTable * glob_table)
     struct GlobalSymbol glob_entry;
     cout << "\t.file\t \"main.c\"" <<endl;
     cout << "\t.text" <<endl;
+    cout << "\t.section\t.rodata" <<endl;
+    cout << ".LC_CHAR:" <<endl;
+    cout << "\t .string \"\%c\"" <<endl;
+    cout << ".LC_INT:" <<endl;
+    cout << "\t .string \"\%d\"" <<endl;
+    cout << ".LC_LONG:" <<endl;
+    cout << "\t .string \"\%ld\"" <<endl;
+    cout << "\t.text" <<endl <<endl;
     for (int i = 0; i< glob_table->entries.size(); i++)
     {   
         struct Quad quad;
@@ -454,10 +478,10 @@ void generateAssembly(struct GlobalSymbolTable * glob_table)
             }
         }
         if(func_name == "main"){
-            cout << "\t.size\t" << func_name + ", .-" + func_name <<endl;
+            cout << "\t.size\t" << func_name + ", .-" + func_name <<endl <<endl;
         }
         else{
-            cout << "\t.size\t" << "__" + class_name + "__"  + func_name + ", .-" + "__" + class_name + "__"  + func_name <<endl;
+            cout << "\t.size\t" << "__" + class_name + "__"  + func_name + ", .-" + "__" + class_name + "__"  + func_name <<endl <<endl;
         }
     }
     cout << ".end" <<endl;

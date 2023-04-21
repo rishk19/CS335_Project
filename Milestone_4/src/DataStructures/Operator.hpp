@@ -60,6 +60,9 @@ enum Op {
     Addq_,
     Subq_,
     Callq_,
+    Printint_,
+    Printchar_,
+    Printlong_
 };
 struct Operator {
     Op op;

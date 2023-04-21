@@ -2604,48 +2604,82 @@ MethodInvocation:
         $$ = makeInternalNode($1->data, memArr, 1, 1);
 
         // Checking If function has been define
+        if(string($1->data) == "System.out.println"){
+            if($3 != NULL){
+                for(int i = 0; i< $3->arr.size(); i++)
+                {
+                    struct Quad * quad = new struct Quad;
+                    quad->my_table = curr;
 
-        struct GlobalSymbol * glob_entry = glob_lookup(class_name, $1->data, glob_table);
-        if(glob_entry ==  NULL){
-            // Function not defined before 
-            semantic_error("Function " + string($1->data) + " at line number " + to_string(line_number) + " not declared." );
+                    if(isIntegralType($3->arr[i]->symbol.type.name) != 1){
+                        semantic_error("System.out.println is not supported for type " + $3->arr[i]->symbol.type.name + " at line number " + to_string(line_number));
+                    }
+                    else{
+                        if($3->arr[i]->symbol.type.name == "int"|| $3->arr[i]->symbol.type.name == "boolean" || $3->arr[i]->symbol.type.name == "byte" || $3->arr[i]->symbol.type.name == "short")
+                        {
+                            quad->op.op = Printint_;
+                            quad->op.type = "int";
+                        }
+                        else if($3->arr[i]->symbol.type.name == "char")
+                        {
+                            quad->op.op = Printchar_;
+                            quad->op.type = "int";
+                        }
+                        else{
+                            quad->op.op = Printlong_;
+                            quad->op.type = "int";
+                        }
+                        fill_arg(&quad->result, $3->arr[i]->val);
+                        quad->arg_1.status = IS_EMPTY;
+                        quad->arg_2.status = IS_EMPTY;
+                        pushQuad($$->val,*quad);
+                    }
+                }
+            }
         }
         else{
-            // Checking if Arguments are filled in properly
-            if($3 == NULL){
-                if(glob_entry->type.parameters_type.size() != 0){
-                    semantic_error("Function " + string($1->data) +  " invocation at line number " + to_string(line_number) + " has wrong number of parameters passed.");
-                }
+            struct GlobalSymbol * glob_entry = glob_lookup(class_name, $1->data, glob_table);
+            if(glob_entry ==  NULL){
+                // Function not defined before 
+                semantic_error("Function " + string($1->data) + " at line number " + to_string(line_number) + " not declared." );
             }
             else{
-                if($3->arr.size()!= glob_entry->type.parameters_type.size()){
-                    semantic_error("Function " + string($1->data) +  " invocation at line number " + to_string(line_number) + " has wrong number of parameters passed.");
+                // Checking if Arguments are filled in properly
+                if($3 == NULL){
+                    if(glob_entry->type.parameters_type.size() != 0){
+                        semantic_error("Function " + string($1->data) +  " invocation at line number " + to_string(line_number) + " has wrong number of parameters passed.");
+                    }
                 }
                 else{
-                    for (int i = 0; i< $3->arr.size(); i++)
-                    {   
-                        if(!isAssignmentCompatible(glob_entry->type.parameters_type[i],$3->arr[i]->symbol.type.name))
-                        {
-                            semantic_error("Function " + string($1->data) +  " invocation at line number " + to_string(line_number) + " has wrong type of parameter passed at position " + to_string(i+1) + "." );          
-                        }
+                    if($3->arr.size()!= glob_entry->type.parameters_type.size()){
+                        semantic_error("Function " + string($1->data) +  " invocation at line number " + to_string(line_number) + " has wrong number of parameters passed.");
                     }
-                    $$->symbol.type.name = glob_entry->type.return_type;
-                    $$->symbol.size = glob_entry->type.return_size;
-                    $$->symbol.name = glob_entry->type.name;
+                    else{
+                        for (int i = 0; i< $3->arr.size(); i++)
+                        {   
+                            if(!isAssignmentCompatible(glob_entry->type.parameters_type[i],$3->arr[i]->symbol.type.name))
+                            {
+                                semantic_error("Function " + string($1->data) +  " invocation at line number " + to_string(line_number) + " has wrong type of parameter passed at position " + to_string(i+1) + "." );          
+                            }
+                        }
+                        $$->symbol.type.name = glob_entry->type.return_type;
+                        $$->symbol.size = glob_entry->type.return_size;
+                        $$->symbol.name = glob_entry->type.name;
+                    }
+                    
                 }
-                
-            }
 
 
 
-            if( (static_context== 1) && (is_static(glob_entry->type) == 0)){
-                semantic_error("Calling a non-static function from a static context at line number " + to_string(line_number));
-            }
-            else {
-                struct node * E[2];
-                E[0] = $$;
-                E[1] = $3;
-                genMethodInvocationCode(E, 2);
+                if( (static_context== 1) && (is_static(glob_entry->type) == 0)){
+                    semantic_error("Calling a non-static function from a static context at line number " + to_string(line_number));
+                }
+                else {
+                    struct node * E[2];
+                    E[0] = $$;
+                    E[1] = $3;
+                    genMethodInvocationCode(E, 2);
+                }
             }
         }
 
@@ -3938,7 +3972,7 @@ int main(int argc , char** argv)
     FILE* graph = fopen(output_file,"w");
     if(err == 0){
         freopen(output_file,"w", stdout);
-        cout <<"//// The 3AC is the following : ";
+        //cout <<"//// The 3AC is the following : ";
         // ofseam cout(output_file);
         generateTac(graph, glob_table);
     }
