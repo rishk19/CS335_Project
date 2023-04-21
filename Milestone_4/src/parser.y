@@ -990,7 +990,8 @@ MethodDeclaration:
         pushCode(E[0]->val,"begin_func");
         pushCode(E[0]->val,"pushq \%rbp");
 
-        val->status = IS_LITERAL;
+        val->status = IS_REGISTER;
+
         val->place = "\%rbp";
 
         quad->my_table = curr;
@@ -1009,9 +1010,10 @@ MethodDeclaration:
 
         quad->op.op = Movq_;
         quad->op.type = "int";
-
+        val->status = IS_REGISTER;
         val->place = "\%rsp";
         fill_arg(&quad->arg_1,*val);
+        val->status = IS_REGISTER;
         val->place = "\%rbp";
         fill_arg(&quad->result, *val);
         quad->arg_2.status = IS_EMPTY;
@@ -1026,10 +1028,10 @@ MethodDeclaration:
         stackOffset += getTotalStackOffset(symb_table,stackOffset);
         if(stackOffset!=0){
             pushCode(E[0]->val, "$rsp = $rsp - " + to_string(stackOffset));
+            val->status = IS_REGISTER;
             val->place = "\%rsp";
             quad->op.op = Substraction_;
             quad->op.type = "long";
-            val->status = IS_LITERAL;
 
             fill_arg(&quad->arg_1, *val);
             fill_arg(&quad->result, *val);
@@ -2200,7 +2202,7 @@ ReturnStatement:
                 quad->op.type = "int";
                 struct Value * val = new struct Value;
                 val->place = "\%rax";
-                val->status = IS_LITERAL;
+                val->status = IS_REGISTER;
                 fill_arg(&quad->result, *val);
                 fill_arg(&quad->arg_1, $2->val);
                 quad->arg_2.status = IS_EMPTY;
@@ -2211,6 +2213,8 @@ ReturnStatement:
                 pushCode($$->val, "popq \%rbp");
 
                 quad->op.op = Popq_;
+                val->status = IS_REGISTER;
+
                 val->place = "\%rbp";
                 fill_arg(&quad->result, *val);
                 quad->arg_1.status = IS_EMPTY;

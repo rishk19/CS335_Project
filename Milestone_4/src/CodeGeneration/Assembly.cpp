@@ -230,18 +230,21 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         break;
 
     }
-    cout << "Hello";
+    // cout << "Hello";
     return assembly_template;
 }
 string load_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 {
     string assembly = "movq ";
-    if(arg.status= IS_LITERAL){
+    if(arg.status == IS_LITERAL){
         assembly += "$" + arg.literal;
     }
-    else if(arg.status= IS_VARIABLE){
+    else if(arg.status == IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
         assembly += to_string(symb->offset)+"(\%rbp)";
+    }
+    else if(arg.status == IS_REGISTER){
+        assembly+=arg.literal;
     }
     assembly += " " + reg;
     return assembly;
@@ -250,12 +253,15 @@ string load_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 string store_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 {
     string assembly = "movq " + reg + " ";
-    if(arg.status= IS_LITERAL){
+    if(arg.status== IS_LITERAL){
         assembly += "$" + arg.literal;
     }
-    else if(arg.status= IS_VARIABLE){
+    else if(arg.status== IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
         assembly += to_string(symb->offset)+"(\%rbp)";
+    }
+    else if(arg.status == IS_REGISTER){
+        assembly+=arg.literal;
     }
     return assembly;
 }
@@ -266,9 +272,12 @@ string division_inst(struct Argument arg, struct SymbolTable *my_table){
     if(arg.status= IS_LITERAL){
         assembly += "$" + arg.literal;
     }
-    else if(arg.status= IS_VARIABLE){
+    else if(arg.status== IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
         assembly += to_string(symb->offset)+"(\%rbp)";
+    }
+    else if(arg.status == IS_REGISTER){
+        assembly+=arg.literal;
     }
     return assembly;
 }
@@ -298,10 +307,10 @@ string gen_new_inst(string inst, string reg_1, string reg_2){
 string and_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 {
     string assembly = "andq ";
-    if(arg.status= IS_LITERAL){
+    if(arg.status== IS_LITERAL){
         assembly += "$" + arg.literal;
     }
-    else if(arg.status= IS_VARIABLE){
+    else if(arg.status== IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
         assembly += to_string(symb->offset)+"(\%rbp) ";
     }
@@ -311,10 +320,10 @@ string and_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 string or_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 {
     string assembly = "orq ";
-    if(arg.status= IS_LITERAL){
+    if(arg.status== IS_LITERAL){
         assembly += "$" + arg.literal;
     }
-    else if(arg.status= IS_VARIABLE){
+    else if(arg.status== IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
         assembly += to_string(symb->offset)+"(\%rbp) ";
     }
@@ -324,10 +333,10 @@ string or_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 string xor_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 {
     string assembly = "xorq ";
-    if(arg.status= IS_LITERAL){
+    if(arg.status== IS_LITERAL){
         assembly += "$" + arg.literal;
     }
-    else if(arg.status= IS_VARIABLE){
+    else if(arg.status == IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
         assembly += to_string(symb->offset)+"(\%rbp) ";
     }
@@ -338,10 +347,10 @@ string xor_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 string salq_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 {
     string assembly = "salq "+reg;
-    if(arg.status= IS_LITERAL){
+    if(arg.status== IS_LITERAL){
         assembly += "$" + arg.literal;
     }
-    else if(arg.status= IS_VARIABLE){
+    else if(arg.status== IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
         assembly += to_string(symb->offset)+"(\%rbp) ";
     }
@@ -350,10 +359,10 @@ string salq_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 string sarq_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 {
     string assembly = "salq "+reg;
-    if(arg.status= IS_LITERAL){
+    if(arg.status== IS_LITERAL){
         assembly += "$" + arg.literal;
     }
-    else if(arg.status= IS_VARIABLE){
+    else if(arg.status== IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
         assembly += to_string(symb->offset)+"(\%rbp) ";
     }
@@ -368,7 +377,7 @@ void generateAssembly(struct GlobalSymbolTable * glob_table)
     struct GlobalSymbol glob_entry;
     for (int i = 0; i< glob_table->entries.size(); i++)
     {   
-        cout << endl;
+        // cout << endl;
         struct Quad quad;
         vector<string>code;
         glob_entry = glob_table->entries[i];
@@ -376,10 +385,11 @@ void generateAssembly(struct GlobalSymbolTable * glob_table)
         for (int j = 0; j< glob_entry.tac.quad.size(); j++)
         {
             cout << view_quad(&glob_entry.tac.quad[j]) << endl;
-            quad_to_assembly(&glob_entry.tac.quad[j]);
-            // for (int k =0; k<code.size() ; k++){
-            //      cout << code[j] << endl;
-            // }
+            // cout << glob_entry.tac.quad[j].op.op<<endl;
+            code =quad_to_assembly(&glob_entry.tac.quad[j]);
+            for (int k =0; k<code.size() ; k++){
+                 cout << code[j] << endl;
+            }
         }
     }
     return;
