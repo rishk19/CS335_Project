@@ -1,5 +1,19 @@
 class uminus_bminus{
-    int printInt(int n){
+    int printInt(int n){ 
+        int x = 3;
+
+        if(n == 1)
+            {
+                n = n+1;
+
+                return 4;
+            }
+        else if(1 > 0){
+            return 5;
+        }
+        else{
+            return 1000000000000000;
+        }
         return n;
     }
 

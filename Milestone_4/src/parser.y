@@ -1049,38 +1049,29 @@ MethodDeclaration:
         E[2] = $2;
         buildTAC(E, 3, APPEND_CODE);
 
-        pushCode(E[0]->val, "movq \%rbp \%rsp");
+        // pushCode(E[0]->val, "movq \%rbp \%rsp");
 
-        quad->op.op = Movq_;
-        quad->op.type = "int";
+        // quad->op.op = Movq_;
+        // quad->op.type = "int";
         
-        val->place = "\%rbp";
-        val->status = IS_VARIABLE;
-        fill_arg(&quad->arg_1, *val);
-        val->place = "\%rsp";
-        fill_arg(&quad->result, *val);
-        quad->arg_2.status = IS_EMPTY;
+        // val->place = "\%rbp";
+        // val->status = IS_VARIABLE;
+        // fill_arg(&quad->arg_1, *val);
+        // val->place = "\%rsp";
+        // fill_arg(&quad->result, *val);
+        // quad->arg_2.status = IS_EMPTY;
 
-        pushQuad(E[0]->val, *quad);
+        // pushQuad(E[0]->val, *quad);
         
-        pushCode(E[0]->val, "popq \%rbp");
+        
+        // pushCode(E[0]->val, "retq");
 
-        quad->op.op = Popq_;
-        val->place = "\%rbp";
-        fill_arg(&quad->result, *val);
-        quad->arg_1.status = IS_EMPTY;
-        quad->arg_2.status = IS_EMPTY;
+        // quad->op.op = Retq_;
+        // quad->result.status = IS_EMPTY;
+        // quad->arg_1.status = IS_EMPTY;
+        // quad->arg_2.status = IS_EMPTY;
 
-        pushQuad(E[0]->val, *quad);
-
-        pushCode(E[0]->val, "retq");
-
-        quad->op.op = Retq_;
-        quad->result.status = IS_EMPTY;
-        quad->arg_1.status = IS_EMPTY;
-        quad->arg_2.status = IS_EMPTY;
-
-        pushQuad(E[0]->val, *quad);
+        // pushQuad(E[0]->val, *quad);
 
         pushCode(E[0]->val, "end_func");
         struct GlobalSymbol* globEntry =  glob_lookup(class_name, $1->symbol.name, glob_table);
@@ -2203,7 +2194,37 @@ ReturnStatement:
                 semantic_error("Function of type void returning value at line number " + to_string(line_number));
             }
             else{
+                struct Quad* quad = new struct Quad;
+                quad->op.op = Movq_;
+                quad->op.type = "int";
+                struct Value * val = new struct Value;
+                val->place = "\%rax";
+                val->status = IS_LITERAL;
+                fill_arg(&quad->result, *val);
+                fill_arg(&quad->arg_1, $2->val);
+                quad->arg_2.status = IS_EMPTY;
+                pushQuad($$->val, *quad);
                 pushCode($$->val, "push " + $2->val.place + " (" + to_string(ret_size) + ")$rbp");
+                
+
+                pushCode($$->val, "popq \%rbp");
+
+                quad->op.op = Popq_;
+                val->place = "\%rbp";
+                fill_arg(&quad->result, *val);
+                quad->arg_1.status = IS_EMPTY;
+                quad->arg_2.status = IS_EMPTY;
+
+                pushQuad($$->val, *quad);
+
+                
+                quad->arg_1.status = IS_EMPTY;
+                quad->arg_2.status = IS_EMPTY;
+                quad->result.status = IS_EMPTY;
+                quad->op.op = Retq_;
+                quad->op.type = "int";
+                pushQuad($$->val, *quad);
+                pushCode($$->val,"retq");
             }
         }
         hasReturned = 1;
@@ -3866,7 +3887,7 @@ int main(int argc , char** argv)
     //view_symbol_table_with_children_hierarchy(glob_class_scope);
     //viewGlobal(glob_table);
     //viewGlobalTac(glob_table);
-    view_symbol_table_with_children_hierarchy(glob_class_scope);
+    // view_symbol_table_with_children_hierarchy(glob_class_scope);
 
 
     FILE* graph = fopen(output_file,"w");

@@ -199,9 +199,17 @@ vector<string> quad_to_assembly(struct Quad* quad ){
 
         }
         break;
-    case NotOperator_:
+    case Product_:
         assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
-        
+        assembly_template.push_back(load_inst(quad->arg_2, r13, quad->my_table));
+        assembly_template.push_back("imulq " + r12 + " " + r13);
+        assembly_template.push_back(store_inst(quad->result, r13, quad->my_table));
+
+    case Divide_:
+        assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
+        assembly_template.push_back(load_inst(quad->arg_2, r13, quad->my_table));
+        assembly_template.push_back("subq " + r12 + " " + r13);
+        assembly_template.push_back(store_inst(quad->result, r13, quad->my_table));
 
 
     default:

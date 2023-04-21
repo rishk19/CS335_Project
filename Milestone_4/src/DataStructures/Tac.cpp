@@ -245,6 +245,7 @@ int genIfElseCode(Value &S, Value &E1, Value &E2, Value &E3, string L1, string L
     struct Quad *quad2 = new struct Quad;
     quad2->op.op = Label_;
     quad2->op.type = "int";
+    val->label = L1;
     fill_arg(&quad2->result, *val);
     quad2->arg_1.status = IS_EMPTY;
     quad2->arg_2.status = IS_EMPTY;
@@ -759,6 +760,7 @@ int buildTAC(struct node *E[], int n, int flag)
             newTempLabel = newTempLabel + 1;
             L2 = makeNewLabel(newTempLabel);
             newTempLabel = newTempLabel + 1;
+            cout << "L1: " <<L1<< " L2: "<<L2<<endl;
             genIfElseCode(E[0]->val, ((E[1] != NULL) ? E[1]->val : dummyVal), ((E[2] != NULL) ? E[2]->val : dummyVal), ((E[3] != NULL) ? E[3]->val : dummyVal), L1, L2);
         }
         break;
