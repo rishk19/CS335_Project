@@ -1,7 +1,7 @@
 class uminus_bminus{
     int printInt(int n){ 
-        int x = 3;
-
+        //int x = 3;
+        
         if(n == 1)
             {
                 n = n+1;

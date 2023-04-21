@@ -5,6 +5,7 @@ using namespace std;
 
 vector<string> quad_to_assembly(struct Quad* quad ){
     vector<string> assembly_template;
+    assembly_template.clear();
     string temp1 = "assign temp first";
     string temp2 = "assign temp first";
     string temp3 = "assign temp first";
@@ -18,6 +19,7 @@ vector<string> quad_to_assembly(struct Quad* quad ){
     string ecx = "\%ecx";
     string cl = "\%cl";
 
+    cout << quad->op.op << endl;
     switch (quad->op.op)
     {
     case Addition_:
@@ -32,19 +34,21 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         }
         break;
         
-        break;
     case Substraction_:
         assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
         if(quad->arg_2.status != IS_EMPTY){
+            cout << "Branch 1" <<endl;
             assembly_template.push_back(load_inst(quad->arg_2, r13, quad->my_table));
             assembly_template.push_back("subq " + r12 + " " + r13);
             assembly_template.push_back(store_inst(quad->result, r13, quad->my_table));
         }
         else{
+            cout << "Branch 2" <<endl;
             assembly_template.push_back("negq r12" );
             assembly_template.push_back(store_inst(quad->result, r12, quad->my_table));
 
         }
+        cout << "Substraction "<< endl;
         break;
     case Product_:
         assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
@@ -113,6 +117,7 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         assembly_template.push_back(set_inst("setg", al));
         assembly_template.push_back(gen_new_inst("movzbl", al, eax));
         assembly_template.push_back(store_inst(quad->result, rax, quad->my_table));
+        break;
 
     case LessThan_:
         assembly_template.push_back(load_inst(quad->arg_1, rax, quad->my_table));
@@ -120,6 +125,7 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         assembly_template.push_back(set_inst("setl", al));
         assembly_template.push_back(gen_new_inst("movzbl", al, eax));
         assembly_template.push_back(store_inst(quad->result, rax, quad->my_table));
+        break;
 
     case GreaterThanEqualTo_:
         assembly_template.push_back(load_inst(quad->arg_1, rax, quad->my_table));
@@ -127,6 +133,7 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         assembly_template.push_back(set_inst("setge", al));
         assembly_template.push_back(gen_new_inst("movzbl", al, eax));
         assembly_template.push_back(store_inst(quad->result, rax, quad->my_table));
+        break;
 
     case LessThanEqualTo_:
         assembly_template.push_back(load_inst(quad->arg_1, rax, quad->my_table));
@@ -134,6 +141,7 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         assembly_template.push_back(set_inst("setle", al));
         assembly_template.push_back(gen_new_inst("movzbl", al, eax));
         assembly_template.push_back(store_inst(quad->result, rax, quad->my_table));
+        break;
 
     case EqualToEqualTo_:
         assembly_template.push_back(load_inst(quad->arg_1, rax, quad->my_table));
@@ -141,6 +149,7 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         assembly_template.push_back(set_inst("sete", al));
         assembly_template.push_back(gen_new_inst("movzbl", al, eax));
         assembly_template.push_back(store_inst(quad->result, rax, quad->my_table));
+        break;
 
     case NotEqualTo_:
         assembly_template.push_back(load_inst(quad->arg_1, rax, quad->my_table));
@@ -148,6 +157,8 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         assembly_template.push_back(set_inst("setne", al));
         assembly_template.push_back(gen_new_inst("movzbl", al, eax));
         assembly_template.push_back(store_inst(quad->result, rax, quad->my_table));
+        break;
+
     // case UnaryAddition_:
     //     assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
     //     assembly_template.push_back(store_inst(quad->result, r12, quad->my_table));
@@ -162,16 +173,22 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         assembly_template.push_back("cqto");
         assembly_template.push_back(division_inst(quad->arg_2, quad->my_table));
         assembly_template.push_back(store_inst(quad->result, rdx, quad->my_table));
+        break;
+
     
     case CircumFlex_:
         assembly_template.push_back(load_inst(quad->arg_1, r13, quad->my_table));
         assembly_template.push_back(xor_inst(quad->arg_2, r12, quad->my_table));
         assembly_template.push_back(store_inst(quad->result, r12, quad->my_table));
+        break;
+        
     
     case Tilde_:
         assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
         assembly_template.push_back(gen_new_inst("notq", r12,""));
         assembly_template.push_back(store_inst(quad->result, r12, quad->my_table));
+        break;
+
     case LeftShit_:
         assembly_template.push_back(load_inst(quad->arg_2, rax, quad->my_table));
         assembly_template.push_back(gen_new_inst("movl",eax,edx));
@@ -179,6 +196,7 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         assembly_template.push_back(gen_new_inst("movl",edx,ecx));
         assembly_template.push_back(gen_new_inst("salq",cl,rax));
         assembly_template.push_back(store_inst(quad->result, rax, quad->my_table));
+        break;
 
     case RightShift_:
         assembly_template.push_back(load_inst(quad->arg_2, rax, quad->my_table));
@@ -187,12 +205,16 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         assembly_template.push_back(gen_new_inst("movl",edx,ecx));
         assembly_template.push_back(gen_new_inst("sarq",cl,rax));
         assembly_template.push_back(store_inst(quad->result, rax, quad->my_table));
+        break;
+
     case LeftShitEqualTo_:
         assembly_template.push_back(load_inst(quad->arg_2, rax, quad->my_table));
         assembly_template.push_back(gen_new_inst("movl",eax,ecx));
         assembly_template.push_back(salq_inst(quad->arg_1, cl, quad->my_table));
         assembly_template.push_back(store_inst(quad->arg_1, rax, quad->my_table));
         assembly_template.push_back(store_inst(quad->result, rax, quad->my_table));
+        break;
+
 
     case RightShiftEqualTo_:
         assembly_template.push_back(load_inst(quad->arg_2, rax, quad->my_table));
@@ -200,11 +222,15 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         assembly_template.push_back(sarq_inst(quad->arg_1, cl, quad->my_table));
         assembly_template.push_back(store_inst(quad->arg_1, rax, quad->my_table));
         assembly_template.push_back(store_inst(quad->result, rax, quad->my_table));
-    default:
+    case Empty_:
+        cout << "Empty" <<endl;
         break;
+    default:
+        cout << "Default" <<endl;
+        break;
+
     }
-
-
+    cout << "Hello";
     return assembly_template;
 }
 string load_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
@@ -234,30 +260,6 @@ string store_inst(struct Argument arg, string reg, struct SymbolTable * my_table
     return assembly;
 }
 
-void generateAssembly(struct GlobalSymbolTable * glob_table)
-{
-    if(glob_table == NULL){
-        cout << "Empty Global Table" << endl;
-    }
-    struct GlobalSymbol glob_entry;
-    for (int i = 0; i< glob_table->entries.size(); i++)
-    {   
-        cout << endl;
-        struct Quad quad;
-        vector<string>code;
-        glob_entry = glob_table->entries[i];
-        for (int j = 0; j< glob_entry.tac.quad.size(); j++)
-        {
-            cout << view_quad(&glob_entry.tac.quad[j]);
-            cout << endl;
-            //quad_to_assembly(&glob_entry.tac.quad[j]);
-            // for (int k =0; k<code.size() ; k++){
-            //     cout << code[j] << endl;
-            // }
-        }
-    }
-    return;
-}
 
 string division_inst(struct Argument arg, struct SymbolTable *my_table){
     string assembly = "idivq ";
@@ -356,4 +358,29 @@ string sarq_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
         assembly += to_string(symb->offset)+"(\%rbp) ";
     }
     return assembly;
+}
+
+void generateAssembly(struct GlobalSymbolTable * glob_table)
+{
+    if(glob_table == NULL){
+        cout << "Empty Global Table" << endl;
+    }
+    struct GlobalSymbol glob_entry;
+    for (int i = 0; i< glob_table->entries.size(); i++)
+    {   
+        cout << endl;
+        struct Quad quad;
+        vector<string>code;
+        glob_entry = glob_table->entries[i];
+        //view_quadruple(glob_entry.tac.quad);
+        for (int j = 0; j< glob_entry.tac.quad.size(); j++)
+        {
+            cout << view_quad(&glob_entry.tac.quad[j]) << endl;
+            quad_to_assembly(&glob_entry.tac.quad[j]);
+            // for (int k =0; k<code.size() ; k++){
+            //      cout << code[j] << endl;
+            // }
+        }
+    }
+    return;
 }

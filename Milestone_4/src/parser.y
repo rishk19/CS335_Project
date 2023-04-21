@@ -990,7 +990,7 @@ MethodDeclaration:
         pushCode(E[0]->val,"begin_func");
         pushCode(E[0]->val,"pushq \%rbp");
 
-        val->status = IS_VARIABLE;
+        val->status = IS_LITERAL;
         val->place = "\%rbp";
 
         quad->my_table = curr;
@@ -1029,6 +1029,7 @@ MethodDeclaration:
             val->place = "\%rsp";
             quad->op.op = Substraction_;
             quad->op.type = "long";
+            val->status = IS_LITERAL;
 
             fill_arg(&quad->arg_1, *val);
             fill_arg(&quad->result, *val);
@@ -3892,21 +3893,22 @@ int main(int argc , char** argv)
 
     FILE* graph = fopen(output_file,"w");
     if(err == 0){
-        freopen(output_file,"w", stdout);
+        //freopen(output_file,"w", stdout);
         cout <<"//// The 3AC is the following : ";
         // ofseam cout(output_file);
         generateTac(graph, glob_table);
     }
     else{
-        freopen(output_file,"w", stdout);
+        //freopen(output_file,"w", stdout);
         cout <<"//// There are errors in the code and thus 3AC generation failed";
         // ofseam cout(output_file);
     }
     char * assembly_file = NULL;
     assembly_file = "output/a.s";
-    
+
     if(err ==0){
-        freopen(assembly_file,"w",stdout);
+        //freopen(assembly_file,"w",stdout);
+        cout << "Beginning Code Generation" <<endl;
         if(glob_table != NULL);
         generateAssembly(glob_table);
     }
