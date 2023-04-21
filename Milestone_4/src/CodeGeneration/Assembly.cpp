@@ -247,7 +247,8 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         assembly_template.push_back(jump_inst("jne",quad->result.label));
         break;
     case Retq_:
-        assembly_template.push_back("\tretq");
+        assembly_template.push_back("\tleave");
+        assembly_template.push_back("\tret");
         break;
     case Label_:
         assembly_template.push_back("." + quad->result.label + ":");

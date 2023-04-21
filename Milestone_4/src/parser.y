@@ -2230,7 +2230,7 @@ ReturnStatement:
                 quad->arg_1.status = IS_EMPTY;
                 quad->arg_2.status = IS_EMPTY;
 
-                pushQuad($$->val, *quad);
+                //pushQuad($$->val, *quad);
 
                 
                 quad->arg_1.status = IS_EMPTY;
@@ -2260,7 +2260,7 @@ ReturnStatement:
             quad->arg_1.status = IS_EMPTY;
             quad->arg_2.status = IS_EMPTY;
 
-            pushQuad($$->val, *quad);
+            //pushQuad($$->val, *quad);
 
             
             quad->arg_1.status = IS_EMPTY;
@@ -2603,7 +2603,8 @@ MethodInvocation:
         memArr[0] = $3;
         $$ = makeInternalNode($1->data, memArr, 1, 1);
 
-        // Checking If function has been defined
+        // Checking If function has been define
+
         struct GlobalSymbol * glob_entry = glob_lookup(class_name, $1->data, glob_table);
         if(glob_entry ==  NULL){
             // Function not defined before 
