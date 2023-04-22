@@ -1,8 +1,8 @@
 class short_circuit{
 
-   // int i = 1;
-   // int j = i;
-   // int k = 1;
+   int i = 1;
+   int j = i;
+   int k = 1;
 
    // int printInt(String n){
    //  return 1;
@@ -12,6 +12,8 @@ class short_circuit{
       b = 12;
       a = a +b;
       return 0;
+   int printInt(String n){
+    return 1;
    }
 
    public static void main(){

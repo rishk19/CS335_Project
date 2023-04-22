@@ -355,6 +355,7 @@ string load_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 
 string store_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 {
+    //cout <<"Hello I am in store instruction" <<endl;
     string assembly = "\tmovq " + reg + " ,";
     if(arg.status== IS_LITERAL){
         assembly += "$" + arg.literal;
@@ -366,7 +367,9 @@ string store_inst(struct Argument arg, string reg, struct SymbolTable * my_table
     else if(arg.status == IS_REGISTER){
         assembly+=arg.literal;
     }
+    //cout <<"Hello I am in store instruction" <<endl;
     return assembly;
+
 }
 
 

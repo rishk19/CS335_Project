@@ -331,10 +331,11 @@ Name:
 SimpleName: 
     Identifier {
         $$ = makeleaf($1);  
-        struct Symbol* lookup_entry = check_scope(curr,$1);      
+        struct Symbol* lookup_entry = check_scope(curr,string($1));      
         if(lookup_entry != NULL){
             $$->symbol = *lookup_entry;
-        }buildVal($$,1);
+            buildVal($$,1);
+        }
     }
 
 QualifiedName: 
@@ -893,6 +894,7 @@ VariableDeclarator:
 
     }
     | VariableDeclaratorId EqualTo VariableInitializer {
+        //cout << "I am being initialzed" << endl;
         struct node * memArr[2];
         memArr[0] = $1;
         memArr[1] = $3;
@@ -915,6 +917,10 @@ VariableDeclarator:
         $$->t = 4;
         $$->symbol.type= $3->symbol.type;
         $$->symbol.size = $3->symbol.size;
+        if($3->t == ARRAY_ACCESS){
+            $$->t = ARRAY_ACCESS;
+        }
+        //cout << $3->symbol.name <<endl;
         //view_type($$->symbol.type);
 
     }
@@ -939,7 +945,8 @@ VariableInitializer:
     }
     | ArrayInitializer {
         $$ = $1;
-        $$->t = ARRAY_ACCESS;
+        //cout << $$->t <<endl;
+        //$$->t = ARRAY_ACCESS;
     }
 
 MethodDeclaration: 
@@ -1091,7 +1098,7 @@ MethodDeclaration:
         }
         globEntry->tac = $$->val;
 
-        view_quadruple($$->val.quad);
+        //view_quadruple($$->val.quad);
         static_context = 0;
         hasReturned = 0;
     }
@@ -1727,6 +1734,7 @@ LocalVariableDeclaration:
         memArr[1] = $2;
         $$ = makeInternalNode("Declaration", memArr, 2, 0);
         $$->isDeclaration = DECLARATION;
+        //cout << $2->arr.size() <<endl;
         for(int j = 0 ; j< $2->arr.size(); j++)
             {   
                 //view_symbol($2->arr[j]->symbol);
@@ -1738,7 +1746,7 @@ LocalVariableDeclaration:
                 $$->symbol.offset = $2->arr[j]->symbol.offset;
                 $$->symbol.type.modifier.clear();
 
-                if($2->arr[j]->t = ARRAY_ACCESS){
+                if($2->arr[j]->t == ARRAY_ACCESS){
                     $$->symbol.size = $2->arr[j]->symbol.size;
                     $$->symbol.type = $2->arr[j]->symbol.type;
                 }
@@ -1756,23 +1764,18 @@ LocalVariableDeclaration:
                         count += 1;
                     }
                 }
+                $$->symbol.name  = name;
                 /*
                 for(int i = 0; i < count ; i++ )
                 {
                     $$->symbol.type.name += "[]";
                 }
                 */
-                
-                $$->symbol.name = name;
-                
-
+ 
                 //Type Checking if initialization
                 if($2->arr[j]->t == 4){
-                    //view_symbol($2->arr[j]);
                     if($$->symbol.type.name == $2->arr[j]->symbol.type.name){
                         $$->symbol.type = $2->arr[j]->symbol.type;
-                        //$$->symbol.size = $2->arr[j]->symbol.size;
-                        //view_symbol($$->symbol);
                         long long int x = loc_insert(curr,$$->symbol);
                         if(x<0)
                         {
@@ -1780,13 +1783,14 @@ LocalVariableDeclaration:
                         }
                     }
 
-                    else{
+                    else{   
                             if(isAssignmentCompatible($$->symbol.type.name, $2->arr[j]->arr[1]->symbol.type.name)){
                                 long long int x = loc_insert(curr,$$->symbol);
                                 if(x<0)
                                 {
                                     semantic_error("Declaration of " +$$->symbol.name + " already exists at line number " + to_string(-x));
                                 }
+                                //cout <<$$->symbol.type.name << endl;
                             }
                             else{
                                 semantic_error("Bad initialization types ["  + $$->symbol.type.name + ", " + $2->arr[j]->symbol.type.name + "] at line number " +  to_string(line_number) + ".");
@@ -1794,6 +1798,7 @@ LocalVariableDeclaration:
                         }
                 }
                 else{
+                    //view_symbol($$->symbol);
                     long long int x = loc_insert(curr,$$->symbol);
                     if(x<0)
                         {
@@ -2217,6 +2222,7 @@ ReturnStatement:
             else{
                 struct Quad* quad = new struct Quad;
                 quad->op.op = Movq_;
+                quad->my_table = curr;
                 quad->op.type = "int";
                 struct Value * val = new struct Value;
                 val->place = "\%rax";
@@ -2255,6 +2261,7 @@ ReturnStatement:
             struct Quad* quad = new struct Quad;
             quad->op.op = Movq_;
             quad->op.type = "int";
+            quad->my_table = curr;
             struct Value * val = new struct Value;
             val->place = "\%rax";
             val->status = IS_REGISTER;
@@ -2411,6 +2418,7 @@ PrimaryNoNewArray:
         fill_arg(&quad->arg_1, *val);
 
         pushQuad($$->val, *quad);
+        $$->t = ARRAY_ACCESS;
 
     }
 
@@ -2724,7 +2732,7 @@ ArrayAccess:
         memArr[1] = $3;
         $$ = makeInternalNode("ArrayAccess", memArr, 2, 1);
         $$->symbol = $1->symbol;
-
+        //view_symbol($1->symbol);
         string txt = $$->symbol.type.name;
         string name = "";
         int count = 0;
@@ -2737,7 +2745,6 @@ ArrayAccess:
                 count += 1;
             }
         }
-
 
         if(count == 0){
             semantic_error("Array dimension mismatch at line number " + to_string(line_number) + ".");
@@ -3802,6 +3809,7 @@ Assignment:
         val->status = IS_VARIABLE;
         fill_arg(&quad->result, *val);
         fill_arg(&quad->arg_2, $3->val);
+        //cout << $3->val.place <<endl;
 
         quad->my_table = curr;
         quad->op.op = ArrayAccess_;
@@ -3974,7 +3982,7 @@ int main(int argc , char** argv)
     // }
     
     // view_symbol_table_with_children_hierarchy(glob_class_scope);
-    // viewGlobal(glob_table);
+    //viewGlobal(glob_table);
     // viewGlobalTac(glob_table);
     // view_symbol_table_with_children_hierarchy(glob_class_scope);
 
