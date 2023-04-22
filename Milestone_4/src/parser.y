@@ -2632,6 +2632,7 @@ MethodInvocation:
                         fill_arg(&quad->result, $3->arr[i]->val);
                         quad->arg_1.status = IS_EMPTY;
                         quad->arg_2.status = IS_EMPTY;
+                        appendCode($$->val, $3->val);
                         pushQuad($$->val,*quad);
                     }
                 }

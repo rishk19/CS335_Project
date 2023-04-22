@@ -24,7 +24,7 @@ class uminus_bminus{
         boolean c = false;
         c = a&&true;
         //int arr[][];
-        System.out.println(k);
+        System.out.println(k+1);
         // int i;
         // k = 5;
         // // printInt(--i);
