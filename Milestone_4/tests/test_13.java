@@ -1,13 +1,13 @@
 class large_expression{
 
     public static int maxx(int a, int b){
-        return 1;
-        // if(a < b){
-        //     return b;
-        // }
-        // else{
-        //     return a;
-        // }
+        //return 1;
+        if(a < b){
+            return b;
+        }
+        else{
+            return a;
+        }
     }
 
     public static void main(){
@@ -19,9 +19,9 @@ class large_expression{
         // arr[1] = 1;
         r = arr[1];
 
-        int x = 100 ;
+        // int x = 100 ;
         // x = maxx(0,1);
-        //System.out.println(x);
+        // System.out.println(x);
         // for (int i =0; i < 6; i++)
         // {
         //     r = r + 'a';

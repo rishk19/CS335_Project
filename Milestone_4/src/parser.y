@@ -2217,6 +2217,7 @@ ReturnStatement:
             else{
                 struct Quad* quad = new struct Quad;
                 quad->op.op = Movq_;
+                quad->my_table = curr;
                 quad->op.type = "int";
                 struct Value * val = new struct Value;
                 val->place = "\%rax";
@@ -2255,6 +2256,7 @@ ReturnStatement:
             struct Quad* quad = new struct Quad;
             quad->op.op = Movq_;
             quad->op.type = "int";
+            quad->my_table = curr;
             struct Value * val = new struct Value;
             val->place = "\%rax";
             val->status = IS_REGISTER;
@@ -3802,6 +3804,7 @@ Assignment:
         val->status = IS_VARIABLE;
         fill_arg(&quad->result, *val);
         fill_arg(&quad->arg_2, $3->val);
+        //cout << $3->val.place <<endl;
 
         quad->my_table = curr;
         quad->op.op = ArrayAccess_;
@@ -3974,7 +3977,7 @@ int main(int argc , char** argv)
     // }
     
     // view_symbol_table_with_children_hierarchy(glob_class_scope);
-    // viewGlobal(glob_table);
+    //viewGlobal(glob_table);
     // viewGlobalTac(glob_table);
     // view_symbol_table_with_children_hierarchy(glob_class_scope);
 

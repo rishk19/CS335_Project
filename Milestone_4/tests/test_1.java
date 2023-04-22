@@ -1,12 +1,12 @@
 class short_circuit{
 
-   // int i = 1;
-   // int j = i;
-   // int k = 1;
+   int i = 1;
+   int j = i;
+   int k = 1;
 
-   // int printInt(String n){
-   //  return 1;
-   // }
+   int printInt(String n){
+    return 1;
+   }
 
 
    public static void main(int Arg[]){
