@@ -15,11 +15,12 @@ int callee(int c)
 
 int main()
 {
-    long a = 4; long b = 2; long c = 10;
+    int a = 4; long b = 2; long c = 10;
     int arr[10];
     arr[0] = 1;
     arr[1] = 0;
-    arr[0] = arr[1];
+    a = arr[0];
+    // arr[0] = arr[1];
     // c = a + b;    //addq
     // c = a - b;    //subq
     // c = a * b;    //imulq

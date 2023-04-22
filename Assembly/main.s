@@ -32,13 +32,13 @@ callee:
 main:
 	pushq	%rbp
 	movq	%rsp, %rbp
-	movq	$4, -8(%rbp)
+	movl	$4, -4(%rbp)
 	movq	$2, -16(%rbp)
 	movq	$10, -24(%rbp)
 	movl	$1, -64(%rbp)
 	movl	$0, -60(%rbp)
-	movl	-60(%rbp), %eax
-	movl	%eax, -64(%rbp)
+	movl	-64(%rbp), %eax
+	movl	%eax, -4(%rbp)
 	movl	$0, %eax
 	popq	%rbp
 	ret
