@@ -145,7 +145,7 @@ run:
 	@read -p "Enter Serial Number of Test Case : " IMAGE;\
 	./$(BIN_DIR)/parser --input= ./$(TEST_DIR)/test_$${IMAGE}.java --output = ./$(OUTPUT_DIR)/test_$${IMAGE}.s ;\
 	$(CC) ./$(OUTPUT_DIR)/test_$${IMAGE}.s -o ./$(OUTPUT_DIR)/test_$${IMAGE}.out;\
-	././$(OUTPUT_DIR)/test_$${IMAGE}.out > ./$(OUTPUR_DIR)/test_$${IMAGE}.txt;\
+	././$(OUTPUT_DIR)/test_$${IMAGE}.out > ./$(OUTPUT_DIR)/test_$${IMAGE}.txt;\
 
 run_many:
 	clear
