@@ -2667,6 +2667,11 @@ MethodInvocation:
                     if(glob_entry->type.parameters_type.size() != 0){
                         semantic_error("Function " + string($1->data) +  " invocation at line number " + to_string(line_number) + " has wrong number of parameters passed.");
                     }
+                    else{
+                        $$->symbol.type.name = glob_entry->type.return_type;
+                        $$->symbol.size = glob_entry->type.return_size;
+                        $$->symbol.name = glob_entry->type.name;
+                    }
                 }
                 else{
                     if($3->arr.size()!= glob_entry->type.parameters_type.size()){
@@ -2680,6 +2685,7 @@ MethodInvocation:
                                 semantic_error("Function " + string($1->data) +  " invocation at line number " + to_string(line_number) + " has wrong type of parameter passed at position " + to_string(i+1) + "." );          
                             }
                         }
+                        //cout << "Hello" <<endl;
                         $$->symbol.type.name = glob_entry->type.return_type;
                         $$->symbol.size = glob_entry->type.return_size;
                         $$->symbol.name = glob_entry->type.name;
@@ -2696,6 +2702,7 @@ MethodInvocation:
                     struct node * E[2];
                     E[0] = $$;
                     E[1] = $3;
+                    //cout << $$->symbol.name << endl;
                     genMethodInvocationCode(E, 2);
                 }
             }

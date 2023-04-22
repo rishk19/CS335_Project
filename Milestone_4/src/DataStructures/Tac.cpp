@@ -541,7 +541,7 @@ int genMethodInvocationCode(struct node *E[], int n)
     quad->op.op = Callq_;
     quad->op.type = E[0]->symbol.type.return_type;
     //struct GlobalSymbol * glob = glob_lookup(,E[0]->data,glob_table);
-    val->label = "__" + E[0]->symbol.name + "__" +  string(E[0]->data);
+    val->label = "__" + E[0]->symbol.name +  "__" +  string(E[0]->data);
     val->status = IS_LABEL;
     fill_arg(&quad->result, *val);
     quad->arg_1.status = IS_EMPTY;
