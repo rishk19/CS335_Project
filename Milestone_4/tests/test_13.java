@@ -14,10 +14,10 @@ class large_expression{
         int r = 101;
         // r = 5-1+6-2+7-3+8+9+10+5-1+6-2+7-3+8+9+10+5-1+6-2+7-3+8+9+10;
         // r = r++;
-
+        int j = 2;
         int arr[] = new int[5];
         // arr[1] = 1;
-        arr[0] = arr[1];
+        r = arr[1];
 
         int x = 100 ;
         // x = maxx(0,1);

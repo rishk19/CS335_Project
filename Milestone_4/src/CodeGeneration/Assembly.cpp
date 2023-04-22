@@ -305,40 +305,37 @@ vector<string> quad_to_assembly(struct Quad* quad ){
 }
 string store_in_array(struct Quad* quad, string reg){
     string assembly = "";
-    struct Symbol * symb = check_scope(quad->my_table, quad->result.literal);
-    int element_offset = symb->offset;
-    if(quad->arg_1.status == IS_LITERAL){
-        element_offset += stoi(quad->arg_1.literal);
-        assembly += "\tmovq "+reg+" , "+to_string(element_offset)+"(\%rbp)";
-    }
-    else if(quad->arg_1.status == IS_VARIABLE){
-        struct Symbol * symb_arg_1 = check_scope(quad->my_table, quad->arg_1.literal);
-        assembly += "\tmovq "+to_string(symb_arg_1->offset)+"(\%rbp) , "+" \%r13\n";
-        assembly += "\tsubq $"+to_string(element_offset) +" , \%r13\n";
-        assembly += "\tsubq \%rbp , \%r13\n";
-        assembly += "\tmovq " +reg+" , 0(\%r13)";
-    }
-
+    struct Symbol * symb_arr = check_scope(quad->my_table, quad->result.literal);
+    struct Symbol * symb_index = check_scope(quad->my_table, quad->arg_1.label);
+    int element_offset = symb_arr->offset;
+    assembly += "\tmovq "+to_string(symb_index->offset) +"(\%rbp) , " +"\%r11";
+    assembly += "\tnegq \%r11";
+    assembly += "\tsubq $"+to_string(-element_offset)+" , \%r11";
+    assembly += "\taddq \%rbp , \%r11";
+    assembly += "\tmovq " +reg+" , 0(\%r11)";
     return assembly;
 }
 string load_from_array(struct Quad* quad){
     string assembly = "";
     string r12 = "\%r12";
     string r13 = "\%r13";
-    struct Symbol * symb_arg_1 = check_scope(quad->my_table, quad->arg_1.literal);
-    int element_offset = symb_arg_1->offset;
-    if(quad->arg_2.status == IS_LITERAL){
-        element_offset += stoi(quad->arg_2.literal);
-        assembly += "\tmovq $"+to_string(element_offset)+" , "+r12+"\n";
-    }
-    else if(quad->arg_2.status == IS_VARIABLE){
-        struct Symbol * symb_arg_2 = check_scope(quad->my_table, quad->arg_2.literal);
-        assembly+="\tmovq "+to_string(symb_arg_2->offset)+"(\%rbp), "+r12+"\n";
-        assembly += "\tsubq $"+to_string(element_offset)+" , "+r12+"\n";
-    }
-    struct Symbol *symb_res = check_scope(quad->my_table, quad->result.literal);
-    assembly+="\tmovq 0("+r12+") , "+r13+"\n";
-    assembly+="\tmovq "+r13+" , "+to_string(symb_res->offset)+"(\%rbp)";
+
+
+    
+    // struct Symbol * symb_arg_1 = check_scope(quad->my_table, quad->arg_1.literal);
+    // int element_offset = symb_arg_1->offset;
+    // if(quad->arg_2.status == IS_LITERAL){
+    //     element_offset += stoi(quad->arg_2.literal);
+    //     assembly += "6\tmovq $"+to_string(element_offset)+" , "+r12+"\n";
+    // }
+    // else if(quad->arg_2.status == IS_VARIABLE){
+    //     struct Symbol * symb_arg_2 = check_scope(quad->my_table, quad->arg_2.literal);
+    //     assembly+="7\tmovq "+to_string(symb_arg_2->offset)+"(\%rbp), "+r12+"\n";
+    //     assembly += "8\tsubq $"+to_string(element_offset)+" , "+r12+"\n";
+    // }
+    // struct Symbol *symb_res = check_scope(quad->my_table, quad->result.literal);
+    // assembly+="9\tmovq 0("+r12+") , "+r13+"\n";
+    // assembly+="10\tmovq "+r13+" , "+to_string(symb_res->offset)+"(\%rbp)";
 
     return assembly;
 
