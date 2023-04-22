@@ -8,7 +8,7 @@ using namespace std;
 
 struct Argument
 {
-    int status; //-1-> Empty 0-> literal, 1->symb_table_entry, 2->label
+    int status; //-1-> Empty 0-> literal, 1->symb_table_entry, 2->label 3-> Register
     
     string literal;
     Symbol * symbol_entry;   

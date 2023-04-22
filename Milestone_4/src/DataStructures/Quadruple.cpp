@@ -27,6 +27,10 @@ string view_quad(struct Quad* qd){
             //res = qd->result.literal;
         }
     }
+    else if(qd->result.status == IS_REGISTER){
+        res = qd->result.literal;
+    }
+    
 
     string arg_1 = "";
     if(qd->arg_1.status == IS_LABEL){
@@ -51,6 +55,9 @@ string view_quad(struct Quad* qd){
             //arg_1 = qd->arg_1.literal;
         }
     }
+    else if(qd->arg_1.status == IS_REGISTER){
+        arg_1 = qd->result.literal;
+    }
 
     string arg_2 = "";
     if(qd->arg_2.status == IS_LABEL){
@@ -74,6 +81,9 @@ string view_quad(struct Quad* qd){
         else{
             arg_2 = qd->arg_2.symbol_entry->name;
         }
+    }
+    else if(qd->arg_2.status == IS_REGISTER){
+        arg_2 = qd->result.literal;
     }
 
     ans = "    " + res + " = " + arg_1 + " " + op +  " "  +  arg_2 ;
@@ -126,6 +136,15 @@ string view_quad(struct Quad* qd){
     else if(qd->op.op == Callq_){
         ans = "    callq " + res;
     }
+    else if(qd->op.op == Printint_){
+        ans = "    printint(" + res + ")";
+    }
+    else if(qd->op.op == Printchar_){
+        ans = "    printchar(" + res + ")";
+    }
+    else if(qd->op.op == Printlong_){
+        ans = "    printlong(" + res + ")";
+    }
     else{
     }
     return ans;
@@ -139,7 +158,7 @@ vector<string> view_quadruple(vector<Quad> quad){
     printQuad.clear();
     for(int i = 0; i<quad.size(); i++){
         printQuad.push_back(view_quad(&quad[i]));
-        //cout << view_quad(&quad[i]) << endl;
+        cout << view_quad(&quad[i]) << endl;
     }
     
 

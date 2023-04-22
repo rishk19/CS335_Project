@@ -51,6 +51,7 @@ using namespace std;
 #define IS_LABEL 2
 #define IS_LITERAL 0
 #define IS_VARIABLE 1
+#define IS_REGISTER 3
 #define IS_EMPTY -1
 #define IS_ARRAYACESS 1000
 

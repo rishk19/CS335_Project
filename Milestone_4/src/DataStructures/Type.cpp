@@ -82,8 +82,11 @@ int type_size(string type)
     if(type == "char") return 8;
     if(type == "float") return 8;
     if(type == "double") return 8;
+    if(type == "boolean") return 8;
 
-    return -1;
+    //cout << type << endl;
+
+    return 8;
 }
 
 int is_static(struct Type &head)

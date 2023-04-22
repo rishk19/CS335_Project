@@ -945,7 +945,7 @@ VariableInitializer:
 MethodDeclaration: 
     MethodHeader MethodBody{
         
-        if(hasReturned == 0){
+        if(hasReturned != 1){
             if($1->symbol.type.return_type != "void"){
                 semantic_error("Non-Void Function " + $1->symbol.name + " must return some value!");
             }
@@ -955,7 +955,6 @@ MethodDeclaration:
                 semantic_error("Void Function " + $1->symbol.name + " cannot return any value!");
             }
         }
-        hasReturned = 0;
         
         struct node * memArr[2];
         memArr[0] = $1;
@@ -975,22 +974,27 @@ MethodDeclaration:
 
         struct Quad * quad = new struct Quad;
         struct Value * val = new struct Value;
-        quad->my_table = curr;
-        quad->op.op = Label_;
-        quad->op.type = "int";
-        val->status = IS_LABEL;
-        val->label = "__" + class_name + "__" + string(E[0]->symbol.name);
-        fill_arg(&quad->result, *val);
-        quad->arg_1.status = IS_EMPTY;
-        quad->arg_2.status = IS_EMPTY;
-        pushQuad($$->val, *quad);
+        // quad->my_table = curr;
+        // quad->op.op = Label_;
+        // quad->op.type = "int";
+        // val->status = IS_LABEL;
+        // if(string(E[0]->symbol.name) != "main")
+        //     val->label = "__" + class_name + "__" + string(E[0]->symbol.name);
+        // else{
+        //     val->label = string(E[0]->symbol.name);
+        // }
+        // fill_arg(&quad->result, *val);
+        // quad->arg_1.status = IS_EMPTY;
+        // quad->arg_2.status = IS_EMPTY;
+        // pushQuad($$->val, *quad);
         //view_quad(quad);
 
         pushCode(E[0]->val,str);
         pushCode(E[0]->val,"begin_func");
         pushCode(E[0]->val,"pushq \%rbp");
 
-        val->status = IS_LITERAL;
+        val->status = IS_REGISTER;
+
         val->place = "\%rbp";
 
         quad->my_table = curr;
@@ -1009,9 +1013,10 @@ MethodDeclaration:
 
         quad->op.op = Movq_;
         quad->op.type = "int";
-
+        val->status = IS_REGISTER;
         val->place = "\%rsp";
         fill_arg(&quad->arg_1,*val);
+        val->status = IS_REGISTER;
         val->place = "\%rbp";
         fill_arg(&quad->result, *val);
         quad->arg_2.status = IS_EMPTY;
@@ -1024,12 +1029,15 @@ MethodDeclaration:
             stackOffset -= $1->symbol.type.parameters_size[i];
         }
         stackOffset += getTotalStackOffset(symb_table,stackOffset);
+        if(stackOffset %16 != 0){
+            stackOffset += (16 - (stackOffset%16));
+        }
         if(stackOffset!=0){
             pushCode(E[0]->val, "$rsp = $rsp - " + to_string(stackOffset));
+            val->status = IS_REGISTER;
             val->place = "\%rsp";
             quad->op.op = Substraction_;
             quad->op.type = "long";
-            val->status = IS_LITERAL;
 
             fill_arg(&quad->arg_1, *val);
             fill_arg(&quad->result, *val);
@@ -1050,29 +1058,31 @@ MethodDeclaration:
         E[2] = $2;
         buildTAC(E, 3, APPEND_CODE);
 
-        // pushCode(E[0]->val, "movq \%rbp \%rsp");
+        // if(hasReturned == 0){
+        //     pushCode(E[0]->val, "movq \%rbp \%rsp");
 
-        // quad->op.op = Movq_;
-        // quad->op.type = "int";
-        
-        // val->place = "\%rbp";
-        // val->status = IS_VARIABLE;
-        // fill_arg(&quad->arg_1, *val);
-        // val->place = "\%rsp";
-        // fill_arg(&quad->result, *val);
-        // quad->arg_2.status = IS_EMPTY;
+        //     quad->op.op = Movq_;
+        //     quad->op.type = "int";
+            
+        //     val->place = "\%rbp";
+        //     val->status = IS_VARIABLE;
+        //     fill_arg(&quad->arg_1, *val);
+        //     val->place = "\%rsp";
+        //     fill_arg(&quad->result, *val);
+        //     quad->arg_2.status = IS_EMPTY;
 
-        // pushQuad(E[0]->val, *quad);
-        
-        
-        // pushCode(E[0]->val, "retq");
+        //     pushQuad(E[0]->val, *quad);
+            
+            
+        //     pushCode(E[0]->val, "retq");
 
-        // quad->op.op = Retq_;
-        // quad->result.status = IS_EMPTY;
-        // quad->arg_1.status = IS_EMPTY;
-        // quad->arg_2.status = IS_EMPTY;
+        //     quad->op.op = Retq_;
+        //     quad->result.status = IS_EMPTY;
+        //     quad->arg_1.status = IS_EMPTY;
+        //     quad->arg_2.status = IS_EMPTY;
 
-        // pushQuad(E[0]->val, *quad);
+        //     pushQuad(E[0]->val, *quad);
+        // }
 
         pushCode(E[0]->val, "end_func");
         struct GlobalSymbol* globEntry =  glob_lookup(class_name, $1->symbol.name, glob_table);
@@ -1083,6 +1093,7 @@ MethodDeclaration:
 
         //view_quadruple($$->val.quad);
         static_context = 0;
+        hasReturned = 0;
     }
 
 MethodHeader:
@@ -2191,6 +2202,7 @@ ReturnStatement:
 
 
         if($2 != NULL){
+            hasReturned = 1;
             if(ret_size == 0){
                 semantic_error("Function of type void returning value at line number " + to_string(line_number));
             }
@@ -2200,7 +2212,7 @@ ReturnStatement:
                 quad->op.type = "int";
                 struct Value * val = new struct Value;
                 val->place = "\%rax";
-                val->status = IS_LITERAL;
+                val->status = IS_REGISTER;
                 fill_arg(&quad->result, *val);
                 fill_arg(&quad->arg_1, $2->val);
                 quad->arg_2.status = IS_EMPTY;
@@ -2211,12 +2223,14 @@ ReturnStatement:
                 pushCode($$->val, "popq \%rbp");
 
                 quad->op.op = Popq_;
+                val->status = IS_REGISTER;
+
                 val->place = "\%rbp";
                 fill_arg(&quad->result, *val);
                 quad->arg_1.status = IS_EMPTY;
                 quad->arg_2.status = IS_EMPTY;
 
-                pushQuad($$->val, *quad);
+                //pushQuad($$->val, *quad);
 
                 
                 quad->arg_1.status = IS_EMPTY;
@@ -2228,9 +2242,38 @@ ReturnStatement:
                 pushCode($$->val,"retq");
             }
         }
-        hasReturned = 1;
-        //string str = "ret";
-        //pushCode($$->val,str);
+        else{
+            hasReturned = 0;
+            struct Quad* quad = new struct Quad;
+            quad->op.op = Movq_;
+            quad->op.type = "int";
+            struct Value * val = new struct Value;
+            val->place = "\%rax";
+            val->status = IS_REGISTER;
+            pushCode($$->val, "popq \%rbp");
+
+            quad->op.op = Popq_;
+            val->status = IS_REGISTER;
+
+            val->place = "\%rbp";
+            fill_arg(&quad->result, *val);
+            quad->arg_1.status = IS_EMPTY;
+            quad->arg_2.status = IS_EMPTY;
+
+            //pushQuad($$->val, *quad);
+
+            
+            quad->arg_1.status = IS_EMPTY;
+            quad->arg_2.status = IS_EMPTY;
+            quad->result.status = IS_EMPTY;
+            quad->op.op = Retq_;
+            quad->op.type = "int";
+            pushQuad($$->val, *quad);
+            pushCode($$->val,"retq");
+
+            string str = "ret";
+            pushCode($$->val,str);
+        }
     }
 
 ThrowStatement: 
@@ -2560,48 +2603,84 @@ MethodInvocation:
         memArr[0] = $3;
         $$ = makeInternalNode($1->data, memArr, 1, 1);
 
-        // Checking If function has been defined
-        struct GlobalSymbol * glob_entry = glob_lookup(class_name, $1->data, glob_table);
-        if(glob_entry ==  NULL){
-            // Function not defined before 
-            semantic_error("Function " + string($1->data) + " at line number " + to_string(line_number) + " not declared." );
+        // Checking If function has been define
+        if(string($1->data) == "System.out.println"){
+            if($3 != NULL){
+                for(int i = 0; i< $3->arr.size(); i++)
+                {
+                    struct Quad * quad = new struct Quad;
+                    quad->my_table = curr;
+
+                    if(isPrimitiveType($3->arr[i]->symbol.type.name) != 1){
+                        semantic_error("System.out.println is not supported for type " + $3->arr[i]->symbol.type.name + " at line number " + to_string(line_number));
+                    }
+                    else{
+                        if($3->arr[i]->symbol.type.name == "int"|| $3->arr[i]->symbol.type.name == "boolean" || $3->arr[i]->symbol.type.name == "byte" || $3->arr[i]->symbol.type.name == "short")
+                        {
+                            quad->op.op = Printint_;
+                            quad->op.type = "int";
+                        }
+                        else if($3->arr[i]->symbol.type.name == "char")
+                        {
+                            quad->op.op = Printchar_;
+                            quad->op.type = "int";
+                        }
+                        else{
+                            quad->op.op = Printlong_;
+                            quad->op.type = "int";
+                        }
+                        fill_arg(&quad->result, $3->arr[i]->val);
+                        quad->arg_1.status = IS_EMPTY;
+                        quad->arg_2.status = IS_EMPTY;
+                        appendCode($$->val, $3->val);
+                        pushQuad($$->val,*quad);
+                    }
+                }
+            }
         }
         else{
-            // Checking if Arguments are filled in properly
-            if($3 == NULL){
-                if(glob_entry->type.parameters_type.size() != 0){
-                    semantic_error("Function " + string($1->data) +  " invocation at line number " + to_string(line_number) + " has wrong number of parameters passed.");
-                }
+            struct GlobalSymbol * glob_entry = glob_lookup(class_name, $1->data, glob_table);
+            if(glob_entry ==  NULL){
+                // Function not defined before 
+                semantic_error("Function " + string($1->data) + " at line number " + to_string(line_number) + " not declared." );
             }
             else{
-                if($3->arr.size()!= glob_entry->type.parameters_type.size()){
-                    semantic_error("Function " + string($1->data) +  " invocation at line number " + to_string(line_number) + " has wrong number of parameters passed.");
+                // Checking if Arguments are filled in properly
+                if($3 == NULL){
+                    if(glob_entry->type.parameters_type.size() != 0){
+                        semantic_error("Function " + string($1->data) +  " invocation at line number " + to_string(line_number) + " has wrong number of parameters passed.");
+                    }
                 }
                 else{
-                    for (int i = 0; i< $3->arr.size(); i++)
-                    {   
-                        if(!isAssignmentCompatible(glob_entry->type.parameters_type[i],$3->arr[i]->symbol.type.name))
-                        {
-                            semantic_error("Function " + string($1->data) +  " invocation at line number " + to_string(line_number) + " has wrong type of parameter passed at position " + to_string(i+1) + "." );          
-                        }
+                    if($3->arr.size()!= glob_entry->type.parameters_type.size()){
+                        semantic_error("Function " + string($1->data) +  " invocation at line number " + to_string(line_number) + " has wrong number of parameters passed.");
                     }
-                    $$->symbol.type.name = glob_entry->type.return_type;
-                    $$->symbol.size = glob_entry->type.return_size;
-                    $$->symbol.name = glob_entry->type.name;
+                    else{
+                        for (int i = 0; i< $3->arr.size(); i++)
+                        {   
+                            if(!isAssignmentCompatible(glob_entry->type.parameters_type[i],$3->arr[i]->symbol.type.name))
+                            {
+                                semantic_error("Function " + string($1->data) +  " invocation at line number " + to_string(line_number) + " has wrong type of parameter passed at position " + to_string(i+1) + "." );          
+                            }
+                        }
+                        $$->symbol.type.name = glob_entry->type.return_type;
+                        $$->symbol.size = glob_entry->type.return_size;
+                        $$->symbol.name = glob_entry->type.name;
+                    }
+                    
                 }
-                
-            }
 
 
 
-            if( (static_context== 1) && (is_static(glob_entry->type) == 0)){
-                semantic_error("Calling a non-static function from a static context at line number " + to_string(line_number));
-            }
-            else {
-                struct node * E[2];
-                E[0] = $$;
-                E[1] = $3;
-                genMethodInvocationCode(E, 2);
+                if( (static_context== 1) && (is_static(glob_entry->type) == 0)){
+                    semantic_error("Calling a non-static function from a static context at line number " + to_string(line_number));
+                }
+                else {
+                    struct node * E[2];
+                    E[0] = $$;
+                    E[1] = $3;
+                    genMethodInvocationCode(E, 2);
+                }
             }
         }
 
@@ -3892,23 +3971,24 @@ int main(int argc , char** argv)
 
 
     FILE* graph = fopen(output_file,"w");
-    if(err == 0){
-        //freopen(output_file,"w", stdout);
-        cout <<"//// The 3AC is the following : ";
-        // ofseam cout(output_file);
-        generateTac(graph, glob_table);
-    }
-    else{
-        //freopen(output_file,"w", stdout);
-        cout <<"//// There are errors in the code and thus 3AC generation failed";
-        // ofseam cout(output_file);
-    }
-    char * assembly_file = NULL;
-    assembly_file = "output/a.s";
+    // if(err == 0){
+    //     freopen(output_file,"w", stdout);
+    //     //cout <<"//// The 3AC is the following : ";
+    //     // ofseam cout(output_file);
+    //     generateTac(graph, glob_table);
+    // }
+    // else{
+    //     freopen(output_file,"w", stdout);
+    //     cout <<"//// There are errors in the code and thus 3AC generation failed";
+    //     // ofseam cout(output_file);
+    // }
+    // char * assembly_file = NULL;
+    // assembly_file = "output/output.s";
 
     if(err ==0){
-        //freopen(assembly_file,"w",stdout);
-        cout << "Beginning Code Generation" <<endl;
+        freopen(output_file,"w",stdout);
+        cout << endl;
+        //cout << "Beginning Code Generation" <<endl;
         if(glob_table != NULL);
         generateAssembly(glob_table);
     }

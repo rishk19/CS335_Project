@@ -21,5 +21,7 @@ string or_inst(struct Argument arg, string reg, struct SymbolTable * my_table);
 string xor_inst(struct Argument arg, string reg, struct SymbolTable * my_table);
 string salq_inst(struct Argument arg, string reg, struct SymbolTable * my_table);
 string sarq_inst(struct Argument arg, string reg, struct SymbolTable * my_table);
+string pp_inst(struct Argument arg, string pp_type, struct SymbolTable* my_table);
 void generateAssembly(struct GlobalSymbolTable * glob_table);
+string movsbl_inst(struct Argument arg, string reg, struct SymbolTable * my_table);
 #endif

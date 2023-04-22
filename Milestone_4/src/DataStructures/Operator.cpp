@@ -348,6 +348,15 @@ string op_to_str(Op op){
         case Callq_:
             return "callq";
             break;
+        case Printint_:
+            return "printint";
+            break;
+        case Printchar_:
+            return "printchar";
+            break;
+        case Printlong_:
+            return "printlong";
+            break;
         default:
             break;
     }

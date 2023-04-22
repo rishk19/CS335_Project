@@ -238,6 +238,10 @@ while {
     sscanf(yytext,"%s", yylval.data);
     return(While);}
 
+System.out.println {
+    sscanf(yytext, "%s", yylval.data);
+    return(Identifier);
+}
 
 [a-zA-Z_][a-zA-Z0-9_]* {
     sscanf(yytext,"%s", yylval.data);

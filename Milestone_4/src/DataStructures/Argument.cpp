@@ -21,6 +21,11 @@ void fill_arg(struct Argument* arg, struct Value &val)
         arg->label = val.label;
         arg->status = IS_LABEL;
     }
+    else if(val.status == IS_REGISTER)
+    {
+        arg->literal = val.place;
+        arg->status = IS_REGISTER;
+    }
     else {
         arg->status = IS_EMPTY;
     }
