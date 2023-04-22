@@ -11,15 +11,16 @@ class large_expression{
     }
 
     public static void main(){
-        int r;
-        r = 5-1+6-2+7-3+8+9+10+5-1+6-2+7-3+8+9+10+5-1+6-2+7-3+8+9+10;
-        r = r++;
+        int r = 101;
+        // r = 5-1+6-2+7-3+8+9+10+5-1+6-2+7-3+8+9+10+5-1+6-2+7-3+8+9+10;
+        // r = r++;
 
-        // int arr[] = new int[5];
+        int arr[] = new int[5];
         // arr[1] = 1;
-        // arr[0] = arr[1];
-        int x ;
-        x = maxx(0,1);
+        arr[0] = arr[1];
+
+        int x = 100 ;
+        // x = maxx(0,1);
         //System.out.println(x);
         // for (int i =0; i < 6; i++)
         // {
