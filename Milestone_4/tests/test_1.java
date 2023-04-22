@@ -44,7 +44,8 @@ class short_circuit{
       //  }
       int a = 0;
       a = 1+ 4;
-      
+      int arr[][][] = new int[5][5][5];
+      arr[2][3][1] = 1;
          
    }
 }
