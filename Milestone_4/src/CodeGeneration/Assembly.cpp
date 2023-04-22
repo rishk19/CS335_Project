@@ -277,7 +277,18 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         assembly_template.push_back("\tmovl \$10 ,\%edi");
         assembly_template.push_back("\tcall putchar");
         break;
+    case Callq_:
+        //view_quad(quad);
+        // cout << "call" << quad->result.literal <<endl;
+        // cout << quad->result.label <<endl;
+        // cout << quad->result.literal <<endl;
+        // cout << "284" <<endl;
+        assembly_template.push_back("\tcall " + quad->result.label);
+        break;
     default:
+        cout << "Enetered default" <<endl;
+        //cout << view_quad(quad);
+        cout <<endl;
         //cout << "Default" <<endl;
         break;
 
