@@ -19,11 +19,13 @@ class uminus_bminus{
 
     public static void main(){
         int k=10;
+        int y = 9;
         boolean a = true;
         boolean b = true;
         boolean c = false;
         c = a&&true;
         //int arr[][];
+        k = k + y;
         System.out.println(k);
         // int i;
         // k = 5;
