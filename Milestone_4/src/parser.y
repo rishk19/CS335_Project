@@ -1058,30 +1058,30 @@ MethodDeclaration:
         E[2] = $2;
         buildTAC(E, 3, APPEND_CODE);
 
+
         // if(hasReturned == 0){
-        //     pushCode(E[0]->val, "movq \%rbp \%rsp");
+            //pushCode(E[0]->val, "movq \%rbp \%rsp");
 
-        //     quad->op.op = Movq_;
-        //     quad->op.type = "int";
+            quad->op.op = Movq_;
+            quad->op.type = "int";
             
-        //     val->place = "\%rbp";
-        //     val->status = IS_VARIABLE;
-        //     fill_arg(&quad->arg_1, *val);
-        //     val->place = "\%rsp";
-        //     fill_arg(&quad->result, *val);
-        //     quad->arg_2.status = IS_EMPTY;
+            val->place = "\%rbp";
+            val->status = IS_REGISTER;
+            fill_arg(&quad->arg_1, *val);
+            val->place = "\%rsp";
+            fill_arg(&quad->result, *val);
+            quad->arg_2.status = IS_EMPTY;
 
-        //     pushQuad(E[0]->val, *quad);
+            //pushQuad(E[0]->val, *quad);
             
-            
-        //     pushCode(E[0]->val, "retq");
+            pushCode(E[0]->val, "retq");
 
-        //     quad->op.op = Retq_;
-        //     quad->result.status = IS_EMPTY;
-        //     quad->arg_1.status = IS_EMPTY;
-        //     quad->arg_2.status = IS_EMPTY;
+            quad->op.op = Retq_;
+            quad->result.status = IS_EMPTY;
+            quad->arg_1.status = IS_EMPTY;
+            quad->arg_2.status = IS_EMPTY;
 
-        //     pushQuad(E[0]->val, *quad);
+            pushQuad(E[0]->val, *quad);
         // }
 
         pushCode(E[0]->val, "end_func");
@@ -1737,8 +1737,13 @@ LocalVariableDeclaration:
                 $$->symbol.source_file = $2->arr[j]->symbol.source_file;
                 $$->symbol.offset = $2->arr[j]->symbol.offset;
                 $$->symbol.type.modifier.clear();
+
+                if($2->arr[j]->t = ARRAY_ACCESS){
+                    $$->symbol.size = $2->arr[j]->symbol.size;
+                    $$->symbol.type = $2->arr[j]->symbol.type;
+                }
                 //cout << $$->symbol.size << endl;
-                
+            
                 string txt = $2->arr[j]->symbol.name;
                 string name = "";
                 int count = 0;
@@ -1751,12 +1756,15 @@ LocalVariableDeclaration:
                         count += 1;
                     }
                 }
+                /*
                 for(int i = 0; i < count ; i++ )
                 {
                     $$->symbol.type.name += "[]";
                 }
+                */
                 
                 $$->symbol.name = name;
+                
 
                 //Type Checking if initialization
                 if($2->arr[j]->t == 4){
@@ -2495,13 +2503,14 @@ ArrayCreationExpression:
         $$->isDeclaration = DECLARATION;
         $$->symbol.type.name = $2->symbol.type.name;
         $$->symbol.size = $2->symbol.size;
-
-        for(int i = 0 ; i < $3->arr.size(); i++){
-            $$->symbol.type.name += "[]";
-            $$->symbol.type.dims.push_back(atoi($3->arr[i]->data));
-            $$->symbol.size *= $$->symbol.type.dims[i];
+        if($3 != NULL){
+            for(int i = 0 ; i < $3->arr.size(); i++){
+                $$->symbol.type.name += "[]";
+                $$->symbol.type.dims.push_back(atoi($3->arr[i]->data));
+                $$->symbol.size *= $$->symbol.type.dims[i];
+            }
+            //cout << $$->symbol.type.name <<endl;
         }
-
         //view_type($$->symbol.type);
 
         // buildVal($$);
@@ -2741,7 +2750,6 @@ ArrayAccess:
         }
 
         $$->symbol.type.name = name;
-        //cout << $$->symbol.type.name << endl;
 
         if($3->symbol.type.name != "byte" && $3->symbol.type.name != "short" && $3->symbol.type.name != "int" && $3->symbol.type.name != "char"  )
         {
@@ -3836,7 +3844,8 @@ LeftHandSide:
             //$$->symbol.type = lookup_entry->type;
         }
         //appendCode($$->val)
-        $$->symbol.type.name = $1->symbol.type.name;        
+        $$->symbol.type.name = $1->symbol.type.name;   
+        //cout << $$->symbol.type.name <<endl;     
         $$->symbol.name = $1->symbol.name;
         //$$->val.place = $1->symbol.name + "[" + $1->val.place + "]";
         $$->val.place = $1->val.place;
@@ -3964,9 +3973,9 @@ int main(int argc , char** argv)
     //         cout << root->val.code[iter]<<endl; 
     // }
     
-    //view_symbol_table_with_children_hierarchy(glob_class_scope);
-    //viewGlobal(glob_table);
-    //viewGlobalTac(glob_table);
+    // view_symbol_table_with_children_hierarchy(glob_class_scope);
+    // viewGlobal(glob_table);
+    // viewGlobalTac(glob_table);
     // view_symbol_table_with_children_hierarchy(glob_class_scope);
 
 
@@ -4000,7 +4009,7 @@ int main(int argc , char** argv)
     //     generateGraph(root, graph);
     // }
     // fprintf(graph, "} \n");
-    fclose(graph);
+    //fclose(graph);
     fclose(yyin);
 
     return 0;

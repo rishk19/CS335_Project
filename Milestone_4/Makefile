@@ -145,4 +145,15 @@ run:
 	@read -p "Enter Serial Number of Test Case : " IMAGE;\
 	./$(BIN_DIR)/parser --input= ./$(TEST_DIR)/test_$${IMAGE}.java --output = ./$(OUTPUT_DIR)/test_$${IMAGE}.s ;\
 	$(CC) ./$(OUTPUT_DIR)/test_$${IMAGE}.s -o ./$(OUTPUT_DIR)/test_$${IMAGE}.out;\
-	././$(OUTPUT_DIR)/test_$${IMAGE}.out;
+	././$(OUTPUT_DIR)/test_$${IMAGE}.out > ./$(OUTPUR_DIR)/test_$${IMAGE}.txt;\
+
+run_many:
+	clear
+	@read -p "Enter Number of Test Case [n] you want to run : " IMAGE;\
+	number = 1 ;\
+	while [[ $$number -le $$IMAGE ]] ; do \
+		./$(BIN_DIR)/parser --input= ./$(TEST_DIR)/test_$${number}.java --output = ./$(OUTPUT_DIR)/test_$${number}.s ;\
+		$(CC) ./$(OUTPUT_DIR)/test_$${number}.s -o ./$(OUTPUT_DIR)/test_$${number}.out 2> ./$(OUTPUR_DIR)/test_$${number}.txt;\
+		././$(OUTPUT_DIR)/test_$${number}.out > ./$(OUTPUT_DIR)/test_$${number}.txt;\
+		((number = number + 1)); \
+	done
