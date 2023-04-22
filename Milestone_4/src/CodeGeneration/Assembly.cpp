@@ -321,7 +321,7 @@ string store_inst(struct Argument arg, string reg, struct SymbolTable * my_table
 
 string division_inst(struct Argument arg, struct SymbolTable *my_table){
     string assembly = "\tidivq ";
-    if(arg.status= IS_LITERAL){
+    if(arg.status== IS_LITERAL){
         assembly += "$" + arg.literal;
     }
     else if(arg.status== IS_VARIABLE){
