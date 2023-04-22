@@ -22,7 +22,7 @@ vector<string> quad_to_assembly(struct Quad* quad ){
 
     switch (quad->op.op)
     {
-    case Addition_:
+    case Addition_:     //
         assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
         if(quad->arg_2.status != IS_EMPTY){
             assembly_template.push_back(load_inst(quad->arg_2, r13, quad->my_table));

@@ -10,7 +10,7 @@ SRC_DIR = src
 test:
 	clear
 	@read -p "Enter Serial Number of Test Case : " IMAGE;\
-	./$(BIN_DIR)/parser --input= ./$(TEST_DIR)/test_$${IMAGE}.java --output = ./$(OUTPUT_DIR)/test_$${IMAGE}.3ac ;\
+	./$(BIN_DIR)/parser --input= ./$(TEST_DIR)/test_$${IMAGE}.java --output = ./$(OUTPUT_DIR)/test_$${IMAGE}.s ;\
 	#dot -Tpdf ./$(OUTPUT_DIR)/test_$${IMAGE}.dot -o ./$(OUTPUT_DIR)/test_$${IMAGE}.pdf ;\
 
 clean:
@@ -136,6 +136,13 @@ test_many:
 	@read -p "Enter Number of Test Case [n] you want to run : " IMAGE;\
 	number = 1 ;\
 	while [[ $$number -le $$IMAGE ]] ; do \
-		./$(BIN_DIR)/parser --input= ./$(TEST_DIR)/test_$${number}.java --output = ./$(OUTPUT_DIR)/test_$${number}.3ac ;\
+		./$(BIN_DIR)/parser --input= ./$(TEST_DIR)/test_$${number}.java --output = ./$(OUTPUT_DIR)/test_$${number}.s ;\
 		((number = number + 1)); \
 	done
+
+run:
+	clear
+	@read -p "Enter Serial Number of Test Case : " IMAGE;\
+	./$(BIN_DIR)/parser --input= ./$(TEST_DIR)/test_$${IMAGE}.java --output = ./$(OUTPUT_DIR)/test_$${IMAGE}.s ;\
+	$(CC) ./$(OUTPUT_DIR)/test_$${IMAGE}.s -o ./$(OUTPUT_DIR)/test_$${IMAGE}.out;\
+	./$(OUTPUT_DIR)/test_${IMAGE}$.out;
