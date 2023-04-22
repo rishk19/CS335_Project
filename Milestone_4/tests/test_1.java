@@ -1,19 +1,14 @@
 class short_circuit{
 
-   int i = 1;
-   int j = i;
-   int k = 1;
-
    // int printInt(String n){
    //  return 1;
    // }
-   public static int rikesh(int a, int b){
+   public static int rikesh(){
+      int a,b;
       a = 2;
       b = 12;
       a = a +b;
       return 0;
-   int printInt(String n){
-    return 1;
    }
 
    public static void main(){
@@ -26,6 +21,10 @@ class short_circuit{
          System.out.println(i);
          i++;
       }
+         rikesh();
+
+   }
+
       //  float x = 9.0;
       //  int i=1, j =1;
       //  int j = 1;
@@ -64,7 +63,7 @@ class short_circuit{
       // arr[2][3][1] = 1;
          
    }
-}
+
 
 
 

@@ -620,7 +620,7 @@ ClassBodyDeclarations_opt : {
         E[0] = $$;
         E[1] = $1;
         buildTAC(E, 2, COPY_CODE);
-        view_quadruple(class_declaration_code->quad);
+        //view_quadruple(class_declaration_code->quad);
         //view_quadruple($1->val.quad);
         
     }
@@ -4004,7 +4004,7 @@ int main(int argc , char** argv)
     // char * assembly_file = NULL;
     // assembly_file = "output/output.s";
 
-    if(err = 0){
+    if(err == 0){
         freopen(output_file,"w",stdout);
         cout << endl;
         //cout << "Beginning Code Generation" <<endl;
