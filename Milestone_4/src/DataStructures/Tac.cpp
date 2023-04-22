@@ -498,7 +498,7 @@ int genMethodInvocationCode(struct node *E[], int n)
     }
     quad->op.op = Subq_;
     quad->op.type = "int";
-    val->status = IS_VARIABLE;
+    val->status = IS_REGISTER;
     val->place = "\%rsp";
     fill_arg(&quad->result,*val);
     val->status = IS_LITERAL;
@@ -508,11 +508,11 @@ int genMethodInvocationCode(struct node *E[], int n)
     val->place = to_string(return_size);
     fill_arg(&quad->arg_1, *val);
     quad->arg_2.status = IS_EMPTY;
-    pushQuad(E[0]->val, *quad);
+    //pushQuad(E[0]->val, *quad);
     pushCode(E[0]->val, "$rsp = $rsp - " + to_string(E[0]->symbol.size + 8) + " // stack space for return value, pc");
     
     quad->op.op = Pushq_;
-    val->status = IS_VARIABLE;
+    val->status = IS_REGISTER;
     val->place = "\%rip";
     fill_arg(&quad->result, *val); //for return address
     quad->arg_1.status = IS_EMPTY;
@@ -537,8 +537,8 @@ int genMethodInvocationCode(struct node *E[], int n)
     quad->op.op = Callq_;
     quad->op.type = E[0]->symbol.type.return_type;
     //struct GlobalSymbol * glob = glob_lookup(,E[0]->data,glob_table);
-    val->place = "__" + E[0]->symbol.name + "__" +  string(E[0]->data);
-    val->label = IS_LABEL;
+    val->label = "__" + E[0]->symbol.name + "__" +  string(E[0]->data);
+    val->status = IS_LABEL;
     fill_arg(&quad->result, *val);
     quad->arg_1.status = IS_EMPTY;
     quad->arg_2.status = IS_EMPTY;
@@ -552,7 +552,7 @@ int genMethodInvocationCode(struct node *E[], int n)
 
     quad->op.op = Popq_;
     val->place = "\%rip";
-    val->status = IS_VARIABLE;
+    val->status = IS_REGISTER;
     fill_arg(&quad->result, *val);
     quad->arg_1.status = IS_EMPTY;
     quad->arg_2.status = IS_EMPTY;
@@ -563,7 +563,8 @@ int genMethodInvocationCode(struct node *E[], int n)
     val->status = IS_VARIABLE;
     val->place = temp;
     fill_arg(&quad->result,*val);
-    val->place = "(\%rsp)";
+    val->place = "\%rsp";
+    val->status = IS_REGISTER;
     fill_arg(&quad->arg_1, *val);
     quad->arg_2.status = IS_EMPTY;
     pushQuad(E[0]->val,*quad);
@@ -571,7 +572,7 @@ int genMethodInvocationCode(struct node *E[], int n)
 
     quad->op.op = Addq_;
     val->place = "\%rsp";
-    val->status = IS_VARIABLE;
+    val->status = IS_REGISTER;
     fill_arg(&quad->result, *val);
     val->place = to_string(return_size+parameterSize);
     val->status = IS_LITERAL;

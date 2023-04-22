@@ -3971,17 +3971,19 @@ int main(int argc , char** argv)
 
 
     FILE* graph = fopen(output_file,"w");
-    // if(err == 0){
-    //     freopen(output_file,"w", stdout);
-    //     //cout <<"//// The 3AC is the following : ";
-    //     // ofseam cout(output_file);
-    //     generateTac(graph, glob_table);
-    // }
-    // else{
-    //     freopen(output_file,"w", stdout);
-    //     cout <<"//// There are errors in the code and thus 3AC generation failed";
-    //     // ofseam cout(output_file);
-    // }
+    char * assembly_file = NULL;
+    assembly_file = "output/output.3ac";
+    if(err == 0){
+        freopen(assembly_file,"w", stdout);
+        //cout <<"//// The 3AC is the following : ";
+        // ofseam cout(output_file);
+        generateTac(graph, glob_table);
+    }
+    else{
+        freopen(output_file,"w", stdout);
+        cout <<"//// There are errors in the code and thus 3AC generation failed";
+        // ofseam cout(output_file);
+    }
     // char * assembly_file = NULL;
     // assembly_file = "output/output.s";
 
