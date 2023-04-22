@@ -7,9 +7,23 @@ class short_circuit{
    // int printInt(String n){
    //  return 1;
    // }
+   public static int rikesh(int a, int b){
+      a = 2;
+      b = 12;
+      a = a +b;
+      return 0;
+   }
 
-
-   public static void main(int Arg[]){
+   public static void main(){
+      int a = 1;
+      int b = 2;
+      int c = 3;
+      // int j = rikesh(2, 4);
+      int i = 0;
+      while(i<10){
+         System.out.println(i);
+         i++;
+      }
       //  float x = 9.0;
       //  int i=1, j =1;
       //  int j = 1;
@@ -42,10 +56,10 @@ class short_circuit{
       //  {
       //    printInt(5);
       //  }
-      int a = 0;
-      a = 1+ 4;
-      int arr[][][] = new int[5][5][5];
-      arr[2][3][1] = 1;
+      // int a = 0;
+      // a = 1+ 4;
+      // int arr[][][] = new int[5][5][5];
+      // arr[2][3][1] = 1;
          
    }
 }

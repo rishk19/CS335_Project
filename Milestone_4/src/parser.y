@@ -3996,7 +3996,7 @@ int main(int argc , char** argv)
     // char * assembly_file = NULL;
     // assembly_file = "output/output.s";
 
-    if(err ==0){
+    if(err = 0){
         freopen(output_file,"w",stdout);
         cout << endl;
         //cout << "Beginning Code Generation" <<endl;

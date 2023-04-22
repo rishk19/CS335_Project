@@ -108,49 +108,49 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         assembly_template.push_back(or_inst(quad->arg_2, r13, quad->my_table));
         assembly_template.push_back(store_inst(quad->result, r13, quad->my_table));
         break;
-    case GreaterThan_:
-        assembly_template.push_back(load_inst(quad->arg_1, rax, quad->my_table));
-        assembly_template.push_back(cmpq_inst(quad->arg_2, rax, quad->my_table));
+    case LessThan_:
+        assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
+        assembly_template.push_back(cmpq_inst(quad->arg_2, r12, quad->my_table));
         assembly_template.push_back(set_inst("setg", al));
         assembly_template.push_back(gen_new_inst("movzbl", al, eax));
         assembly_template.push_back(store_inst(quad->result, rax, quad->my_table));
         break;
 
-    case LessThan_:
-        assembly_template.push_back(load_inst(quad->arg_1, rax, quad->my_table));
-        assembly_template.push_back(cmpq_inst(quad->arg_2, rax, quad->my_table));
+    case GreaterThan_:
+        assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
+        assembly_template.push_back(cmpq_inst(quad->arg_2, r12, quad->my_table));
         assembly_template.push_back(set_inst("setl", al));
         assembly_template.push_back(gen_new_inst("movzbl", al, eax));
         assembly_template.push_back(store_inst(quad->result, rax, quad->my_table));
         break;
 
-    case GreaterThanEqualTo_:
-        assembly_template.push_back(load_inst(quad->arg_1, rax, quad->my_table));
-        assembly_template.push_back(cmpq_inst(quad->arg_2, rax, quad->my_table));
+    case LessThanEqualTo_:
+        assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
+        assembly_template.push_back(cmpq_inst(quad->arg_2, r12, quad->my_table));
         assembly_template.push_back(set_inst("setge", al));
         assembly_template.push_back(gen_new_inst("movzbl", al, eax));
         assembly_template.push_back(store_inst(quad->result, rax, quad->my_table));
         break;
 
-    case LessThanEqualTo_:
-        assembly_template.push_back(load_inst(quad->arg_1, rax, quad->my_table));
-        assembly_template.push_back(cmpq_inst(quad->arg_2, rax, quad->my_table));
+    case GreaterThanEqualTo_:
+        assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
+        assembly_template.push_back(cmpq_inst(quad->arg_2, r12, quad->my_table));
         assembly_template.push_back(set_inst("setle", al));
         assembly_template.push_back(gen_new_inst("movzbl", al, eax));
         assembly_template.push_back(store_inst(quad->result, rax, quad->my_table));
         break;
 
     case EqualToEqualTo_:
-        assembly_template.push_back(load_inst(quad->arg_1, rax, quad->my_table));
-        assembly_template.push_back(cmpq_inst(quad->arg_2, rax, quad->my_table));
+        assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
+        assembly_template.push_back(cmpq_inst(quad->arg_2, r12, quad->my_table));
         assembly_template.push_back(set_inst("sete", al));
         assembly_template.push_back(gen_new_inst("movzbl", al, eax));
         assembly_template.push_back(store_inst(quad->result, rax, quad->my_table));
         break;
 
     case NotEqualTo_:
-        assembly_template.push_back(load_inst(quad->arg_1, rax, quad->my_table));
-        assembly_template.push_back(cmpq_inst(quad->arg_2, rax, quad->my_table));
+        assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
+        assembly_template.push_back(cmpq_inst(quad->arg_2, r12, quad->my_table));
         assembly_template.push_back(set_inst("setne", al));
         assembly_template.push_back(gen_new_inst("movzbl", al, eax));
         assembly_template.push_back(store_inst(quad->result, rax, quad->my_table));
@@ -306,13 +306,13 @@ vector<string> quad_to_assembly(struct Quad* quad ){
 string store_in_array(struct Quad* quad, string reg){
     string assembly = "";
     struct Symbol * symb_arr = check_scope(quad->my_table, quad->result.literal);
-    struct Symbol * symb_index = check_scope(quad->my_table, quad->arg_1.label);
+    struct Symbol * symb_index = check_scope(quad->my_table, quad->arg_1.literal);
     int element_offset = symb_arr->offset;
-    assembly += "\tmovq "+to_string(symb_index->offset) +"(\%rbp) , " +"\%r11";
-    assembly += "\tnegq \%r11";
-    assembly += "\tsubq $"+to_string(-element_offset)+" , \%r11";
-    assembly += "\taddq \%rbp , \%r11";
-    assembly += "\tmovq " +reg+" , 0(\%r11)";
+    assembly += "\tmovq "+to_string(symb_index->offset) +"(\%rbp) , " +"\%r11\n";
+    assembly += "\tnegq \%r11\n";
+    assembly += "\tsubq $"+to_string(-element_offset)+" , \%r11\n";
+    assembly += "\taddq \%rbp , \%r11\n";
+    assembly += "\tmovq " +reg+" , 0(\%r11)\n";
     return assembly;
 }
 string load_from_array(struct Quad* quad){
@@ -320,23 +320,19 @@ string load_from_array(struct Quad* quad){
     string r12 = "\%r12";
     string r13 = "\%r13";
 
+    struct Argument arr = quad->arg_1;
+    struct Argument index = quad->arg_2;
+    struct Argument res = quad->result; // for res = arr[index]
+    struct Symbol * symb_arr = check_scope(quad->my_table, quad->arg_1.literal);
+    struct Symbol * symb_index = check_scope(quad->my_table, quad->arg_2.literal);
+    struct Symbol * symb_res = check_scope(quad->my_table, quad->result.literal);
 
-    
-    // struct Symbol * symb_arg_1 = check_scope(quad->my_table, quad->arg_1.literal);
-    // int element_offset = symb_arg_1->offset;
-    // if(quad->arg_2.status == IS_LITERAL){
-    //     element_offset += stoi(quad->arg_2.literal);
-    //     assembly += "6\tmovq $"+to_string(element_offset)+" , "+r12+"\n";
-    // }
-    // else if(quad->arg_2.status == IS_VARIABLE){
-    //     struct Symbol * symb_arg_2 = check_scope(quad->my_table, quad->arg_2.literal);
-    //     assembly+="7\tmovq "+to_string(symb_arg_2->offset)+"(\%rbp), "+r12+"\n";
-    //     assembly += "8\tsubq $"+to_string(element_offset)+" , "+r12+"\n";
-    // }
-    // struct Symbol *symb_res = check_scope(quad->my_table, quad->result.literal);
-    // assembly+="9\tmovq 0("+r12+") , "+r13+"\n";
-    // assembly+="10\tmovq "+r13+" , "+to_string(symb_res->offset)+"(\%rbp)";
-
+    assembly += "\tmovq "+to_string(symb_index->offset)+ "(\%rbp)" +" , "+r12+"\n";
+    assembly += "\tnegq "+r12+"\n";
+    assembly += "\tsubq $"+to_string(-symb_arr->offset)+" , "+r12+"\n";
+    assembly += "\taddq \%rbp , "+r12+"\n";
+    assembly += "\tmovq 0("+r12+")"+", "+r13+"\n";
+    assembly += "\tmovq "+r13+" , "+to_string(symb_res->offset)+"(\%rbp)\n";
     return assembly;
 
 }
@@ -391,13 +387,13 @@ string division_inst(struct Argument arg, struct SymbolTable *my_table){
 string cmpq_inst(struct Argument arg, string literal, struct SymbolTable* my_table){
     string assembly = "";
     if(arg.status == IS_VARIABLE){
-        assembly += "\tcmpq "+literal + " ,";
         struct Symbol * symb = check_scope(my_table, arg.literal);
-        assembly += to_string(symb->offset) +"(\%rbp)";
+        assembly += "\tmovq " + to_string(symb->offset) +"(\%rbp), \%rax\n";
+        assembly += "\tcmpq "+literal + " , \%rax";
     }
     else if(arg.status == IS_LITERAL){
-        assembly+= "\tmovq $"+arg.literal+" , %rax";
-        assembly+="\n\tcmpq "+literal+" , %rax";
+        assembly+= "\tmovq $"+arg.literal+" , \%rax";
+        assembly+="\n\tcmpq "+literal+" , \%rax";
     }
     return assembly;
 }
