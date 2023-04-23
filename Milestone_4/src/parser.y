@@ -1743,7 +1743,8 @@ LocalVariableDeclaration:
                 $$->symbol.name= $2->arr[j]->symbol.name;
                 $$->symbol.size = $1->symbol.size;
                 $$->symbol.source_file = $2->arr[j]->symbol.source_file;
-                $$->symbol.offset = $2->arr[j]->symbol.offset;
+                //cout << $2->arr[j]->symbol.offset <<endl;
+                $$->symbol.offset = $2->arr[j]->symbol.offset; 
                 $$->symbol.type.modifier.clear();
 
                 if($2->arr[j]->t == ARRAY_ACCESS){
@@ -2244,7 +2245,7 @@ ReturnStatement:
                 quad->arg_1.status = IS_EMPTY;
                 quad->arg_2.status = IS_EMPTY;
 
-                //pushQuad($$->val, *quad);
+                pushQuad($$->val, *quad);
 
                 
                 quad->arg_1.status = IS_EMPTY;
@@ -2263,7 +2264,7 @@ ReturnStatement:
             quad->op.type = "int";
             quad->my_table = curr;
             struct Value * val = new struct Value;
-            val->place = "\%rax";
+            val->place = " ax";
             val->status = IS_REGISTER;
             pushCode($$->val, "popq \%rbp");
 
@@ -2275,7 +2276,7 @@ ReturnStatement:
             quad->arg_1.status = IS_EMPTY;
             quad->arg_2.status = IS_EMPTY;
 
-            //pushQuad($$->val, *quad);
+            pushQuad($$->val, *quad);
 
             
             quad->arg_1.status = IS_EMPTY;

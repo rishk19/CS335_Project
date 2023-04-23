@@ -521,7 +521,7 @@ int genMethodInvocationCode(struct node *E[], int n)
     fill_arg(&quad->result, *val); //for return address
     quad->arg_1.status = IS_EMPTY;
     quad->arg_2.status = IS_EMPTY;
-    pushQuad(E[0]->val, *quad);
+    //pushQuad(E[0]->val, *quad);
     pushCode(E[0]->val, "push PC // pushin program counter ");
 
     /*
@@ -560,7 +560,7 @@ int genMethodInvocationCode(struct node *E[], int n)
     fill_arg(&quad->result, *val);
     quad->arg_1.status = IS_EMPTY;
     quad->arg_2.status = IS_EMPTY;
-    pushQuad(E[0]->val,*quad);
+    //pushQuad(E[0]->val,*quad);
 
     quad->op.op = Movq_;
     quad->op.type = "int";
