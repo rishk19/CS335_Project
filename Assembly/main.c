@@ -1,25 +1,34 @@
 #include <stdio.h>
 
-int caller(int a, int b);
-int callee(int c);
+// int caller(int a, int b);
+// int callee(int c);
 
-int caller(int a, int b)
-{
-    return(callee(a + b));
-}
+// int caller(int a, int b)
+// {
+//     return(callee(a + b));
+// }
 
-int callee(int c)
-{
-    return(c+1);
-}
+// int callee(int c)
+// {
+//     return(c+1);
+// }
+int rikesh(){
+      int a = 100;
+      a = 1;
 
-int main()
+      return 0;
+   }
+void main()
 {
-    int a = 4; long b = 2; long c = 10;
-    int arr[10];
-    arr[0] = 1;
-    arr[1] = 0;
-    a = arr[0];
+    // int a = 4; long b = 2; long c = 10;
+    // int arr[10];
+    // arr[0] = 1;
+    // arr[1] = 0;
+    int i = 0;
+
+         rikesh();
+
+    // a = arr[0];
     // arr[0] = arr[1];
     // c = a + b;    //addq
     // c = a - b;    //subq
@@ -200,5 +209,5 @@ int main()
     // c = a  b;    
     // c = a  b;        
     //printf("%d\n", caller(a,b));
-    return 0;
+    // return 0;
 }

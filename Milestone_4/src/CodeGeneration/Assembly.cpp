@@ -307,8 +307,8 @@ string store_in_array(struct Quad* quad, string reg){
     string assembly = "";
     struct Symbol * symb_arr = check_scope(quad->my_table, quad->result.literal);
     struct Symbol * symb_index = check_scope(quad->my_table, quad->arg_1.literal);
-    int element_offset = symb_arr->offset;
-    assembly += "\tmovq "+to_string(symb_index->offset) +"(\%rbp) , " +"\%r11\n";
+    int element_offset = symb_arr->offset-8;
+    assembly += "\tmovq "+to_string(symb_index->offset-8) +"(\%rbp) , " +"\%r11\n";
     assembly += "\tnegq \%r11\n";
     assembly += "\tsubq $"+to_string(-element_offset)+" , \%r11\n";
     assembly += "\taddq \%rbp , \%r11\n";
@@ -327,12 +327,12 @@ string load_from_array(struct Quad* quad){
     struct Symbol * symb_index = check_scope(quad->my_table, quad->arg_2.literal);
     struct Symbol * symb_res = check_scope(quad->my_table, quad->result.literal);
 
-    assembly += "\tmovq "+to_string(symb_index->offset)+ "(\%rbp)" +" , "+r12+"\n";
+    assembly += "\tmovq "+to_string(symb_index->offset-8)+ "(\%rbp)" +" , "+r12+"\n";
     assembly += "\tnegq "+r12+"\n";
-    assembly += "\tsubq $"+to_string(-symb_arr->offset)+" , "+r12+"\n";
+    assembly += "\tsubq $"+to_string(-(symb_arr->offset-8))+" , "+r12+"\n";
     assembly += "\taddq \%rbp , "+r12+"\n";
     assembly += "\tmovq 0("+r12+")"+", "+r13+"\n";
-    assembly += "\tmovq "+r13+" , "+to_string(symb_res->offset)+"(\%rbp)\n";
+    assembly += "\tmovq "+r13+" , "+to_string(symb_res->offset - 8)+"(\%rbp)\n";
     return assembly;
 
 }
@@ -344,7 +344,7 @@ string load_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
     }
     else if(arg.status == IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
-        assembly += to_string(symb->offset)+"(\%rbp) ,";
+        assembly += to_string(symb->offset-8)+"(\%rbp) ,";
     }
     else if(arg.status == IS_REGISTER){
         assembly+=arg.literal + " ,";
@@ -362,7 +362,7 @@ string store_inst(struct Argument arg, string reg, struct SymbolTable * my_table
     }
     else if(arg.status== IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
-        assembly += to_string(symb->offset)+"(\%rbp)";
+        assembly += to_string(symb->offset-8)+"(\%rbp)";
     }
     else if(arg.status == IS_REGISTER){
         assembly+=arg.literal;
@@ -380,7 +380,7 @@ string division_inst(struct Argument arg, struct SymbolTable *my_table){
     }
     else if(arg.status== IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
-        assembly += to_string(symb->offset)+"(\%rbp)";
+        assembly += to_string(symb->offset-8)+"(\%rbp)";
     }
     else if(arg.status == IS_REGISTER){
         assembly+=arg.literal;
@@ -391,7 +391,7 @@ string cmpq_inst(struct Argument arg, string literal, struct SymbolTable* my_tab
     string assembly = "";
     if(arg.status == IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
-        assembly += "\tmovq " + to_string(symb->offset) +"(\%rbp), \%rax\n";
+        assembly += "\tmovq " + to_string(symb->offset-8) +"(\%rbp), \%rax\n";
         assembly += "\tcmpq "+literal + " , \%rax";
     }
     else if(arg.status == IS_LITERAL){
@@ -420,7 +420,7 @@ string and_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
     }
     else if(arg.status== IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
-        assembly += to_string(symb->offset)+"(\%rbp) ,";
+        assembly += to_string(symb->offset-8)+"(\%rbp) ,";
     }
     assembly+=reg;
     return assembly;
@@ -433,7 +433,7 @@ string or_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
     }
     else if(arg.status== IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
-        assembly += to_string(symb->offset)+"(\%rbp) ,";
+        assembly += to_string(symb->offset-8)+"(\%rbp) ,";
     }
     assembly+=reg;
     return assembly;
@@ -446,7 +446,7 @@ string xor_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
     }
     else if(arg.status == IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
-        assembly += to_string(symb->offset)+"(\%rbp) ,";
+        assembly += to_string(symb->offset-8)+"(\%rbp) ,";
     }
     assembly+=reg;
     return assembly;
@@ -460,7 +460,7 @@ string salq_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
     }
     else if(arg.status== IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
-        assembly += to_string(symb->offset)+"(\%rbp) ,";
+        assembly += to_string(symb->offset-8)+"(\%rbp) ,";
     }
     return assembly;
 }
@@ -472,7 +472,7 @@ string sarq_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
     }
     else if(arg.status== IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
-        assembly += to_string(symb->offset)+"(\%rbp) ,";
+        assembly += to_string(symb->offset-8)+"(\%rbp) ,";
     }
     return assembly;
 }
@@ -484,7 +484,7 @@ string pp_inst(struct Argument arg, string pp_type, struct SymbolTable* my_table
     }
     else if(arg.status == IS_VARIABLE && pp_type == "pushq"){
         struct Symbol * symb = check_scope(my_table, arg.literal);
-        assembly += to_string(symb->offset)+"(\%rbp) ";
+        assembly += to_string(symb->offset-8)+"(\%rbp) ";
     }
     else if(arg.status == IS_REGISTER){
         assembly+=arg.literal;
@@ -503,7 +503,7 @@ string movsbl_inst(struct Argument arg, string reg, struct SymbolTable * my_tabl
     }
     else if(arg.status == IS_VARIABLE){
         struct Symbol * symb = check_scope(my_table, arg.literal);
-        assembly += to_string(symb->offset)+"(\%rbp) ,";
+        assembly += to_string(symb->offset-8)+"(\%rbp) ,";
     }
     else if(arg.status == IS_REGISTER){
         assembly+=arg.literal + " ,";

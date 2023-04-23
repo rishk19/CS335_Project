@@ -4,23 +4,24 @@ class short_circuit{
    //  return 1;
    // }
    public static int rikesh(){
-      int a,b;
-      a = 2;
-      b = 12;
-      a = a +b;
+      int a = 100;
+      a = 1;
+      System.out.println(a);
       return 0;
    }
 
    public static void main(){
-      int a = 1;
-      int b = 2;
-      int c = 3;
+      // int a = 1;
+      // int b = 2;
+      // int c = 3;
       // int j = rikesh(2, 4);
-      int i = 0;
-      while(i<10){
-         System.out.println(i);
-         i++;
-      }
+      int i = 10;
+      rikesh();
+      System.out.println(i);
+      // while(i<10){
+      //    System.out.println(i);
+      //    i++;
+      // }
          rikesh();
 
    }
