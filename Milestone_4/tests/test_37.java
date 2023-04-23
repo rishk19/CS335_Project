@@ -20,6 +20,7 @@ class short_circuit{
         func1();
         sum = func2();
         System.out.println(sum);
+        func3(1,2);
     }
 }
  

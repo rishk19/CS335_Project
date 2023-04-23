@@ -1038,7 +1038,9 @@ MethodDeclaration:
         for(int  i = 0; i<$1->symbol.type.parameters_size.size(); i++){
             stackOffset -= $1->symbol.type.parameters_size[i];
         }
+        long long int parameter_offset = stackOffset;
         stackOffset += getTotalStackOffset(symb_table,stackOffset);
+        stackOffset -= parameter_offset;
         if(stackOffset %16 != 0){
             stackOffset += (16 - (stackOffset%16));
         }
