@@ -62,7 +62,8 @@ enum Op {
     Callq_,
     Printint_,
     Printchar_,
-    Printlong_
+    Printlong_,
+    Leave_
 };
 struct Operator {
     Op op;

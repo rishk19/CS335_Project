@@ -32,6 +32,8 @@ string src_file = "";
 int err = 0;
 int hasReturned = 0;
 int static_context = 0;
+
+int is_main = 0;
 long long int stackOffset = 0;
 
 struct Value * class_declaration_code = new struct Value;
@@ -1094,6 +1096,34 @@ MethodDeclaration:
             fill_arg(&quad->arg_2,*val);
             pushQuad(E[0]->val, *quad);
 
+        for(int i = 0; i< E[0]->val.quad.size(); i++)
+        {
+            if(E[0]->val.quad[i].op.type == "to_change")
+            {
+                E[0]->val.quad[i].arg_2.literal = to_string(stackOffset);
+                E[0]->val.quad[i].op.type ="int";
+            }
+        }
+            
+
+            quad->op.op = Popq_;
+            quad->op.type = "int";
+            val->place = "\%rbp";
+            val->status = IS_REGISTER;
+
+            fill_arg(&quad->result, *val);
+            pushQuad(E[0]->val, *quad);
+
+            if(is_main == 1){
+                quad->arg_1.status = IS_EMPTY;
+                quad->arg_2.status = IS_EMPTY;
+                quad->result.status = IS_EMPTY;
+                quad->op.op = Leave_;
+                quad->op.type = "int";
+                pushQuad($$->val, *quad);
+            }
+
+
             pushCode(E[0]->val, "retq");
 
             quad->op.op = Retq_;
@@ -1102,6 +1132,8 @@ MethodDeclaration:
             quad->arg_2.status = IS_EMPTY;
 
             pushQuad(E[0]->val, *quad);
+
+    
         // }
 
         pushCode(E[0]->val, "end_func");
@@ -1114,6 +1146,9 @@ MethodDeclaration:
         //view_quadruple($$->val.quad);
         static_context = 0;
         hasReturned = 0;
+        is_main = 0;
+
+
     }
 
 MethodHeader:
@@ -1256,6 +1291,9 @@ MethodDeclarator:
         memArr[0]  = $4;
         $$ = makeInternalNode($1, memArr,1, 0);
         string temp = string($1);
+        if(temp == "main"){
+            is_main = 1;
+        }
         $$->symbol.name = temp;
         if($4 != NULL)
         {
@@ -2245,12 +2283,27 @@ ReturnStatement:
                 fill_arg(&quad->arg_1, $2->val);
                 quad->arg_2.status = IS_EMPTY;
                 pushQuad($$->val, *quad);
+
+
+                val->place = "\%rsp";
+                val->status = IS_REGISTER;
+                quad->op.op = Addition_;
+                quad->op.type = "to_change";
+                fill_arg(&quad->arg_1, *val);
+                fill_arg(&quad->result, *val);
+                val->place = to_string(stackOffset);
+                val->status = IS_LITERAL;
+                fill_arg(&quad->arg_2,*val);
+                //restore_offset.push_back(quad);
+                pushQuad($$->val, *quad);
+
                 pushCode($$->val, "push " + $2->val.place + " (" + to_string(ret_size) + ")$rbp");
                 
 
                 pushCode($$->val, "popq \%rbp");
 
                 quad->op.op = Popq_;
+                quad->op.type = "int";
                 val->status = IS_REGISTER;
 
                 val->place = "\%rbp";
@@ -2260,16 +2313,14 @@ ReturnStatement:
 
                 pushQuad($$->val, *quad);
 
-                val->place = "\%rsp";
-                val->status = IS_REGISTER;
-                quad->op.op = Addition_;
-                quad->op.type = "int";
-                fill_arg(&quad->arg_1, *val);
-                fill_arg(&quad->result, *val);
-                val->place = to_string(stackOffset);
-                val->status = IS_LITERAL;
-                fill_arg(&quad->arg_2,*val);
-                pushQuad($$->val, *quad);
+                if(is_main == 1){
+                    quad->arg_1.status = IS_EMPTY;
+                    quad->arg_2.status = IS_EMPTY;
+                    quad->result.status = IS_EMPTY;
+                    quad->op.op = Leave_;
+                    quad->op.type = "int";
+                    pushQuad($$->val, *quad);
+                }
 
                 
                 quad->arg_1.status = IS_EMPTY;
@@ -2284,11 +2335,24 @@ ReturnStatement:
         else{
             hasReturned = 0;
             struct Quad* quad = new struct Quad;
+            struct Value *val = new struct Value;
+            quad->my_table = curr;
+
+            val->place = "\%rsp";
+            val->status = IS_REGISTER;
+            quad->op.op = Addition_;
+            quad->op.type = "to_change";
+            fill_arg(&quad->arg_1, *val);
+            fill_arg(&quad->result, *val);
+            val->place = to_string(stackOffset);
+            val->status = IS_LITERAL;
+            fill_arg(&quad->arg_2,*val);
+            pushQuad($$->val, *quad);
+
             quad->op.op = Movq_;
             quad->op.type = "int";
             quad->my_table = curr;
-            struct Value * val = new struct Value;
-            val->place = " ax";
+            val->place = " \%rax";
             val->status = IS_REGISTER;
             pushCode($$->val, "popq \%rbp");
 
@@ -2302,17 +2366,14 @@ ReturnStatement:
 
             pushQuad($$->val, *quad);
 
-            val->place = "\%rsp";
-            val->status = IS_REGISTER;
-            quad->op.op = Addition_;
-            quad->op.type = "int";
-            fill_arg(&quad->arg_1, *val);
-            fill_arg(&quad->result, *val);
-            val->place = to_string(stackOffset);
-            val->status = IS_LITERAL;
-            fill_arg(&quad->arg_2,*val);
-            pushQuad($$->val, *quad);
-
+            if(is_main == 1){
+                quad->arg_1.status = IS_EMPTY;
+                quad->arg_2.status = IS_EMPTY;
+                quad->result.status = IS_EMPTY;
+                quad->op.op = Leave_;
+                quad->op.type = "int";
+                pushQuad($$->val, *quad);
+            }
 
             
             quad->arg_1.status = IS_EMPTY;

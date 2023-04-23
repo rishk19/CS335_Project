@@ -24,6 +24,8 @@ vector<string> quad_to_assembly(struct Quad* quad ){
     {
     case Addition_:     //
         assembly_template.push_back(load_inst(quad->arg_1, r12, quad->my_table));
+        // cout << view_quad(quad);
+        // cout << "Line 28 Assembly generation" << endl;
         if(quad->arg_2.status != IS_EMPTY){
             assembly_template.push_back(load_inst(quad->arg_2, r13, quad->my_table));
             assembly_template.push_back("\taddq " + r12 + " ," + r13);
@@ -248,7 +250,7 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         assembly_template.push_back(jump_inst("jne",quad->result.label));
         break;
     case Retq_:
-        assembly_template.push_back("\tleave");
+        //assembly_template.push_back("\tleave");
         assembly_template.push_back("\tret");
         break;
     case Label_:
@@ -291,6 +293,9 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         break;
     case LoadArray_:
         assembly_template.push_back(load_from_array(quad));
+        break;
+    case Leave_:
+        assembly_template.push_back("\tleave");
         break;
     default:
         // cout << "Enetered default" <<endl;
