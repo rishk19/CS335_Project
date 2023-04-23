@@ -4062,8 +4062,19 @@ int main(int argc , char** argv)
     char * input_file = NULL;
     char * output_file = NULL;
     int help_flag = 0;
+    int verbose_flag = 0;
 
-    flag_extractor(argc, argv, &input_file, &output_file,&help_flag);
+    flag_extractor(argc, argv, &input_file, &output_file,&help_flag,&verbose_flag);
+    if(help_flag){
+        help();
+        return 0;
+    }
+    if(verbose_flag){
+        #ifdef YYDEBUG
+            yydebug =  1;
+        #endif
+    }
+
 
     /* Parsing Algorithm */
     yyin = fopen(input_file,"r");
