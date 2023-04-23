@@ -3,7 +3,7 @@
 using namespace std;
 
 
-void flag_extractor(int argc, char** argv, char** input_file, char** output_file, int* help_flag)
+void flag_extractor(int argc, char** argv, char** input_file, char** output_file, int* help_flag, int* verbose_flag)
 {
     int z = 0;
     FILE* fp;
@@ -32,11 +32,6 @@ void flag_extractor(int argc, char** argv, char** input_file, char** output_file
 
     fclose(fp);
     system("rm help.txt");
-
-    if(*help_flag){
-        help();
-        return ;
-    }
     
         /* Verbose Mode */
 
@@ -46,10 +41,10 @@ void flag_extractor(int argc, char** argv, char** input_file, char** output_file
 
     if((read = getline(output_file, &len, fp)) != -1) {
         if(read > 0){
-            #ifdef YYDEBUG
-                yydebug =  1;
-            #endif
+            *verbose_flag = 1;
+
         }
+        
     }
 
     fclose(fp);
