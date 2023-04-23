@@ -379,11 +379,13 @@ string store_inst(struct Argument arg, string reg, struct SymbolTable * my_table
 
 
 string division_inst(struct Argument arg, struct SymbolTable *my_table){
-    string assembly = "\tidivq ";
+    string assembly = "";
     if(arg.status== IS_LITERAL){
-        assembly += "$" + arg.literal;
+        assembly += "\tmovq $"+ arg.literal+" , \%r13\n";
+        assembly += "\tidivq \%r13";
     }
     else if(arg.status== IS_VARIABLE){
+        assembly = "\tidivq ";
         struct Symbol * symb = check_scope(my_table, arg.literal);
         assembly += to_string(symb->offset-8)+"(\%rbp)";
     }
