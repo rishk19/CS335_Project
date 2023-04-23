@@ -567,7 +567,7 @@ int genMethodInvocationCode(struct node *E[], int n)
     val->status = IS_VARIABLE;
     val->place = temp;
     fill_arg(&quad->result,*val);
-    val->place = "\%rsp";
+    val->place = "\%rax";
     val->status = IS_REGISTER;
     fill_arg(&quad->arg_1, *val);
     quad->arg_2.status = IS_EMPTY;
