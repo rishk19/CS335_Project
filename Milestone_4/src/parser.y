@@ -32,6 +32,7 @@ string src_file = "";
 int err = 0;
 int hasReturned = 0;
 int static_context = 0;
+long long int stackOffset = 0;
 
 struct Value * class_declaration_code = new struct Value;
 
@@ -1031,7 +1032,7 @@ MethodDeclaration:
         pushQuad(E[0]->val, *quad);
         struct SymbolTable * symb_table ;
         symb_table = glob_lookup(class_name,$1->symbol.name, glob_table)->LocalSymbolTable;
-        long long int stackOffset = 0;
+        stackOffset = 0;
         for(int  i = 0; i<$1->symbol.type.parameters_size.size(); i++){
             stackOffset -= $1->symbol.type.parameters_size[i];
         }
@@ -1080,7 +1081,19 @@ MethodDeclaration:
             quad->arg_2.status = IS_EMPTY;
 
             //pushQuad(E[0]->val, *quad);
-            
+
+
+            val->place = "\%rsp";
+            val->status = IS_REGISTER;
+            quad->op.op = Addition_;
+            quad->op.type = "int";
+            fill_arg(&quad->arg_1, *val);
+            fill_arg(&quad->result, *val);
+            val->place = to_string(stackOffset);
+            val->status = IS_LITERAL;
+            fill_arg(&quad->arg_2,*val);
+            pushQuad(E[0]->val, *quad);
+
             pushCode(E[0]->val, "retq");
 
             quad->op.op = Retq_;
@@ -2247,6 +2260,17 @@ ReturnStatement:
 
                 pushQuad($$->val, *quad);
 
+                val->place = "\%rsp";
+                val->status = IS_REGISTER;
+                quad->op.op = Addition_;
+                quad->op.type = "int";
+                fill_arg(&quad->arg_1, *val);
+                fill_arg(&quad->result, *val);
+                val->place = to_string(stackOffset);
+                val->status = IS_LITERAL;
+                fill_arg(&quad->arg_2,*val);
+                pushQuad($$->val, *quad);
+
                 
                 quad->arg_1.status = IS_EMPTY;
                 quad->arg_2.status = IS_EMPTY;
@@ -2277,6 +2301,18 @@ ReturnStatement:
             quad->arg_2.status = IS_EMPTY;
 
             pushQuad($$->val, *quad);
+
+            val->place = "\%rsp";
+            val->status = IS_REGISTER;
+            quad->op.op = Addition_;
+            quad->op.type = "int";
+            fill_arg(&quad->arg_1, *val);
+            fill_arg(&quad->result, *val);
+            val->place = to_string(stackOffset);
+            val->status = IS_LITERAL;
+            fill_arg(&quad->arg_2,*val);
+            pushQuad($$->val, *quad);
+
 
             
             quad->arg_1.status = IS_EMPTY;
