@@ -23,6 +23,8 @@ class short_circuit{
       //    i++;
       // }
          rikesh();
+         System.out.println(i);
+      
 
    }
 

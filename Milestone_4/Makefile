@@ -153,7 +153,7 @@ run_many:
 	number = 1 ;\
 	while [[ $$number -le $$IMAGE ]] ; do \
 		./$(BIN_DIR)/parser --input= ./$(TEST_DIR)/test_$${number}.java --output = ./$(OUTPUT_DIR)/test_$${number}.s ;\
-		$(CC) ./$(OUTPUT_DIR)/test_$${number}.s -o ./$(OUTPUT_DIR)/test_$${number}.out 2> ./$(OUTPUR_DIR)/test_$${number}.txt;\
+		$(CC) ./$(OUTPUT_DIR)/test_$${number}.s -o ./$(OUTPUT_DIR)/test_$${number}.out 2> ./$(OUTPUT_DIR)/test_$${number}.txt;\
 		././$(OUTPUT_DIR)/test_$${number}.out > ./$(OUTPUT_DIR)/test_$${number}.txt;\
 		((number = number + 1)); \
 	done

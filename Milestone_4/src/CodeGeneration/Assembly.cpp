@@ -295,7 +295,7 @@ vector<string> quad_to_assembly(struct Quad* quad ){
         assembly_template.push_back(load_from_array(quad));
         break;
     case Leave_:
-        assembly_template.push_back("\tleave");
+        //assembly_template.push_back("\tleave");
         break;
     default:
         // cout << "Enetered default" <<endl;
