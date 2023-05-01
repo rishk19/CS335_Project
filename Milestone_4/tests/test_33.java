@@ -1,13 +1,16 @@
 //Basic operators
 class short_circuit{
     public static void main(){
-        int a = 0; int b = 1; int c;
-        c = a-b+1*2/1+7*7+22;
+        System.out.println(0);
+        
+        int a = 0; int b = 1; int c = 100;
         
         System.out.println(c);
 
         c = 1*2*3*4*5+2+2-2*4/1+2/2;
         
+        System.out.println(c);
+        c = a + b;
         System.out.println(c);
 
         boolean p1 = true, p2 = false, p3 = true;
