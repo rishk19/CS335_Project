@@ -438,13 +438,14 @@ int genForCode(Value &S, Value &E1, Value &E2, Value &E3, Value &E4, string L1, 
 int genMethodInvocationCode(struct node *E[], int n)
 { // Quadruple Left
 
-    if (E[0] == NULL || E[1] == NULL)
+    if (E[0] == NULL)
         return 1;
 
     string temp = makeNewTemp(newTempLabel);
     newTempLabel++;
     E[0]->val.place = temp;
-    appendCode(E[0]->val, E[1]->val);
+    if(E[1]!= NULL)
+        appendCode(E[0]->val, E[1]->val);
     insert_temp(E[0]->symbol, temp, E[0]->symbol.type.return_type);
     /*
      This will be done while assembly translation
@@ -466,39 +467,42 @@ int genMethodInvocationCode(struct node *E[], int n)
     struct Quad * quad = new struct Quad;
     struct Value * val = new struct Value;
     quad->my_table = curr;
-    quad->op.op = Pushq_;
-    quad->op.type = "int";
     long long int parameterSize = 0;
-    int argSize = E[1]->arr.size();
-    for (int i = 0; i < argSize; i++)
-    {   
-        val->status = E[1]->arr[i]->val.status;
-        val->place = E[1]->arr[i]->val.place;
-        parameterSize += E[1]->arr[i]->symbol.size;
-        fill_arg(&quad->result, *val); 
-        quad->arg_1.status = IS_EMPTY;
-        quad->arg_2.status = IS_EMPTY;
-        quad->op.op = Pushq_; 
-        pushQuad(E[0]->val, *quad); 
-        //view_quad()// passing all the parameters on stack
-    }
-    pushCode(E[0]->val, "$rsp = $rsp - " + to_string(parameterSize) + "// stack space for actual parameters ");
-    int currSize = 0;
-    for (int i = 0; i < argSize; i++)
-    {
-        string param = "push ";
-        if (E[1]->arr[i]->val.place.size() != 0)
-        {
-            param.append(E[1]->arr[i]->val.place);
-            param.append(" (" + to_string(currSize) + ")$rsp");
-
-            currSize += E[1]->arr[i]->symbol.size;
+    if(E[1]!= NULL){
+        quad->op.op = Pushq_;
+        quad->op.type = "int";
+        //long long int parameterSize = 0;
+        int argSize = E[1]->arr.size();
+        for (int i = 0; i < argSize; i++)
+        {   
+            val->status = E[1]->arr[i]->val.status;
+            val->place = E[1]->arr[i]->val.place;
+            parameterSize += E[1]->arr[i]->symbol.size;
+            fill_arg(&quad->result, *val); 
+            quad->arg_1.status = IS_EMPTY;
+            quad->arg_2.status = IS_EMPTY;
+            quad->op.op = Pushq_; 
+            pushQuad(E[0]->val, *quad); 
+            //view_quad()// passing all the parameters on stack
         }
-        pushCode(E[0]->val, param);
+        pushCode(E[0]->val, "$rsp = $rsp - " + to_string(parameterSize) + "// stack space for actual parameters ");
+        int currSize = 0;
+        for (int i = 0; i < argSize; i++)
+        {
+            string param = "push ";
+            if (E[1]->arr[i]->val.place.size() != 0)
+            {
+                param.append(E[1]->arr[i]->val.place);
+                param.append(" (" + to_string(currSize) + ")$rsp");
+
+                currSize += E[1]->arr[i]->symbol.size;
+            }
+            pushCode(E[0]->val, param);
+        }
     }
     quad->op.op = Subq_;
     quad->op.type = "int";
-    val->status = IS_VARIABLE;
+    val->status = IS_REGISTER;
     val->place = "\%rsp";
     fill_arg(&quad->result,*val);
     val->status = IS_LITERAL;
@@ -508,16 +512,16 @@ int genMethodInvocationCode(struct node *E[], int n)
     val->place = to_string(return_size);
     fill_arg(&quad->arg_1, *val);
     quad->arg_2.status = IS_EMPTY;
-    pushQuad(E[0]->val, *quad);
+    //pushQuad(E[0]->val, *quad);
     pushCode(E[0]->val, "$rsp = $rsp - " + to_string(E[0]->symbol.size + 8) + " // stack space for return value, pc");
     
     quad->op.op = Pushq_;
-    val->status = IS_VARIABLE;
+    val->status = IS_REGISTER;
     val->place = "\%rip";
     fill_arg(&quad->result, *val); //for return address
     quad->arg_1.status = IS_EMPTY;
     quad->arg_2.status = IS_EMPTY;
-    pushQuad(E[0]->val, *quad);
+    //pushQuad(E[0]->val, *quad);
     pushCode(E[0]->val, "push PC // pushin program counter ");
 
     /*
@@ -537,8 +541,8 @@ int genMethodInvocationCode(struct node *E[], int n)
     quad->op.op = Callq_;
     quad->op.type = E[0]->symbol.type.return_type;
     //struct GlobalSymbol * glob = glob_lookup(,E[0]->data,glob_table);
-    val->place = "__" + E[0]->symbol.name + "__" +  string(E[0]->data);
-    val->label = IS_LABEL;
+    val->label = "__" + E[0]->symbol.name +  "__" +  string(E[0]->data);
+    val->status = IS_LABEL;
     fill_arg(&quad->result, *val);
     quad->arg_1.status = IS_EMPTY;
     quad->arg_2.status = IS_EMPTY;
@@ -552,33 +556,35 @@ int genMethodInvocationCode(struct node *E[], int n)
 
     quad->op.op = Popq_;
     val->place = "\%rip";
-    val->status = IS_VARIABLE;
+    val->status = IS_REGISTER;
     fill_arg(&quad->result, *val);
     quad->arg_1.status = IS_EMPTY;
     quad->arg_2.status = IS_EMPTY;
-    pushQuad(E[0]->val,*quad);
+    //pushQuad(E[0]->val,*quad);
 
     quad->op.op = Movq_;
     quad->op.type = "int";
     val->status = IS_VARIABLE;
     val->place = temp;
     fill_arg(&quad->result,*val);
-    val->place = "(\%rsp)";
+    val->place = "\%rax";
+    val->status = IS_REGISTER;
     fill_arg(&quad->arg_1, *val);
     quad->arg_2.status = IS_EMPTY;
     pushQuad(E[0]->val,*quad);
    // cout <<endl<<view_quad(quad)<<endl;
+    if(E[1]!=NULL){
+        quad->op.op = Addq_;
+        val->place = "\%rsp";
+        val->status = IS_REGISTER;
+        fill_arg(&quad->result, *val);
+        val->place = to_string(return_size+parameterSize);
+        val->status = IS_LITERAL;
+        fill_arg(&quad->arg_1, *val);
+        pushQuad(E[0]->val, *quad);
 
-    quad->op.op = Addq_;
-    val->place = "\%rsp";
-    val->status = IS_VARIABLE;
-    fill_arg(&quad->result, *val);
-    val->place = to_string(return_size+parameterSize);
-    val->status = IS_LITERAL;
-    fill_arg(&quad->arg_1, *val);
-    pushQuad(E[0]->val, *quad);
-
-    pushCode(E[0]->val, "$rsp = $rsp - " + to_string(E[0]->symbol.size + parameterSize) + "  // Popping return value and arguments");
+        pushCode(E[0]->val, "$rsp = $rsp - " + to_string(E[0]->symbol.size + parameterSize) + "  // Popping return value and arguments");
+    }
     /*
         5. The caller can expect to find the return value of the subroutine in the register RAX.
     */

@@ -145,6 +145,9 @@ string view_quad(struct Quad* qd){
     else if(qd->op.op == Printlong_){
         ans = "    printlong(" + res + ")";
     }
+    else if(qd->op.op == Leave_){
+        ans = "    leave";
+    }
     else{
     }
     return ans;

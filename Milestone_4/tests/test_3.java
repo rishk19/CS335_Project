@@ -1,5 +1,5 @@
 class uminus_bminus{
-    int printInt(int n){ 
+    static int printInt(int n){ 
         //int x = 3;
         
         if(n == 1)
@@ -20,14 +20,16 @@ class uminus_bminus{
     public static void main(){
         int k=10;
         int y = 9;
-        boolean a = true;
-        boolean b = true;
-        boolean c = false;
-        c = a&&true;
-        //int arr[][];
-        k = k + y;
+        k = printInt(0);
+        // boolean a = true;
+        // boolean b = true;
+        // boolean c = false;
+        // c = a&&true;
+        // //int arr[][];
+        // k = k + y;
         System.out.println(k);
         System.out.println(k+1);
+
         // int i;
         // k = 5;
         // // printInt(--i);

@@ -24,4 +24,6 @@ string sarq_inst(struct Argument arg, string reg, struct SymbolTable * my_table)
 string pp_inst(struct Argument arg, string pp_type, struct SymbolTable* my_table);
 void generateAssembly(struct GlobalSymbolTable * glob_table);
 string movsbl_inst(struct Argument arg, string reg, struct SymbolTable * my_table);
+string store_in_array(struct Quad* quad, string reg);
+string load_from_array(struct Quad* quad);
 #endif
